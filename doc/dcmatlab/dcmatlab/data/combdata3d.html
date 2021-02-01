@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of combdata3d</title>
+  <meta name="keywords" content="combdata3d">
+  <meta name="description" content="COMBDATA3D - Combine 3d data sets">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; combdata3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>combdata3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>COMBDATA3D - Combine 3d data sets</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=combdata3d(N1,N2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> COMBDATA3D - Combine 3d data sets
+ N=combdata3d(N1,N2)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="combdata.html" class="code" title="function newdata=combdata(varargin)">combdata</a>	COMBDATA - combine two data structs (calls combdata2d/3d)</li><li><a href="reads3dfile.html" class="code" title="function N=readsnd3d(filename)">reads3dfile</a>	READSND3D - Read 3d file by use of soundings</li><li><a href="readsnd3d.html" class="code" title="function N=readsnd3d(filename)">readsnd3d</a>	READSND3D - Read 3d file by use of soundings</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=combdata3d(N1,N2)</a>
+0002 
+0003 <span class="comment">% COMBDATA3D - Combine 3d data sets</span>
+0004 <span class="comment">% N=combdata3d(N1,N2)</span>
+0005 
+0006 l1=length(N1.elec);n1=length(N1.a);
+0007 l2=length(N2.elec);n2=length(N2.a);
+0008 [N.elec,I,J]=unique([N1.elec;N2.elec],<span class="string">'rows'</span>);
+0009 N.a=zeros(n1+n2,1);
+0010 N.b=N.a;N.m=N.a;N.n=N.a;
+0011 <span class="keyword">if</span> isfield(N1,<span class="string">'r'</span>)&amp;&amp;isfield(N2,<span class="string">'r'</span>), N.r=[N1.r(:);N2.r(:)]; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> isfield(N1,<span class="string">'rho'</span>)&amp;&amp;isfield(N2,<span class="string">'rho'</span>), N.rho=[N1.rho(:);N2.rho(:)]; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> isfield(N1,<span class="string">'ip'</span>)&amp;&amp;isfield(N2,<span class="string">'ip'</span>), N.ip=[N1.ip(:);N2.ip(:)]; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> isfield(N1,<span class="string">'err'</span>)&amp;&amp;isfield(N2,<span class="string">'err'</span>), N.err=[N1.err(:);N2.err(:)]; <span class="keyword">end</span>
+0015 <span class="keyword">if</span> isfield(N1,<span class="string">'i'</span>)&amp;&amp;isfield(N2,<span class="string">'i'</span>), N.i=[N1.i(:);N2.i(:)]; <span class="keyword">end</span>
+0016 <span class="keyword">if</span> isfield(N1,<span class="string">'u'</span>)&amp;&amp;isfield(N2,<span class="string">'u'</span>), N.u=[N1.u(:);N2.u(:)]; <span class="keyword">end</span>
+0017 N.k=[N1.k(:);N2.k(:)];
+0018 N.a(1:n1)=J(N1.a);
+0019 N.a(n1+1:n1+n2)=J(N2.a+l1);
+0020 N.m(1:n1)=J(N1.m);
+0021 N.m(n1+1:n1+n2)=J(N2.m+l1);
+0022 fi=find(N1.b);
+0023 N.b(fi)=J(N1.b(fi));
+0024 fi=find(N2.b);
+0025 N.b(fi+n1)=J(N2.b(fi)+l1);
+0026 fi=find(N1.n);
+0027 N.n(fi)=J(N1.n(fi));
+0028 fi=find(N2.n);
+0029 N.n(fi+n1)=J(N2.n(fi)+l1);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

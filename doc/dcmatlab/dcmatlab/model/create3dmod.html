@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of create3dmod</title>
+  <meta name="keywords" content="create3dmod">
+  <meta name="description" content="CREATEMOD - Create model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; create3dmod.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>create3dmod
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CREATEMOD - Create model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Mod=create3dmod(N,nz,dx,dy) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CREATEMOD - Create model
+ Model = create3dmod(N[,nz,dx,dy])
+ create parametric model from data struct N
+ nz(number of layers),
+ dx/dy (smallest spacing) are optional</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Mod=create3dmod(N,nz,dx,dy)</a>
+0002 
+0003 <span class="comment">% CREATEMOD - Create model</span>
+0004 <span class="comment">% Model = create3dmod(N[,nz,dx,dy])</span>
+0005 <span class="comment">% create parametric model from data struct N</span>
+0006 <span class="comment">% nz(number of layers),</span>
+0007 <span class="comment">% dx/dy (smallest spacing) are optional</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;2, nz=[]; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;3, dx=[]; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;4, dy=dx; <span class="keyword">end</span>
+0012 
+0013 <span class="keyword">if</span> isempty(nz),
+0014     nz=length(unique(sort(round(N.k))));
+0015     <span class="keyword">if</span> nz&gt;8, nz=8; <span class="keyword">end</span>
+0016 <span class="keyword">end</span>
+0017 Mod.z=zparam(N,nz);
+0018 
+0019 aa=diff(unique(sort(N.elec(:,1))));
+0020 dxel=min(aa(find(aa)));
+0021 aa=diff(unique(sort(N.elec(:,2))));
+0022 dyel=min(aa(find(aa)));
+0023 minx=min(N.elec(:,1))-dxel;
+0024 maxx=max(N.elec(:,1))+dyel;
+0025 miny=min(N.elec(:,2))-dyel;
+0026 maxy=max(N.elec(:,2))+dyel;
+0027 Mod.x0=minx;
+0028 Mod.y0=miny;
+0029 <span class="keyword">if</span> isempty(dy), dy=dyel; <span class="keyword">end</span> <span class="comment">%or /2 ?</span>
+0030 <span class="keyword">if</span> isempty(dx), dx=dxel; <span class="keyword">end</span>
+0031 dx=round(dx*20)/20;
+0032 dy=round(dy*20)/20;
+0033 <span class="keyword">if</span> nargin&lt;3,
+0034     refx=round(dx/2/(Mod.z(2)-Mod.z(1)))*2;
+0035 <span class="keyword">else</span>
+0036     refx=1;
+0037 <span class="keyword">end</span>
+0038 <span class="keyword">if</span> refx&lt;1, refx=1; <span class="keyword">end</span>
+0039 Mod.dx=dx/refx;
+0040 <span class="keyword">if</span> nargin&lt;4,
+0041     refy=round(dx/2/(Mod.z(2)-Mod.z(1)))*2;
+0042 <span class="keyword">else</span>
+0043     refy=1;
+0044 <span class="keyword">end</span>
+0045 <span class="keyword">if</span> refy&lt;1, refy=1; <span class="keyword">end</span>
+0046 Mod.dy=dy/refy;
+0047 
+0048 nnx=floor((maxx-minx)/Mod.dx);
+0049 nny=floor((maxy-miny)/Mod.dy);
+0050 
+0051 <span class="comment">%message(sprintf('Min(x)=%g Max(x)=%g Min(y)=%g Max(y)=%g D=%g',minx,maxx,miny,maxy,D));</span>
+0052 zusatz=1;
+0053 K=length(Mod.z)-1;
+0054 <span class="comment">% Model estimation</span>
+0055 minKonf=min(abs(N.k)); 
+0056 <span class="comment">% Sigma_q=Mittelwert der geringsten Eindringtiefe o. Mittel</span>
+0057 rq=median(N.r(find(abs(N.k)==minKonf)));
+0058 <span class="comment">%rq=mean(N.r);</span>
+0059 <span class="keyword">if</span> rq&gt;20, rq=round(rq/10)*10; <span class="keyword">end</span>
+0060 Mod.Bg=ones(size(Mod.z))*rq;
+0061 mode=1;
+0062 <span class="keyword">switch</span> mode,
+0063 <span class="keyword">case</span> 2, <span class="comment">% ascending</span>
+0064     Mod.nx=(1:K)+refx-1;Mod.ny=(1:K)+refy-1;
+0065 <span class="keyword">case</span> 1, <span class="comment">% complicating</span>
+0066     Mod.nx=round(min(diff(Mod.z)/Mod.dx+1,Mod.z(2:end)/Mod.dx));
+0067     Mod.ny=round(min(diff(Mod.z)/Mod.dy+1,Mod.z(2:end)/Mod.dy));
+0068     Mod.nx=max(Mod.nx,round(refx.*((0:K-1)*0.13+1)));
+0069     Mod.ny=max(Mod.ny,round(refy.*((0:K-1)*0.13+1)));    
+0070     <span class="keyword">for</span> k=1:length(Mod.nx)-1,
+0071         <span class="keyword">if</span> Mod.nx(k+1)&gt;Mod.nx(k)+1, Mod.nx(k+1)=Mod.nx(k)+1; <span class="keyword">end</span>
+0072         <span class="keyword">if</span> Mod.ny(k+1)&gt;Mod.ny(k)+1, Mod.ny(k+1)=Mod.ny(k)+1; <span class="keyword">end</span>
+0073     <span class="keyword">end</span>
+0074 <span class="keyword">case</span> 3, <span class="comment">% quadratic</span>
+0075     Mod.nx=round(diff(Mod.z)/Mod.dx);
+0076     Mod.ny=round(diff(Mod.z)/Mod.dx);
+0077 <span class="keyword">otherwise</span>, <span class="comment">%logarithmically ascending</span>
+0078     Mod.nx=round(refx.*((0:K-1)*0.13+1));
+0079     Mod.ny=round(refx.*((0:K-1)*0.13+1));
+0080 <span class="keyword">end</span>
+0081 Mod.ncells=0;
+0082 <span class="keyword">for</span> k=1:K,
+0083     Mod.M{k}=ones(floor(nnx/Mod.nx(k)),floor(nny/Mod.ny(k)))*Mod.Bg(k);
+0084     Mod.ncells=Mod.ncells+prod(size(Mod.M{k}));
+0085 <span class="keyword">end</span>
+0086 message(sprintf(<span class="string">'Creating para model: %d cells, rho=%.1f'</span>,Mod.ncells,rq));
+0087 message(sprintf(<span class="string">'dx=%.1f (%.1f-%.1f) dy=%.1f (%.1f-%.1f)'</span>,Mod.dx,Mod.nx(1)*Mod.dx,<span class="keyword">...</span>
+0088     Mod.nx(end)*Mod.dx,Mod.dy,Mod.ny(1)*Mod.dx,Mod.ny(end)*Mod.dy));</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of invshiftcdp</title>
+  <meta name="keywords" content="invshiftcdp">
+  <meta name="description" content="% INVSHIFTED - make shifted CG and choose by L-criterion">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; invshiftcdp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>invshiftcdp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% INVSHIFTED - make shifted CG and choose by L-criterion</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x,lambda,rho,eta,ak] = invshiftcdp(A,y,C,D,P,startlam,minlam,kuh) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% INVSHIFTED - make shifted CG and choose by L-criterion
+% x = invshiftcd(S,y,C,D,startlam,minlam,q)
+% solves implicitly the equation
+% ( (DS)'*DS + l*C'C ) x = (DS)'*D*y (-l*C'C x0)
+% [x,lambda,rho,eta,ak] = ...</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="cglsparcdp.html" class="code" title="function [X,rho,eta,j] = cglsparcdp(A,b,L,D,PP,lambda)">cglsparcdp</a>	CGLSPARCDP - Least squares basing on conjugate gradients</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [X,rho,eta,j] = cglsparcdp(A,b,L,D,PP,lambda)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,lambda,rho,eta,ak] = invshiftcdp(A,y,C,D,P,startlam,minlam,kuh)</a>
+0002 
+0003 <span class="comment">%% INVSHIFTED - make shifted CG and choose by L-criterion</span>
+0004 <span class="comment">%% x = invshiftcd(S,y,C,D,startlam,minlam,q)</span>
+0005 <span class="comment">%% solves implicitly the equation</span>
+0006 <span class="comment">%% ( (DS)'*DS + l*C'C ) x = (DS)'*D*y (-l*C'C x0)</span>
+0007 <span class="comment">%% [x,lambda,rho,eta,ak] = ...</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;3, C=1; <span class="keyword">end</span> <span class="comment">%speye(size(A,2)); end</span>
+0010 <span class="keyword">if</span> nargin&lt;4, D=1; <span class="keyword">end</span> <span class="comment">%ones(size(A,1),1); end</span>
+0011 <span class="keyword">if</span> nargin&lt;5, P=1; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;6, startlam=1; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;7, minlam=0.0005; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&lt;8, kuh=0.8; <span class="keyword">end</span>
+0015 <span class="keyword">if</span> min(size(D))==1, D=spdiags(D(:),0,length(D)); <span class="keyword">end</span>
+0016     
+0017 kmax=fix(-log(startlam/minlam)/log(kuh)+1);
+0018 ak=startlam*(kuh.^(0:kmax));
+0019 
+0020 <span class="keyword">global</span> DM
+0021 DM=[];
+0022 t0=clock;
+0023 [DM,rho,eta,iter] = <a href="cglsparcdp.html" class="code" title="function [X,rho,eta,j] = cglsparcdp(A,b,L,D,PP,lambda)">cglsparcdp</a>(A,y,C,D,P,ak);
+0024 save(<span class="string">'rhoeta.mat'</span>,<span class="string">'rho'</span>,<span class="string">'eta'</span>,<span class="string">'ak'</span>);
+0025 message(sprintf(<span class="string">'Solved shifted systems(lam=%.1f-%.1f, %.2fs %d Iterations)'</span>,<span class="keyword">...</span>
+0026     max(ak),min(ak),etime(clock,t0),iter));
+0027 
+0028 <span class="keyword">global</span> INV
+0029 <span class="keyword">if</span> isfield(INV,<span class="string">'auto'</span>)&amp;&amp;(INV.auto==0),
+0030   save(<span class="string">'rhoeta.mat'</span>,<span class="string">'rho'</span>,<span class="string">'eta'</span>,<span class="string">'ak'</span>);
+0031   <span class="keyword">global</span> warten
+0032   warten=0;
+0033   i_choose;
+0034   <span class="keyword">while</span>(warten==0), pause(1.0); <span class="keyword">end</span>
+0035 <span class="keyword">else</span>
+0036   warten=lkurv(rho,eta,ak); <span class="comment">% not lkurv anymore</span>
+0037   message(sprintf(<span class="string">'Choosing alpha_%d=%.1f'</span>,warten,ak(warten)));
+0038 <span class="keyword">end</span>
+0039 x=DM(:,warten);
+0040 lambda=ak(warten);
+0041 <span class="comment">%clear global warten</span>
+0042 
+0043 <a name="_sub1" href="#_subfunctions" class="code">function [X,rho,eta,j] = cglsparcdp(A,b,L,D,PP,lambda)</a>
+0044 <span class="comment">% Initialization.</span>
+0045 <span class="keyword">if</span> nargin&lt;5, lambda=0.1.^(0:5); <span class="keyword">end</span>
+0046 [m,n] = size(A); 
+0047 x0=zeros(n,1);
+0048 kmax=length(lambda);
+0049 <span class="comment">% Prepare for CG iteration.</span>
+0050 PI=P';
+0051 su=sum(P,1);
+0052 we=ones(size(su));
+0053 fi=find(su);we(fi)=1./su(fi);
+0054 PI=spdiags(we(:),0,length(we),length(we))*PI;
+0055 x=PI*x0;
+0056 X=zeros(length(x),kmax);P=X;
+0057 z = D*(b - A*(PP*x)); <span class="comment">% residuum of unregularized equation</span>
+0058 Z=zeros(length(z),kmax);
+0059 r = (z'*D*A*PP)';<span class="comment">%-L*(PP*x); % residuum of normal equation</span>
+0060 p=r;
+0061 normr2 = ones(kmax,1)*(r'*r);
+0062 R=zeros(length(r),kmax);
+0063 P=zeros(length(p),kmax);
+0064 <span class="keyword">for</span> k=1:kmax,
+0065     Z(:,k)=z;
+0066     P(:,k)=p; <span class="comment">%-L*x*lambda(k)</span>
+0067 <span class="keyword">end</span>
+0068 abbr=normr2(1)*1e-7; <span class="comment">% goal for norm(r)^2</span>
+0069 j=0;
+0070 kmin=1; <span class="comment">% all lambdas</span>
+0071 wb=waitbar(0,<span class="string">'CG Least Squares Parallel CD...'</span>);
+0072 <span class="keyword">while</span>(kmin&lt;=kmax),
+0073   j=j+1;  
+0074   Q = D*(A*(PP*P));
+0075   normr2old=normr2;
+0076   <span class="keyword">for</span> k=kmin:kmax,
+0077       q=Q(:,k);p=P(:,k);
+0078       Pp=PP*p;
+0079       alpha = normr2(k)/(q'*q+Pp'*(L*Pp)*lambda(k));
+0080       X(:,k)  = X(:,k) + alpha*p;
+0081       Z(:,k)  = Z(:,k) - alpha*q;
+0082   <span class="keyword">end</span>
+0083   R(:,kmin:kmax)=(Z(:,kmin:kmax)'*D*A*PP)'; <span class="comment">% common part</span>
+0084   <span class="keyword">for</span> k=kmin:kmax, <span class="comment">% only for not converged</span>
+0085       r = R(:,k);
+0086       r  = r - PI*(L*(PP*X(:,k)))*lambda(k); <span class="comment">% additional part</span>
+0087       normr2(k) = r'*r; <span class="comment">% this is really a bit tricky!</span>
+0088       beta = normr2(k)/normr2old(k); 
+0089       P(:,k) = r + beta*P(:,k);
+0090       R(:,k) = r;
+0091   <span class="keyword">end</span>
+0092   okmin=kmin; <span class="comment">%for waitbar</span>
+0093   kmin=min(find(normr2&gt;abbr)); <span class="comment">% check for convergence</span>
+0094   <span class="keyword">if</span> isempty(kmin), kmin=kmax+1; <span class="keyword">end</span>
+0095   <span class="keyword">if</span> kmin&gt;okmin,
+0096       waitbar(kmin/kmax,wb); 
+0097   <span class="keyword">end</span>
+0098 <span class="keyword">end</span>
+0099 close(wb);
+0100 X=PP*X;
+0101 rho=zeros(kmax,1);
+0102 eta=zeros(kmax,1);
+0103 <span class="keyword">if</span> nargout&gt;1, 
+0104     <span class="keyword">for</span> k=1:kmax,
+0105         rho(k)=norm(Z(:,k));
+0106         eta(k)=sqrt(X(:,k)'*(L*X(:,k)));
+0107     <span class="keyword">end</span>
+0108 <span class="keyword">end</span>
+0109 clear Q PI R Z P</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cglspar</title>
+  <meta name="keywords" content="cglspar">
+  <meta name="description" content="REGCGLS - Regularized Least Squares with Conjugate Gradients">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; cglspar.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cglspar
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>REGCGLS - Regularized Least Squares with Conjugate Gradients</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [X,rho,eta,j] = cglspar(A,b,lambda) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> REGCGLS - Regularized Least Squares with Conjugate Gradients
+ [X,rho,eta,j,X] = regcgls(A,b,lambda,acc,jmax,x0)
+
+ Performs k steps of the conjugate gradient algorithm applied
+ implicitly to the normal equations (A'*A+lambda*I)*x = A'*b.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [X,rho,eta,j] = cglspar(A,b,lambda)</a>
+0002 <span class="comment">% REGCGLS - Regularized Least Squares with Conjugate Gradients</span>
+0003 <span class="comment">% [X,rho,eta,j,X] = regcgls(A,b,lambda,acc,jmax,x0)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Performs k steps of the conjugate gradient algorithm applied</span>
+0006 <span class="comment">% implicitly to the normal equations (A'*A+lambda*I)*x = A'*b.</span>
+0007  
+0008 <span class="comment">% Initialization.</span>
+0009 <span class="keyword">if</span> nargin&lt;3, lambda=0.1.^(0:5); <span class="keyword">end</span>
+0010 [m,n] = size(A); 
+0011 kmax=length(lambda);
+0012 <span class="comment">% Prepare for CG iteration.</span>
+0013 x=zeros(n,1);
+0014 X=zeros(n,kmax);
+0015 z = b - A*x;
+0016 p = (z'*A)';  <span class="comment">% wegen x0=0</span>
+0017 Z=zeros(m,kmax); <span class="comment">% residuum of Ax=b</span>
+0018 P=X; <span class="comment">% update vectors</span>
+0019 <span class="keyword">for</span> k=1:kmax,
+0020     Z(:,k)=z;
+0021     P(:,k)=p-lambda(k)*x;
+0022 <span class="keyword">end</span>
+0023 R=P; <span class="comment">% residuum of normal equation A'Ax=A'b</span>
+0024 normr2 = ones(kmax,1)*(p'*p);
+0025 <span class="comment">% Iterate.</span>
+0026 abbr=p'*p*1e-7;
+0027 j=0;
+0028 kmin=1;
+0029 wb=waitbar(0,<span class="string">'CG Least Squares Parallel...'</span>);
+0030 <span class="keyword">while</span>(kmin&lt;=kmax),
+0031   j=j+1;  
+0032   Q = A*P;
+0033   normr2old=normr2;
+0034   <span class="keyword">for</span> k=kmin:kmax,
+0035       q=Q(:,k);p=P(:,k);
+0036       alpha = normr2(k)/(Q(:,k)'*Q(:,k)+lambda(k)*P(:,k)'*P(:,k));
+0037       X(:,k)  = X(:,k) + alpha*P(:,k);
+0038       Z(:,k)  = Z(:,k) - alpha*Q(:,k);
+0039   <span class="keyword">end</span>
+0040   R(:,kmin:kmax)=(Z(:,kmin:kmax)'*A)';
+0041   <span class="keyword">for</span> k=kmin:kmax,
+0042       <span class="comment">%R(:,k)  = (Z(:,k)'*A)'-lambda(k)*X(:,k);</span>
+0043       R(:,k)  = R(:,k)-lambda(k)*X(:,k);
+0044       normr2(k) = R(:,k)'*R(:,k);
+0045       beta = normr2(k)/normr2old(k);
+0046       P(:,k) = R(:,k) + beta*P(:,k);
+0047   <span class="keyword">end</span>
+0048   okmin=kmin;
+0049   kmin=min(find(normr2&gt;abbr));
+0050   <span class="keyword">if</span> isempty(kmin), kmin=kmax+1; <span class="keyword">end</span>
+0051   <span class="keyword">if</span> kmin&gt;okmin, waitbar(kmin/kmax,wb); <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 close(wb);
+0054 <span class="keyword">if</span> nargout&gt;1, 
+0055     <span class="keyword">for</span> k=1:kmax,
+0056         rho(k)=norm(Z(:,k));
+0057         eta(k)=norm(X(:,k));
+0058     <span class="keyword">end</span>
+0059 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exportres2dinv</title>
+  <meta name="keywords" content="exportres2dinv">
+  <meta name="description" content="EXPORTRES2DINV - Export res2dinv file(s)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; exportres2dinv.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>exportres2dinv
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>EXPORTRES2DINV - Export res2dinv file(s)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function exportres2dinv(N,basename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> EXPORTRES2DINV - Export res2dinv file(s)
+ exportres2dinv(N,basename)
+ file(s) are named basename_dd, _we etc.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="midkonf2d.html" class="code" title="function [mids,seps,ii,kk,midpoint,dm]=midkonf2d(N)">midkonf2d</a>	MIDKONF2D - midpoint and konfiguration of data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function exportres2dinv(N,basename)</a>
+0002 
+0003 <span class="comment">% EXPORTRES2DINV - Export res2dinv file(s)</span>
+0004 <span class="comment">% exportres2dinv(N,basename)</span>
+0005 <span class="comment">% file(s) are named basename_dd, _we etc.</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;2, basename=<span class="string">'aaa'</span>; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'Specify data structure!'</span>); <span class="keyword">end</span>
+0009 [fpath,fname,fext]=fileparts(basename);
+0010 basename=strrep(basename,fext,<span class="string">''</span>);
+0011 [mids,seps,ii,kk]=<a href="midkonf2d.html" class="code" title="function [mids,seps,ii,kk,midpoint,dm]=midkonf2d(N)">midkonf2d</a>(N);
+0012 del=min(diff(unique(N.elec(:,1))));
+0013 type=fix(seps/10000)+1;
+0014 dlen=fix(mod(seps(kk),10000)/100)+1;
+0015 nn=mod(seps(kk),100);
+0016 addname={<span class="string">'pp'</span>,<span class="string">'pd'</span>,<span class="string">'dp'</span>,<span class="string">'we'</span>,<span class="string">'sl'</span>,<span class="string">'dd'</span>};
+0017 loketype=[2 6 6 1 7 3 3];
+0018 <span class="keyword">for</span> tt=unique(type),
+0019     fid=fopen([basename <span class="string">'_'</span> addname{tt} <span class="string">'.dat'</span>],<span class="string">'w'</span>);
+0020     fprintf(fid,<span class="string">'Test\n'</span>);
+0021     fprintf(fid,<span class="string">'%.1f\n'</span>,del);
+0022     fprintf(fid,<span class="string">'%d\n'</span>,loketype(tt));
+0023     fprintf(fid,<span class="string">'%d\n'</span>,length(N.r));
+0024     ss=<span class="string">'%g\t%g\t'</span>;
+0025     <span class="keyword">if</span> tt==2,
+0026         fprintf(fid,<span class="string">'%d\n'</span>,0);
+0027         aa=N.elec(N.a,1);
+0028     <span class="keyword">else</span>
+0029         fprintf(fid,<span class="string">'%d\n'</span>,1);
+0030         aa=mids(ii);aa=aa(:);
+0031     <span class="keyword">end</span>
+0032     fprintf(fid,<span class="string">'%d\n%d\n'</span>,1,0);
+0033     <span class="keyword">if</span> ~ismember(tt,[1 4]), 
+0034         ss=[ss <span class="string">'%g\t'</span>]; 
+0035         aa=[aa dlen(:)];
+0036     <span class="keyword">end</span>
+0037     ss=[ss <span class="string">'%.2f\n'</span>];
+0038     aa=[aa nn(:)];
+0039     aa=[aa N.r(:)];
+0040     fprintf(fid,ss,aa');
+0041     <span class="keyword">for</span> i=1:4, fprintf(fid,<span class="string">'%d\n'</span>,0); <span class="keyword">end</span>
+0042     fclose(fid);
+0043 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

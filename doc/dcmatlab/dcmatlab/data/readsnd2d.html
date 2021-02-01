@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readsnd2d</title>
+  <meta name="keywords" content="readsnd2d">
+  <meta name="description" content="READSND2D - Read 2d file by use of soundings">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readsnd2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readsnd2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READSND2D - Read 2d file by use of soundings</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=readsnd2d(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READSND2D - Read 2d file by use of soundings
+ N = readsnd2d(filename);
+ Format:
+ sounding_filename_1 position
+ ...
+ sounding files consists of 3 columns for AB/2 MN/2 and apparent resistivity</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="abmn2n.html" class="code" title="function N=abmn2n(AA,BB,MM,NN)">abmn2n</a>	ABMN2N - Converts position arrays for A,B,M and N into data struct</li><li><a href="combdata2d.html" class="code" title="function N=combdata2d(N,N1)">combdata2d</a>	COMBDATA2D - Combine data sets</li><li><a href="deldeadelecs.html" class="code" title="function NN=deldeadelecs(N)">deldeadelecs</a>	DELDEADELECS - Delete dead electrodes</li><li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li><li><a href="readvesfile.html" class="code" title="function [out]=readvesfile(vesfile)">readvesfile</a>	READVESFILE - read vertical sounding file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=readsnd2d(filename)</a>
+0002 
+0003 <span class="comment">% READSND2D - Read 2d file by use of soundings</span>
+0004 <span class="comment">% N = readsnd2d(filename);</span>
+0005 <span class="comment">% Format:</span>
+0006 <span class="comment">% sounding_filename_1 position</span>
+0007 <span class="comment">% ...</span>
+0008 <span class="comment">% sounding files consists of 3 columns for AB/2 MN/2 and apparent resistivity</span>
+0009 
+0010 N=[];
+0011 [fpath,fname,fext]=fileparts(filename);
+0012 fid=fopen(fullfile(fpath,[fname fext]),<span class="string">'r'</span>);
+0013 <span class="keyword">if</span> isequal(fid,-1), error(<span class="string">'Could not open file!'</span>); <span class="keyword">end</span>
+0014 <span class="keyword">try</span>
+0015     zeile=<span class="string">''</span>;
+0016     <span class="keyword">while</span> isempty(zeile), zeile=destrip(fgetl(fid)); <span class="keyword">end</span>
+0017     l=0;
+0018     <span class="keyword">while</span> ischar(zeile),
+0019         l=l+1;
+0020         vesfile=sscanf(zeile,<span class="string">'%s %*s %*s'</span>);
+0021         pos=sscanf(zeile,<span class="string">'%*s %f'</span>);
+0022         type=sscanf(zeile,<span class="string">'%*s %*s %d'</span>);        
+0023         fprintf(<span class="string">'Sounding %s at x=%.1fm\n'</span>,vesfile,pos);
+0024         vesfull=fullfile(fpath,vesfile);
+0025         <span class="keyword">if</span> ~exist(vesfull,<span class="string">'file'</span>),
+0026             fprintf(<span class="string">'VES file %s does not exist!\n'</span>,vesfile);
+0027         <span class="keyword">else</span>
+0028             data=<a href="readvesfile.html" class="code" title="function [out]=readvesfile(vesfile)">readvesfile</a>(vesfull);
+0029             AA=-data(:,1);MM=-data(:,2);NN=-MM;BB=-AA;
+0030             V=<a href="abmn2n.html" class="code" title="function N=abmn2n(AA,BB,MM,NN)">abmn2n</a>(AA,BB,MM,NN);
+0031             <span class="keyword">if</span> type==2, V.b(:)=0; <span class="keyword">end</span>
+0032             <span class="keyword">if</span> type==1, V.a=V.b;V.b(:)=0;du=V.m;V.m=V.n;V.n=du; <span class="keyword">end</span>
+0033             V.elec(:,1)=V.elec(:,1)+pos;
+0034             V.elec(:,2)=0;
+0035             V.r=data(:,3);
+0036             numbers{l}=(1:length(V.r));
+0037             <span class="keyword">if</span> l&gt;1, numbers{l}=numbers{l}+length(N.r); <span class="keyword">end</span>
+0038             <span class="keyword">if</span> l==1, N=V; <span class="keyword">else</span> N=<a href="combdata2d.html" class="code" title="function N=combdata2d(N,N1)">combdata2d</a>(N,V); <span class="keyword">end</span>
+0039             zeile=<span class="string">''</span>;
+0040             <span class="keyword">while</span> isempty(zeile), zeile=destrip(fgetl(fid)); <span class="keyword">end</span>
+0041             eind{l}=[data(:,1) data(:,3)];
+0042             names{l}=strrep(vesfile,<span class="string">'.ves'</span>,<span class="string">''</span>);
+0043             positions(l,1)=pos;
+0044         <span class="keyword">end</span>
+0045     <span class="keyword">end</span>
+0046 <span class="keyword">catch</span>
+0047     display(lasterr);
+0048 <span class="keyword">end</span> <span class="comment">%try</span>
+0049 fclose(fid);
+0050 <span class="keyword">if</span> ~isempty(N), N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);N=<a href="deldeadelecs.html" class="code" title="function NN=deldeadelecs(N)">deldeadelecs</a>(N); <span class="keyword">end</span>
+0051 <span class="keyword">if</span> exist(<span class="string">'eind'</span>,<span class="string">'var'</span>), N.eind=eind; <span class="keyword">end</span>
+0052 <span class="keyword">if</span> exist(<span class="string">'positions'</span>,<span class="string">'var'</span>), N.pos=positions; <span class="keyword">end</span>
+0053 <span class="keyword">if</span> exist(<span class="string">'names'</span>,<span class="string">'var'</span>), N.names=names; <span class="keyword">end</span>
+0054 <span class="keyword">if</span> exist(<span class="string">'numbers'</span>,<span class="string">'var'</span>), N.nr=numbers; <span class="keyword">end</span>
+0055 <span class="comment">%</span>
+0056 <span class="comment">% function N=abmn2n(AA,BB,MM,NN)</span>
+0057 <span class="comment">% [N.elec,SI,SJ]=unique([AA;BB;MM;NN],'rows');</span>
+0058 <span class="comment">% [TF,LOC]=ismember(AA,N.elec);</span>
+0059 <span class="comment">% N.a=LOC;</span>
+0060 <span class="comment">% [TF,LOC]=ismember(BB,N.elec);</span>
+0061 <span class="comment">% N.b=LOC;</span>
+0062 <span class="comment">% [TF,LOC]=ismember(MM,N.elec);</span>
+0063 <span class="comment">% N.m=LOC;</span>
+0064 <span class="comment">% [TF,LOC]=ismember(NN,N.elec);</span>
+0065 <span class="comment">% N.n=LOC;</span>
+0066 <span class="comment">%</span>
+0067 <span class="comment">% function N=combdata2d(N,N1)</span>
+0068 <span class="comment">%</span>
+0069 <span class="comment">% data=length(N.a);</span>
+0070 <span class="comment">% ne=size(N.elec,1);</span>
+0071 <span class="comment">% ne1=size(N.elec,1);</span>
+0072 <span class="comment">% data1=length(N1.a);</span>
+0073 <span class="comment">%</span>
+0074 <span class="comment">% index=(1:size(N1.elec,1))'+ne;</span>
+0075 <span class="comment">% %Elektroden anhängen</span>
+0076 <span class="comment">% [aa,bb]=meshgrid(N1.elec(:,1)+N1.elec(:,2)*12.34,N.elec(:,1)+N.elec(:,2)*12.34);</span>
+0077 <span class="comment">% [ii,jj]=find((aa-bb)==0);</span>
+0078 <span class="comment">% index(jj)=ii;</span>
+0079 <span class="comment">% ind=find(index&gt;ne);</span>
+0080 <span class="comment">% N.elec=[N.elec;N1.elec(ind,:)];</span>
+0081 <span class="comment">% cu=cumsum(index&gt;ne);</span>
+0082 <span class="comment">% index(ind)=ne+cu(ind);</span>
+0083 <span class="comment">% N.a(data+1:data+data1)=index(N1.a);</span>
+0084 <span class="comment">% N.b(data+data1)=0; % verlängern</span>
+0085 <span class="comment">% fb=find(N1.b&gt;0);</span>
+0086 <span class="comment">% N.b(fb+data)=index(N1.b(fb));</span>
+0087 <span class="comment">% N.m(data+1:data+data1)=index(N1.m);</span>
+0088 <span class="comment">% N.n(data+data1)=0; % verlängern</span>
+0089 <span class="comment">% fn=find(N1.n&gt;0);</span>
+0090 <span class="comment">% N.n(fn+data)=index(N1.n(fn));</span>
+0091 <span class="comment">% if isfield(N,'r')&amp;&amp;isfield(N1,'r'), N.r=[N.r(:);N1.r(:)]; end</span>
+0092 <span class="comment">% if isfield(N,'k')&amp;&amp;isfield(N1,'k'), N.k=[N.k(:);N1.k(:)]; end</span>
+0093 <span class="comment">% if isfield(N,'err')&amp;isfield(N1,'err'),</span>
+0094 <span class="comment">%     N.err=[N.err(:);N1.err(:)];</span>
+0095 <span class="comment">% else N.err=[]; end</span>
+0096 <span class="comment">% if isfield(N,'ip')&amp;isfield(N1,'ip'),</span>
+0097 <span class="comment">%     N.ip=[N.ip(:);N1.ip(:)];</span>
+0098 <span class="comment">% else N.ip=[]; end</span>
+0099 <span class="comment">% if isfield(N,'i')&amp;isfield(N1,'i'),</span>
+0100 <span class="comment">%     N.i=[N.i(:);N1.i(:)];</span>
+0101 <span class="comment">% else N.i=[]; end</span>
+0102 <span class="comment">% if isfield(N,'u')&amp;isfield(N1,'u'),</span>
+0103 <span class="comment">%     N.u=[N.u(:);N1.u(:)];</span>
+0104 <span class="comment">% else N.u=[]; end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

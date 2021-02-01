@@ -1,0 +1,61 @@
+<html>
+<head>
+<title>DC3DInvRes - Inversion Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC3DInvRes - Inversion Menu</h2>
+<h3><a name="hom"></a>Homogeneous model</h3>
+<p>This resets all model cells (and background resistivities) back to the homogeneous 
+  half-space.</p>
+<p align="right">Hotkey for homogeneous model: Shift + H</p>
+<h3><a name="lay"></a>Create layered model</h3>
+Applying a one-dimensional inversion of the whole data set a starting model is 
+constructed containing the main layering of the underground. The algorithm tries 
+to equalize neighboring layers if the difference is not very large. 
+<h3></h3>
+<h3><a name="full"></a>Full Inversion</h3>
+<p>The full inversion is carried out using the current options.<br>
+  Inversion stops when the difference between data and forward response is not 
+  significantly getting better or when the data are fitted within standard deviation. 
+</p>
+<p align="right">Hotkey for full inversion: Shift + I</p>
+<h3><a name="one"></a>One inverse step</h3>
+<p>Only one inverse step (with forward calculation) is calculated (useful for 
+  testing).</p>
+<p align="right">Hotkey for one inverse step: 1</p>
+<h3><a name="clear"></a>Clear Sensitivity</h3>
+Sometimes it is useful to clear the sensitivity matrix (for recomputation or saving 
+disk space). 
+<h3><a name="calc"></a>Calc Sensitivity</h3>
+<p>Calculates the (homogeneous half-space) sensitivity matrix (otherwise it is 
+  done automatically before the first inverse step). These sensitivities are (automatically) 
+  saved in a file with the root of the data file plus &quot;-sens.mat&quot;. Note, 
+  that every single sensitivity can be viewed by <a href="display.html#sens">Show 
+  Sensitivies</a>.</p>
+<h3><a name="doi"></a>Display depth of investigation</h3>
+The depth of investigation (DOI) index shows, following (Li and Oldenburgh, 1999), 
+the dependence on the starting model. One inversion step is carried out using 
+two different homogeneous half-spaces. The difference between the two models can 
+be treated as a reliability of the model cells. A well-resolved model cell is 
+supposed to obtain nearly identical inversion results. 
+<h3><a name="showlcurve"></a>Show L-curve</h3>
+<p>If an equation solver for multiple lambda values was applied (Manual Choosing 
+  or L-curve choosing in <a href="options.html#inv">Inversion Options</a>), the 
+  according L-curve is displayed.</p>
+<h3><a name="ipinv"></a>IP Inversion</h3>
+<p>A single-step inversion follwing (Beard, Hohmann and Tripp, 1996) is carried 
+  out to obtain a chargeability distribution.</p>
+<p>&nbsp; </p>
+</body>
+</html>

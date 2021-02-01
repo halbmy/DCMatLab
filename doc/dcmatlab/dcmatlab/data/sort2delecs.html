@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sort2delecs</title>
+  <meta name="keywords" content="sort2delecs">
+  <meta name="description" content="SORT2DELECS - sort 2d electrode points clock-wise">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; sort2delecs.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>sort2delecs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SORT2DELECS - sort 2d electrode points clock-wise</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function NN=sort2delecs(N,islinear) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SORT2DELECS - sort 2d electrode points clock-wise
+ Nnew = sort2delecs(Nold) sorts by angle to midpoint
+ sort2delec(N,1) sorts by x</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="combdata2d.html" class="code" title="function N=combdata2d(N,N1)">combdata2d</a>	COMBDATA2D - Combine data sets</li><li><a href="readpro.html" class="code" title="function N=readpro(filename)">readpro</a>	READPRO - Read 3D PRO-File of 2D-Profiles</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function NN=sort2delecs(N,islinear)</a>
+0002 
+0003 <span class="comment">% SORT2DELECS - sort 2d electrode points clock-wise</span>
+0004 <span class="comment">% Nnew = sort2delecs(Nold) sorts by angle to midpoint</span>
+0005 <span class="comment">% sort2delec(N,1) sorts by x</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;2, islinear=0; <span class="keyword">end</span>
+0008 
+0009 <span class="keyword">if</span> islinear,
+0010     wi=N.elec(:,1);
+0011 <span class="keyword">else</span>
+0012     mi=mean(N.elec);mi(end)=mi(end)+0.001;
+0013     wi=atan2(N.elec(:,2)-mi(2),N.elec(:,1)-mi(1));
+0014 <span class="keyword">end</span>
+0015 [swi,ii]=sort(wi);
+0016 NN=N;
+0017 NN.elec=N.elec(ii,:);
+0018 jj=zeros(size(ii));jj(ii)=1:length(jj);
+0019 fi=find(N.a);NN.a(fi)=jj(N.a(fi));
+0020 fi=find(N.b);NN.b(fi)=jj(N.b(fi));
+0021 fi=find(N.m);NN.m(fi)=jj(N.m(fi));
+0022 fi=find(N.n);NN.n(fi)=jj(N.n(fi));</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

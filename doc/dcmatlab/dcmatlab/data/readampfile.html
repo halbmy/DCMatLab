@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readampfile</title>
+  <meta name="keywords" content="readampfile">
+  <meta name="description" content="READAMPFILE - Read ABEM multi purpose file (*.amp)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readampfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readampfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READAMPFILE - Read ABEM multi purpose file (*.amp)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=readampfile(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READAMPFILE - Read ABEM multi purpose file (*.amp)
+ N = readampfile(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function zeile=destrip(zeile)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=readampfile(filename)</a>
+0002 
+0003 <span class="comment">% READAMPFILE - Read ABEM multi purpose file (*.amp)</span>
+0004 <span class="comment">% N = readampfile(filename)</span>
+0005 
+0006 N=[];
+0007 fid=fopen(filename,<span class="string">'r'</span>);
+0008 <span class="keyword">if</span> isequal(fid,-1), error([<span class="string">'Could not open amp file '</span> filename <span class="string">'!'</span>]);<span class="keyword">return</span>; <span class="keyword">end</span>
+0009 zeile=<span class="string">'bla'</span>;first=<span class="string">''</span>;ndata=0;
+0010 <span class="keyword">while</span> ~isempty(zeile),
+0011     zeile=fgetl(fid);
+0012     dp=findstr(zeile,<span class="string">':'</span>);first=<span class="string">''</span>;last=<span class="string">''</span>;
+0013     <span class="keyword">if</span> dp, first=zeile(1:dp(1)-1);last=zeile(dp(1)+1:end); <span class="keyword">end</span>
+0014     <span class="keyword">if</span> length(first)&gt;3, first=first(1:4); <span class="keyword">end</span>
+0015     <span class="keyword">switch</span> first,
+0016         <span class="keyword">case</span> <span class="string">'Rows'</span>, 
+0017             nn=sscanf(last,<span class="string">'%d'</span>,3); <span class="comment">%header/data/topo</span>
+0018             nheader=nn(1);ndata=nn(2);ntopo=nn(3);
+0019         <span class="keyword">case</span> <span class="string">'Acqu'</span>, acq=sscanf(last,<span class="string">'%d'</span>); <span class="comment">%1=SP,2=res,3=IP</span>
+0020         <span class="keyword">case</span> <span class="string">'Smal'</span>, del=sscanf(last,<span class="string">'%f'</span>,1); <span class="comment">%electrode distance</span>
+0021         <span class="keyword">case</span> <span class="string">'Elec'</span>, <span class="comment">% Electrode layout, layout string, Abbrev.</span>
+0022             typ=sscanf(last,<span class="string">'%d\t%*s\t%*s'</span>);
+0023             bla=sscanf(last,<span class="string">'%*d\t%s\t%*s'</span>);
+0024             abb=sscanf(last,<span class="string">'%*d\t%*s\t%s'</span>);
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 header=fgetl(fid);
+0028 <span class="comment">%%</span>
+0029 lA=3;lB=4;lM=5;lN=6;lI=7;lU=8;lR=9;lE=10;
+0030 lTx=0;lRx=0;lDx=0;
+0031 i=0;
+0032 <span class="comment">%%</span>
+0033 <span class="keyword">while</span> ~isempty(header),
+0034    [tok,header]=strtok(header); 
+0035    i=i+1;
+0036    ltok=lower(tok);
+0037    ltok(6:end)=<span class="string">''</span>;
+0038    <span class="keyword">if</span> isequal(ltok,<span class="string">'tx'</span>), lTx=i; <span class="keyword">end</span>
+0039    <span class="keyword">if</span> isequal(ltok,<span class="string">'rx'</span>), lRx=i; <span class="keyword">end</span>
+0040    <span class="keyword">if</span> isequal(ltok,<span class="string">'dx'</span>), lDx=i; <span class="keyword">end</span>
+0041    <span class="keyword">if</span> isequal(ltok,<span class="string">'i(ma)'</span>), lI=i; <span class="keyword">end</span>
+0042    <span class="keyword">if</span> isequal(ltok,<span class="string">'volta'</span>), lU=i; <span class="keyword">end</span>
+0043    <span class="keyword">if</span> isequal(ltok,<span class="string">'app.r'</span>), lR=i; <span class="keyword">end</span>
+0044    <span class="keyword">if</span> isequal(ltok,<span class="string">'error'</span>), lE=i; <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 <span class="comment">%%</span>
+0047 <span class="keyword">if</span> lTx&gt;0, lA=lTx;lB=0; <span class="keyword">end</span>
+0048 <span class="keyword">if</span> lRx&gt;0, lM=lRx;lB=0; <span class="keyword">end</span>
+0049 <span class="comment">% header auswerten!!!</span>
+0050 AA=zeros(ndata,1);BB=AA;MM=AA;NN=AA;
+0051 N.r=AA;
+0052 <span class="keyword">for</span> i=1:ndata,
+0053    zeile=fgetl(fid);
+0054    <span class="keyword">if</span> isequal(zeile,<span class="string">'-1'</span>), error(<span class="string">'not enough data present!'</span>);<span class="keyword">return</span>; <span class="keyword">end</span>
+0055    zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(zeile);
+0056    aa=str2num(zeile);
+0057    <span class="keyword">if</span> lA, AA(i)=aa(lA); <span class="keyword">end</span>
+0058    <span class="keyword">if</span> lTx, AA(i)=aa(lTx); <span class="keyword">end</span>
+0059    <span class="keyword">if</span> lB, BB(i)=aa(lB); <span class="keyword">end</span>
+0060    <span class="keyword">if</span> lM, MM(i)=aa(lM); <span class="keyword">end</span>
+0061    <span class="keyword">if</span> lRx, MM(i)=aa(lRx)+aa(lTx); <span class="keyword">end</span>
+0062    <span class="keyword">if</span> lN, NN(i)=aa(lN); <span class="keyword">end</span>
+0063    <span class="keyword">if</span> lR, N.r(i)=aa(lR); <span class="keyword">end</span>
+0064    <span class="keyword">if</span> lU, N.u(i)=aa(lU); <span class="keyword">end</span>
+0065    <span class="keyword">if</span> lI, N.i(i)=aa(lI)/1000; <span class="keyword">end</span>
+0066    <span class="keyword">if</span> lE, N.err(i)=aa(lE)/100; <span class="keyword">end</span>
+0067    <span class="keyword">if</span> (lTx&gt;0)&amp;&amp;(lDx&gt;0), BB(i)=AA(i)+aa(lDx); <span class="keyword">end</span>
+0068    <span class="keyword">if</span> (lRx&gt;0)&amp;&amp;(lDx&gt;0), NN(i)=MM(i)+aa(lDx); <span class="keyword">end</span>
+0069 <span class="keyword">end</span>
+0070 fclose(fid);
+0071 AA=AA*del;BB=BB*del;MM=MM*del;NN=NN*del;    
+0072 <span class="comment">% fi=find(isinf(MM)|isinf(NN));</span>
+0073 <span class="comment">% if ~isempty(fi),</span>
+0074 <span class="comment">%     AA(fi)=[];BB(fi)=[];MM(fi)=[];NN(fi)=[];</span>
+0075 <span class="comment">%     if lR, N.r(fi)=[]; end</span>
+0076 <span class="comment">%     if lU, N.u(fi)=[]; end</span>
+0077 <span class="comment">%     if lI, N.i(fi)=[]; end</span>
+0078 <span class="comment">%     if lE, N.err(fi)=[]; end</span>
+0079 <span class="comment">% end</span>
+0080 [N.elec,SI,SJ]=unique([AA;BB;MM;NN],<span class="string">'rows'</span>);
+0081 [TF,N.a]=ismember(AA,N.elec);
+0082 [TF,N.b]=ismember(BB,N.elec);
+0083 [TF,N.m]=ismember(MM,N.elec);
+0084 [TF,N.n]=ismember(NN,N.elec);
+0085 <span class="keyword">if</span> isinf(N.elec(<span class="keyword">end</span>,1)),
+0086     le=size(N.elec,1);
+0087     N.a(N.a==le)=0;
+0088     N.b(N.b==le)=0;
+0089     N.m(N.m==le)=0;
+0090     N.n(N.n==le)=0;
+0091     N.elec(<span class="keyword">end</span>,:)=[];
+0092 <span class="keyword">end</span>
+0093 <span class="keyword">if</span> size(N,2)&lt;2, N.elec(:,2)=0; <span class="keyword">end</span>
+0094 <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>), N.err=N.err(:); <span class="keyword">end</span>
+0095 <span class="keyword">if</span> isfield(N,<span class="string">'u'</span>), N.u=N.u(:); <span class="keyword">end</span>
+0096 <span class="keyword">if</span> isfield(N,<span class="string">'i'</span>), N.i=N.i(:); <span class="keyword">end</span>
+0097 <span class="keyword">if</span> isfield(N,<span class="string">'ip'</span>), N.ip=N.ip(:); <span class="keyword">end</span>
+0098 N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);
+0099 mi=min(N.err);
+0100 N.err=N.err-mi+0.02; <span class="comment">% noch genauer zu prüfen!</span>
+0101 
+0102 <a name="_sub1" href="#_subfunctions" class="code">function zeile=destrip(zeile)</a>
+0103 <span class="comment">% strip string from comments (with # character)</span>
+0104 aa=strfind(zeile,<span class="string">'//'</span>);
+0105 <span class="keyword">if</span> ~isempty(aa), zeile=zeile(1:aa(1)-1); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

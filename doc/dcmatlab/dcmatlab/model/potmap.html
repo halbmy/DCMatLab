@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of potmap</title>
+  <meta name="keywords" content="potmap">
+  <meta name="description" content="POTMAP - Matrix to extract potential data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; potmap.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>potmap
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>POTMAP - Matrix to extract potential data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function C=potmap(elec,x,y,z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> POTMAP - Matrix to extract potential data
+ C = potmap(elec,x,y,z)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fdfwd3d.html" class="code" title="function [R,Rrez,MEA,zus]=fdfwd3d(x,y,z,M,Bg,N,FOR)">fdfwd3d</a>	FDFWD3D - 3D DC Forward Calculation with finite differences</li><li><a href="mfdfwd3d.html" class="code" title="function [R,Rrez,MEA]=mfdfwd3d(Mod,N,FOR)">mfdfwd3d</a>	FDFWD3D - 3D DC Forward Calculation with finite differences</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C=potmap(elec,x,y,z)</a>
+0002 
+0003 <span class="comment">% POTMAP - Matrix to extract potential data</span>
+0004 <span class="comment">% C = potmap(elec,x,y,z)</span>
+0005 
+0006 I=length(x);J=length(y);K=length(z);
+0007 IJK=I*J*K;
+0008 m=size(elec,1);
+0009 A=zeros(I,J,K);
+0010 C=spalloc(m,IJK,8*m);
+0011 <span class="keyword">for</span> n=1:m,
+0012   xx=elec(n,1);
+0013   yy=elec(n,2);
+0014   zz=elec(n,3);
+0015   i=max(find(x&lt;=xx));
+0016   j=max(find(y&lt;=yy));
+0017   k=max(find(z&lt;=zz));
+0018   dv=(x(i+1)-x(i))*(y(j+1)-y(j))*(z(k+1)-z(k));
+0019   dxi=xx-x(i);dx1=x(i+1)-xx;
+0020   dyi=yy-y(j);dy1=y(j+1)-yy;
+0021   dzi=zz-z(k);dz1=z(k+1)-zz;
+0022   A(:)=0;
+0023   A(i,j,k)=dx1*dy1*dz1/dv;
+0024   A(i+1,j,k)=dxi*dy1*dz1/dv;
+0025   A(i,j+1,k)=dx1*dyi*dz1/dv;
+0026   A(i+1,j+1,k)=dxi*dyi*dz1/dv;
+0027   A(i,j,k+1)=dx1*dy1*dzi/dv;
+0028   A(i+1,j,k+1)=dxi*dy1*dzi/dv;
+0029   A(i,j+1,k+1)=dx1*dyi*dzi/dv;
+0030   A(i+1,j+1,k+1)=dxi*dyi*dzi/dv;
+0031   C(n,:)=A(:)';
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="comment">%if nargout==0,</span>
+0035     <span class="comment">%spy(C(:,1:max(find(sum(C)))));</span>
+0036 <span class="comment">%end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

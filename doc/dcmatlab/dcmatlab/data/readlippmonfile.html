@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readlippmonfile</title>
+  <meta name="keywords" content="readlippmonfile">
+  <meta name="description" content="filename='100210_1305.txt';">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readlippmonfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readlippmonfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>filename='100210_1305.txt';</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Data,zeit]=readlippmonfile(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> filename='100210_1305.txt';
+ filename='091222_1315.txt';</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Data,zeit]=readlippmonfile(filename)</a>
+0002 <span class="comment">% filename='100210_1305.txt';</span>
+0003 <span class="comment">% filename='091222_1315.txt';</span>
+0004 fid=fopen(filename);
+0005 <span class="keyword">for</span> i=1:11, zeile=fgetl(fid); <span class="keyword">end</span>
+0006 del=str2num(zeile);
+0007 zeile=fgetl(fid);
+0008 fel=str2num(zeile);
+0009 zeile=fgetl(fid);
+0010 aa=str2num(zeile);
+0011 nel=aa(2);
+0012 <span class="keyword">for</span> i=1:3, zeile=fgetl(fid); <span class="keyword">end</span>
+0013 ndata=str2num(zeile);
+0014 abmn=fscanf(fid,<span class="string">'%d'</span>,[4 ndata])';
+0015 <span class="keyword">for</span> i=1:2, zeile=fgetl(fid); <span class="keyword">end</span>
+0016 zeit=datenum(zeile,<span class="string">'dd.mm.yyyy HH:MM:SS'</span>);
+0017 <span class="keyword">for</span> i=1:2, zeile=fgetl(fid); <span class="keyword">end</span>
+0018 A=fscanf(fid,<span class="string">'%f'</span>,[6 ndata])';
+0019 fclose(fid);
+0020 <span class="comment">%%</span>
+0021 Data.elec=zeros(nel,2);
+0022 Data.elec(:,2)=-((0:nel-1)'*del+fel);
+0023 Data.x=Data.elec(:,1);
+0024 Data.z=Data.elec(:,2);
+0025 Data.d=-Data.z;
+0026 Data.a=abmn(:,1);Data.b=abmn(:,2);Data.m=abmn(:,3);Data.n=abmn(:,4);
+0027 Data.i=A(:,3)/1000;
+0028 Data.u=A(:,1)/1000;
+0029 Data.ip=atan(-A(:,2)./A(:,1));
+0030 Data.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(Data);
+0031 Data.r=Data.u./Data.i.*Data.k;
+0032</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

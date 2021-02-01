@@ -1,0 +1,132 @@
+<html>
+<head>
+<title>DC2DInvRes - Options Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC2DInvRes - Options Menu</h2>
+<h3><a name="inv"></a>Inversion Options</h3>
+<p>In the inverse options dialog defines the setup for treating the inverse problem.</p>
+<p align="center"><img src="pic/optinv.png" width="473" height="422"></p>
+<ol>
+  <li>The inversion parameter can be the apparent resistivity or its logarithm(default).</li>
+  <li>For log-inversion, an lower resistivity bound can be defined.</li>
+  <li>Several inversion/regularization algorithms can be applied: 
+    <ul>
+      <li>Gauss-Newton (with explicit regularization) </li>
+      <li> Truncated SVD inversion (implicit regularization)</li>
+      <li> SIRT (simultaneous iterative reconstruction technique)</li>
+      <li>Truncated least squares inversion (implicit regularization)</li>
+    </ul>
+  </li>
+  <li>The regularization strength can be set up in three ways 
+    <ul>
+      <li>fixed regularization strength (values of around 10 are reasonable) (default)</li>
+      <li>automatic choice by L-curve analysis</li>
+      <li>manual choice by scrolling through the models</li>
+    </ul>
+  </li>
+  <li>Enabling &quot;keep constant&quot; saves the determined regularization parameter 
+    for subsequent iterations</li>
+  <li>There are several ways to define model parameter weighting by setting the 
+    matrix C: 
+    <ul>
+      <li> Equal Weighting (every has the same importance) </li>
+      <li> Weighting by coverage (reduce the importance of bad covered cells) 
+      </li>
+      <li> Smoothness constraints (minimizing first or second order derivatives 
+        of the model) <br>
+        (The 2nd order constraints have 3 variants which differ in the handling 
+        of boundaries)
+    </ul>
+  </li>
+  <li>A reduction of free parameters often leads to ore detailed results. This 
+    can be done by deleting bad covered data (whose coverage is below minimum 
+    coverage) or by combining cells in greater depths. Both can be combined (default).</li>
+  <li>A line search is carried out to determine an appropriate step length using 
+    a linear interpolation (default=on). It can significantly improve converge 
+    speed for high non-linearity. However, it needs one additional forward calculation.</li>
+  <li>The model constraints (e.g. smoothness) is applied to the model instead 
+    of the model update (default). This can result in slower convergence, which 
+    is ensured (in combination of line search) with global regularization.</li>
+</ol>
+<p>The author recommends (=default values) the Gauss-Newton method using global 
+  (better resolution properties) smoothness constraints of first(or second) order 
+  (better handling of boundaries) with line search and a fixed lambda (of 1-100). 
+  If chi^2 is much greater than 1 and the model shows less structure, lambda has 
+  to be decreased. To much structure and over-fitted data require an increasment 
+  of lambda. When starting the inversion, the &quot;Manual inversion&quot; option 
+  can be use to find appropriate values optically.<br>
+  Smoothness Constraints of 2nd oder are useful for delineating the boundaries 
+  of small bodies, whereas 1st order behaves better for broad resistivity structures 
+  as undulating basement.<br>
+  However, other methods can be successfully applied, too. E.g. TLS (and SIRT 
+  and TSVD) have the advantage of not forcing model characteristics, but can lead 
+  to artifacts in the top layers. Similar holds for minimu length and weighting 
+  by coverage.</p>
+<h3><a name="for"></a>Forward Calculation Options</h3>
+The forward calculation is based on an Finite Difference Code with singularity 
+removal and mixed boundary conditions written in C++ by Schwarzbach and originates 
+from R.-U. B&ouml;rner (TU Freiberg, Germany).<br>
+The following forward options control accuracy and speed of the forward calculation. 
+Since the accuracy of the forward response limits the data fit, the reciprocity 
+values have to be observed. If high reciprocity values (sd &gt;5%) occur, it is 
+recommended to refine the model. This is generally done by increasing the z-refine 
+value and/or adding surrounding/boundary cells. However a larger grid significantly 
+increases the time used for forward calculation. 
+<p align="center"><img src="pic/optfor.png" width="405" height="403"></p>
+<ol>
+  <li>Generally, the potentials for every electrode are computed and superposed 
+    for the output. It is also possible (but slower) to simulate real dipoles.<br>
+    As an approximation (which helds for small contrasts) the forward calculation 
+    can also be done using the sensitivity matrix as linearized forward operator.</li>
+  <li>When the model contains high resistivity contrasts, the solution can result 
+    in bad accuracy. This can be avoided by grid refinement, both of the z-axis 
+    (manually) and the x-axis (manually or automatic, which tries to yield equally-sized 
+    blocks)</li>
+  <li>In every FD simulation it is necessary to enlarge the model to get a good 
+    approximation of boundary conditions. Is is done by several equally-sized 
+    &quot;surrounding&quot; cells and several &quot;boundary&quot; cells enlarged 
+    with a prolongation factor. </li>
+  <li>At last, it is defined if the surrounding/boundary cells are filled up with 
+    the model boundary cells (default) or with the layer resistivities as determined 
+    by 1d-inversion.</li>
+</ol>
+<h3><a name="graph"></a>Graphics Options</h3>
+<p align="left">This dialog defines, how the <a href="display.html#model">model</a> 
+  and <a href="display.html#data">data</a> sections are plotted.</p>
+<p align="center"><img src="pic/grafopt.png" width="562" height="293"></p>
+<ol>
+  <li>Coloring can be done automatical or manually by providing minimum and maximum 
+    value.</li>
+  <li> The logarithms of resistivity are plotted as well as the resistivity itself.</li>
+  <li> Several color maps can be chosen.</li>
+  <li> The user can decide, whether to draw electrodes or not. </li>
+  <li> The x-axis may be reversed. </li>
+  <li> An aspect ratio for the z-axis of 1 up to 10 can be chosen to visualize 
+    long profile models well. </li>
+  <li> The default way to plot model cells is with colored boxes (because it shows 
+    how the model really looks like), but filled contourlines or smoothed image 
+    are also possible.</li>
+  <li>Generally, it is useful to blend out bad covered model cells by alpha mapping 
+    to keep it out of interpretation.</li>
+</ol>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+G</p>
+<p></p>
+<h3><a name="save"></a>Save Options</h3>
+All Options can be saved as default values and are retrieved by the next start 
+oder &quot;Reset Options&quot;. 
+<h3><a name="reset"></a>Reset Options</h3>
+All options are reset to the default (by user saved) options. 
+</body>
+</html>

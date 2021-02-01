@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cleandirrec</title>
+  <meta name="keywords" content="cleandirrec">
+  <meta name="description" content="CLEANDIRREC - Cleans directory tree recursively">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; cleandirrec.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cleandirrec
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CLEANDIRREC - Cleans directory tree recursively</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function cleandirrec(dirname,delname) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CLEANDIRREC - Cleans directory tree recursively
+ cleandirrec(dirname,delname)
+ e.g. cleandirrec('.','tmp');</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="cleandirrec.html" class="code" title="function cleandirrec(dirname,delname)">cleandirrec</a>	CLEANDIRREC - Cleans directory tree recursively</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="cleandirrec.html" class="code" title="function cleandirrec(dirname,delname)">cleandirrec</a>	CLEANDIRREC - Cleans directory tree recursively</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function cleandirrec(dirname,delname)</a>
+0002 
+0003 <span class="comment">% CLEANDIRREC - Cleans directory tree recursively</span>
+0004 <span class="comment">% cleandirrec(dirname,delname)</span>
+0005 <span class="comment">% e.g. cleandirrec('.','tmp');</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;1, dirname=pwd; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;2, delname=<span class="string">'tmp'</span>; <span class="keyword">end</span>
+0009 <span class="comment">% fprintf('%s\n',dirname);</span>
+0010 dd=dir(dirname);
+0011 <span class="keyword">for</span> i=1:length(dd),
+0012     [pp,ff,ee]=fileparts(dd(i).name);
+0013     <span class="keyword">if</span> strcmp(ee,<span class="string">'.matrix'</span>)&amp;&amp;strcmp(dd(i).name(1),<span class="string">'C'</span>),
+0014         fn=fullfile(dirname,dd(i).name);
+0015         fprintf(<span class="string">'%s\n'</span>,fn); 
+0016         delete(fn);
+0017     <span class="keyword">end</span>
+0018     <span class="keyword">if</span> (dd(i).isdir)&amp;&amp;~strcmp(dd(i).name,<span class="string">'.'</span>)&amp;&amp;~strcmp(dd(i).name,<span class="string">'..'</span>),
+0019         newname=[dirname filesep dd(i).name];
+0020         <span class="keyword">if</span> strcmp(dd(i).name,delname),
+0021             fprintf(<span class="string">'%s\n'</span>,newname);
+0022             rmdir(newname,<span class="string">'s'</span>);
+0023         <span class="keyword">else</span>
+0024             <a href="cleandirrec.html" class="code" title="function cleandirrec(dirname,delname)">cleandirrec</a>(newname,delname);
+0025         <span class="keyword">end</span>
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotlongmod</title>
+  <meta name="keywords" content="plotlongmod">
+  <meta name="description" content="PLOTLONGMOD - Plot long model using serveral stripes (subfigures)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; plotlongmod.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>plotlongmod
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PLOTLONGMOD - Plot long model using serveral stripes (subfigures)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function plotlongmod(Mod,MAL) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PLOTLONGMOD - Plot long model using serveral stripes (subfigures)
+ plotlongmod(Mod[,OPT]);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="patch2dmodel.html" class="code" title="function [cmin,cmax]=patch2dmodel(x,z,dM,MAL,N,Alpha)">patch2dmodel</a>	PATCH2DMODEL - Draw 2D (grid) Model</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plotlongmod(Mod,MAL)</a>
+0002 
+0003 <span class="comment">% PLOTLONGMOD - Plot long model using serveral stripes (subfigures)</span>
+0004 <span class="comment">% plotlongmod(Mod[,OPT]);</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, MAL=struct(<span class="string">'clog'</span>,1,<span class="string">'cauto'</span>,1); <span class="keyword">end</span>
+0007 
+0008 <span class="comment">% Mod=modelimport2d('c:\halbmy\src\dcmatlab\dc2dinvres\rollalong\hafen8t1rollalong.mod');</span>
+0009 <span class="comment">% Mod=modelimport2d('c:\halbmy\src\dcmatlab\dc2dinvres\rollalong\teil22a-roll.mod');</span>
+0010 <span class="comment">% Mod=modelimport2d('c:\halbmy\src\dcmatlab\dc2dinvres\rollalong\teil22c.mod');</span>
+0011 <span class="comment">% Mod=modelimport2d('c:\halbmy\2d\diverse\ggl\Test_roll_along_z01.mod');</span>
+0012 minx=min(Mod.x);maxx=max(Mod.x);
+0013 n=round(sqrt((maxx-minx)/max(Mod.z))/1.5);
+0014 mal=MAL;mal.high=1;
+0015 <span class="keyword">if</span> ~isfield(mal,<span class="string">'clog'</span>),
+0016     <span class="keyword">if</span> isfield(mal,<span class="string">'log'</span>), mal.clog=mal.log; <span class="keyword">else</span> mal.clog=1; <span class="keyword">end</span>
+0017 <span class="keyword">end</span>
+0018 <span class="keyword">if</span> ~isfield(mal,<span class="string">'cauto'</span>)||(mal.cauto&gt;0),
+0019     mal.cauto=0;
+0020     <span class="keyword">if</span> mal.clog, mm=10.^interperc(log10(Mod.M(:)),[5 95]);
+0021     <span class="keyword">else</span> mm=interperc(Mod.M(:),[5 95]); <span class="keyword">end</span>
+0022     mal.cmin=mm(1);mal.cmax=mm(2);
+0023     <span class="keyword">if</span> mal.cmin==mal.cmax, mal.cmin=0.99*mal.cmax; <span class="keyword">end</span>
+0024 <span class="keyword">end</span>
+0025 mal.cbar=0;
+0026 di=(maxx-minx)/n/8;
+0027 <span class="comment">% figure(3);</span>
+0028 clf;
+0029 <span class="keyword">for</span> i=1:n,
+0030     mi=(maxx-minx-di)*(i-1)/n+minx;
+0031     ma=(maxx-minx-di)*i/n+minx+di;
+0032 <span class="comment">%     fprintf('%d\t%.1f-%.1f=%.1f\n',i,ma,mi,ma-mi);</span>
+0033     imi=max(find(Mod.x&lt;=mi));<span class="keyword">if</span> isempty(imi), imi=1; <span class="keyword">end</span>
+0034     ima=min(find(Mod.x&gt;=ma));<span class="keyword">if</span> isempty(ima), ima=length(Mod.x); <span class="keyword">end</span>    
+0035     xx=Mod.x(imi:ima);
+0036     <span class="keyword">if</span> i==1, len=max(xx)-min(xx); <span class="keyword">else</span>
+0037         <span class="keyword">if</span> max(xx)-min(xx)&gt;len, xx(1)=xx(1)+max(xx)-min(xx)-len; <span class="keyword">end</span>
+0038     <span class="keyword">end</span>
+0039 <span class="comment">%     xx(end)-xx(1)</span>
+0040     olddx=max(xx)-min(xx);
+0041     MM=Mod.M(imi:ima-1,:);
+0042     subplot(n+1,1,i);
+0043     <a href="patch2dmodel.html" class="code" title="function [cmin,cmax]=patch2dmodel(x,z,dM,MAL,N,Alpha)">patch2dmodel</a>(xx,Mod.z,MM,mal);
+0044     set(gca,<span class="string">'XTickMode'</span>,<span class="string">'manual'</span>,<span class="string">'XTickLabelMode'</span>,<span class="string">'manual'</span>);
+0045 <span class="keyword">end</span>
+0046 subplot(n+1,1,n+1);
+0047 cbar(mal.cmin,mal.cmax,mal.clog,0,9);
+0048 set(gca,<span class="string">'DataAspectRatio'</span>,get(gca,<span class="string">'DataAspectRatio'</span>).*[1 2 1]);
+0049 title(<span class="string">'\rho in \Omegam'</span>);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

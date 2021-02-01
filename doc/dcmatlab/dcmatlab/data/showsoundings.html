@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showsoundings</title>
+  <meta name="keywords" content="showsoundings">
+  <meta name="description" content="SHOWSOUNDINGS - Show data in form of soundings">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; showsoundings.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>showsoundings
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SHOWSOUNDINGS - Show data in form of soundings</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function showsoundings(N,R) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SHOWSOUNDINGS - Show data in form of soundings
+ showsoundings(N)
+ showsoundings(N,model_response)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function showsoundings(N,R)</a>
+0002 
+0003 <span class="comment">% SHOWSOUNDINGS - Show data in form of soundings</span>
+0004 <span class="comment">% showsoundings(N)</span>
+0005 <span class="comment">% showsoundings(N,model_response)</span>
+0006 
+0007 <span class="keyword">if</span> ~isfield(N,<span class="string">'eind'</span>), <span class="keyword">return</span>; <span class="keyword">end</span>
+0008 nn=length(N.eind);
+0009 abmi=Inf;abma=0;rmi=Inf;rma=0;
+0010 <span class="keyword">for</span> i=1:nn,
+0011     ab2=N.eind{i}(:,1);
+0012     rhoa=N.eind{i}(:,2);
+0013     abmi=min(abmi,min(ab2));
+0014     abma=max(abma,max(ab2));
+0015     rmi=min(rmi,min(rhoa));
+0016     rma=max(rma,max(rhoa));
+0017 <span class="keyword">end</span>
+0018 <span class="keyword">for</span> i=1:nn,
+0019     subplot(1,nn,i);
+0020     ab2=N.eind{i}(:,1);
+0021     rhoa=N.eind{i}(:,2);
+0022     loglog(rhoa,ab2,<span class="string">'bo:'</span>);
+0023     <span class="keyword">if</span> nargin&gt;1,
+0024         hold on
+0025         loglog(R(N.nr{i}),ab2,<span class="string">'rx:'</span>);
+0026         hold off
+0027     <span class="keyword">end</span>
+0028     set(gca,<span class="string">'Ydir'</span>,<span class="string">'reverse'</span>);
+0029     xlim([rmi rma]);
+0030     ylim([abmi abma]); 
+0031     set(gca,<span class="string">'XTick'</span>,[rmi rma],<span class="string">'YTick'</span>,[abmi abma],<span class="keyword">...</span>
+0032         <span class="string">'XTickLabel'</span>,{num2str(round(rmi)),num2str(round(rma))},<span class="string">'YTickLabel'</span>,{num2str(abmi),num2str(abma)});    
+0033     xlabel(<span class="string">'\rho in \Omegam'</span>);
+0034     <span class="keyword">if</span> i==1, ylabel(<span class="string">'AB/2 in m'</span>); <span class="keyword">end</span>
+0035     grid on
+0036     title(sprintf(<span class="string">'x=%d'</span>,round(N.pos(i))));
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

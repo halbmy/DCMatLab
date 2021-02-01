@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readstgfile</title>
+  <meta name="keywords" content="readstgfile">
+  <meta name="description" content="READSTGFILE - Read sting device file (*.stg)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readstgfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readstgfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READSTGFILE - Read sting device file (*.stg)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N = readstgfile(fname) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READSTGFILE - Read sting device file (*.stg)
+ N = readstgfile(filename)
+ Format: (# character can be used to comment)
+ number_of_Electrodes
+ # x y h d # token string for meaning of columns
+ x_el1 (y_el1) z_el1
+ ...
+ x_eln (y_eln) z_eln
+ number_of_datapoints
+ # a b m n u i # possible token string for meaning of columns
+ A_1 B_1 M_1 N_1 R_1 (Err_1)
+ ...
+ A_n B_n M_n N_n R_n (Err_n)
+ (= Electrode numbers, 0=infinity)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N = readstgfile(fname)</a>
+0002 
+0003 <span class="comment">% READSTGFILE - Read sting device file (*.stg)</span>
+0004 <span class="comment">% N = readstgfile(filename)</span>
+0005 <span class="comment">% Format: (# character can be used to comment)</span>
+0006 <span class="comment">% number_of_Electrodes</span>
+0007 <span class="comment">% # x y h d # token string for meaning of columns</span>
+0008 <span class="comment">% x_el1 (y_el1) z_el1</span>
+0009 <span class="comment">% ...</span>
+0010 <span class="comment">% x_eln (y_eln) z_eln</span>
+0011 <span class="comment">% number_of_datapoints</span>
+0012 <span class="comment">% # a b m n u i # possible token string for meaning of columns</span>
+0013 <span class="comment">% A_1 B_1 M_1 N_1 R_1 (Err_1)</span>
+0014 <span class="comment">% ...</span>
+0015 <span class="comment">% A_n B_n M_n N_n R_n (Err_n)</span>
+0016 <span class="comment">% (= Electrode numbers, 0=infinity)</span>
+0017 
+0018 fid=fopen(fname,<span class="string">'r'</span>);   
+0019 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'File not found!'</span>); <span class="keyword">end</span>
+0020 dim=2;
+0021 zeile=fgetl(fid);tt=strfind(zeile,<span class="string">'Type'</span>);
+0022 <span class="keyword">if</span> strfind(lower(zeile(tt+5:end)),<span class="string">'3d'</span>), dim=3; <span class="keyword">end</span>
+0023 zeile=fgetl(fid);tt=strfind(zeile,<span class="string">'Records'</span>);
+0024 ndata=str2double(zeile(tt+8:end));
+0025 Ax=zeros(ndata,1);Bx=Ax;Mx=Ax;Nx=Ax;N.r=Ax;N.i=Ax;<span class="comment">%N.u=Ax;%N.err=Ax;</span>
+0026 N.rho=Ax;
+0027 zeile=fgetl(fid);
+0028 <span class="keyword">for</span> i=1:ndata,
+0029     zeile=fgetl(fid);
+0030 <span class="comment">%     aa=sscanf(zeile,'%*d,%*s ,%*d,%*d:%*d:%*d, %f,%f,%f,%f,%*s , %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f');</span>
+0031 <span class="comment">%     if length(aa)&lt;14, N=[];fclose(fid);return; end</span>
+0032 <span class="comment">%     Ax(i)=aa(5);Bx(i)=aa(8);Mx(i)=aa(11);Nx(i)=aa(14);</span>
+0033 <span class="comment">%     N.r(i)=aa(4);N.i(i)=aa(3)/1000;N.err(i)=aa(2)/100;N.rho(i)=aa(1);</span>
+0034     ko=strfind(zeile,<span class="string">','</span>);
+0035     <span class="keyword">if</span> length(ko)&lt;15, N=[];fclose(fid);<span class="keyword">return</span>; <span class="keyword">end</span>
+0036     zz=strrep(zeile([ko(4)+1:ko(8)-1 ko(9)+1:ko(20)]),<span class="string">','</span>,<span class="string">' '</span>);
+0037     aa=str2num(zz);
+0038     <span class="keyword">if</span> length(aa)&lt;14, N=[];fclose(fid);<span class="keyword">return</span>; <span class="keyword">end</span>
+0039     Ax(i)=aa(5);Bx(i)=aa(8);Mx(i)=aa(11);Nx(i)=aa(14);
+0040     N.r(i)=aa(4);N.i(i)=aa(3)/1000;
+0041 <span class="comment">%     N.err(i)=aa(2)/1000;</span>
+0042     N.rho(i)=aa(1);    
+0043 <span class="keyword">end</span>
+0044 fclose(fid);
+0045 N.elec=unique([Ax;Bx;Mx;Nx]);
+0046 [tf,N.a]=ismember(Ax,N.elec);
+0047 [tf,N.b]=ismember(Bx,N.elec);
+0048 [tf,N.m]=ismember(Mx,N.elec);
+0049 [tf,N.n]=ismember(Nx,N.elec);
+0050 N.elec(:,2)=0;
+0051 N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);
+0052 
+0053 [pp,ff,ee]=fileparts(fname);
+0054 trnfile=strrep(fname,ee,<span class="string">'.trn'</span>);
+0055 <span class="keyword">if</span> exist(trnfile,<span class="string">'file'</span>),
+0056     fid=fopen(trnfile);
+0057     <span class="keyword">for</span> i=1:3, zeile=fgetl(fid); <span class="keyword">end</span>
+0058     A=mytextscan(fid,<span class="string">'%f%f'</span>);
+0059     fclose(fid);
+0060     N.topo=[A{1} A{2}];
+0061 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

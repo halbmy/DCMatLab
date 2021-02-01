@@ -1,0 +1,345 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readres2dinvfile</title>
+  <meta name="keywords" content="readres2dinvfile">
+  <meta name="description" content="READRES2DINVFILE - Read 2D Loke&amp;Barker File">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readres2dinvfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readres2dinvfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READRES2DINVFILE - Read 2D Loke&amp;Barker File</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N = readres2dinvfile(datafile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READRES2DINVFILE - Read 2D Loke&amp;Barker File
+ N = readres2dinvfile('filename.dat');
+ N.....structure of * arrays a,b,m,n = electrode numbers(elec)
+                                   k = konfiguration factor
+                    * elec..Electrode positions ( x,z )</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="delmeasurement.html" class="code" title="function N=delmeasurement(N,fi)">delmeasurement</a>	DELMEASUREMENT - Delete measurement from data struct</li><li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li><li><a href="readpro.html" class="code" title="function N=readpro(filename)">readpro</a>	READPRO - Read 3D PRO-File of 2D-Profiles</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N = readres2dinvfile(datafile)</a>
+0002 <span class="comment">% READRES2DINVFILE - Read 2D Loke&amp;Barker File</span>
+0003 <span class="comment">% N = readres2dinvfile('filename.dat');</span>
+0004 <span class="comment">% N.....structure of * arrays a,b,m,n = electrode numbers(elec)</span>
+0005 <span class="comment">%                                   k = konfiguration factor</span>
+0006 <span class="comment">%                    * elec..Electrode positions ( x,z )</span>
+0007 
+0008 N.elec=[];
+0009 <span class="keyword">if</span> nargin&gt;1,
+0010     input=fopen(<span class="string">'data/rothdi.dat'</span>,<span class="string">'r'</span>);
+0011 <span class="keyword">else</span>
+0012     input=fopen(datafile,<span class="string">'r'</span>);
+0013 <span class="keyword">end</span>
+0014 <span class="keyword">if</span> input&lt;0, 
+0015     message(sprintf(<span class="string">'Could not open datafile: %s'</span>,datafile));
+0016     <span class="keyword">return</span>; 
+0017 <span class="keyword">else</span>
+0018     mess1=sprintf(<span class="string">'Opening datafile: %s '</span>,datafile);
+0019 <span class="keyword">end</span>
+0020 
+0021 nn=9; <span class="comment">% Anzahl Zahlen/Zeile Standard-&gt; 4*2 (x,y) + Rho_a</span>
+0022 data=inf;  <span class="comment">% Maximal möglich</span>
+0023 ippresent=0;
+0024 erstezeile=[];
+0025 xgrid=0;ygrid=0;xunit=0;yunit=0;
+0026 zeile=<span class="string">''</span>;
+0027 <span class="keyword">while</span> isempty(destrip(zeile,<span class="string">'//'</span>)), zeile=fgetl(input); <span class="keyword">end</span>
+0028 titel=zeile;
+0029 zeile=<span class="string">';'</span>;<span class="keyword">while</span> zeile(1)==<span class="string">';'</span>, zeile=fgetl(input); <span class="keyword">end</span>
+0030 xgrid=sscanf(zeile,<span class="string">'%f'</span>,1);
+0031 zeile=<span class="string">';'</span>;<span class="keyword">while</span> zeile(1)==<span class="string">';'</span>, zeile=fgetl(input); <span class="keyword">end</span>
+0032 typ=sscanf(zeile,<span class="string">'%d'</span>,1);
+0033 <span class="keyword">if</span> ~isnumeric(typ), fclose(input);<span class="keyword">return</span>; <span class="keyword">end</span>
+0034 isR=0;
+0035 <span class="keyword">if</span> typ==11, <span class="comment">%independent electrode positions</span>
+0036     subtype=fscanf(input,<span class="string">'%d\n'</span>,1);
+0037     zeile=fgetl(input);
+0038     isR=fscanf(input,<span class="string">'%d'</span>,1);
+0039 <span class="keyword">end</span>
+0040 data=fscanf(input,<span class="string">'%d'</span>,1);
+0041 N=struct(<span class="string">'a'</span>,0,<span class="string">'b'</span>,0,<span class="string">'m'</span>,0,<span class="string">'n'</span>,0,<span class="string">'k'</span>,0,<span class="string">'r'</span>,0);
+0042 location=fscanf(input,<span class="string">'%d'</span>,1);
+0043 ippresent=fscanf(input,<span class="string">'%d\n'</span>,1);
+0044 <span class="keyword">if</span> ippresent==1, <span class="comment">% read 3 lines if ip present</span>
+0045     ss=fgetl(input);
+0046     ss=fgetl(input);
+0047     ss=fgetl(input);
+0048 <span class="keyword">end</span>
+0049 <span class="comment">% if typ==8, % DIPOLE EQUATORIAL</span>
+0050 <span class="comment">%     mess2=sprintf('Dipol-Dipol-Equatorial NOT yet supported!');</span>
+0051 <span class="comment">%     return;</span>
+0052 <span class="comment">% end</span>
+0053 <span class="keyword">if</span> (typ==12)||(typ==13), <span class="comment">% CROSS BORHOLE</span>
+0054     <span class="comment">%mess2=sprintf('Cross-Borehole NOT yet supported!');</span>
+0055     <span class="comment">%return;</span>
+0056     surfel=fgetl(input);
+0057     n0=fscanf(input,<span class="string">'%d\n'</span>,1);
+0058     N.elec=[];
+0059     <span class="keyword">for</span> n=1:n0,
+0060         zeile=fgetl(input);
+0061         el=sscanf(strrep(zeile,<span class="string">','</span>,<span class="string">' '</span>),<span class="string">'%f %f'</span>);
+0062         N.elec=[N.elec;el(:)'];
+0063     <span class="keyword">end</span>
+0064     borel=fgetl(input);
+0065     <span class="keyword">if</span> strcmp(borel(1:4),<span class="string">'Bore'</span>),
+0066         nbor=2;
+0067     <span class="keyword">else</span>
+0068         nbor=fscanf(input,<span class="string">'%d\n'</span>,1);
+0069     <span class="keyword">end</span>
+0070     <span class="keyword">for</span> k=1:nbor,
+0071         nb=[];
+0072         <span class="keyword">while</span> isempty(nb),
+0073             zeile=fgetl(input);            
+0074             nb=sscanf(zeile,<span class="string">'%d\n'</span>,1);
+0075         <span class="keyword">end</span>
+0076         <span class="keyword">for</span> n=1:nb,
+0077             zeile=fgetl(input);
+0078             el=sscanf(strrep(zeile,<span class="string">','</span>,<span class="string">' '</span>),<span class="string">'%f %f'</span>);
+0079             N.elec=[N.elec;el(:)'];
+0080         <span class="keyword">end</span>
+0081         borel=fgetl(input);
+0082     <span class="keyword">end</span>
+0083 <span class="keyword">end</span>
+0084 <span class="keyword">if</span> (typ==11)||(typ==12)||(typ==13), <span class="comment">% mixed array</span>
+0085     mess2=sprintf(<span class="string">'Mixed Array %d Datum Points'</span>,data); 
+0086     AA=[];BB=AA;MM=AA;NN=AA;
+0087     N.r=zeros(data,1);
+0088     <span class="keyword">if</span> ippresent, N.ip=N.r; <span class="keyword">end</span>
+0089     <span class="keyword">for</span> l=1:data,
+0090        zeile=<span class="string">''</span>;
+0091        <span class="keyword">while</span> isempty(zeile), zeile=str2num(fgetl(input)); <span class="keyword">end</span>
+0092        num=zeile(1);
+0093        N.r(l)=zeile(end-ippresent);
+0094        <span class="keyword">if</span> ippresent, N.ip(l)=zeile(end); <span class="keyword">end</span>
+0095        AA=[AA;zeile(2:3)];
+0096        bb=[9999 0];nn=bb;
+0097        <span class="keyword">if</span> num==2,
+0098            mm=zeile(4:5);
+0099        <span class="keyword">end</span>
+0100        <span class="keyword">if</span> num==3,
+0101            mm=zeile(4:5);
+0102            nn=zeile(6:7);
+0103        <span class="keyword">end</span>
+0104        <span class="keyword">if</span> num==4,
+0105            bb=zeile(4:5);
+0106            mm=zeile(6:7);
+0107            nn=zeile(8:9);
+0108        <span class="keyword">end</span>
+0109        BB=[BB;bb];MM=[MM;mm];NN=[NN;nn];
+0110     <span class="keyword">end</span>
+0111     istopo=fscanf(input,<span class="string">'%d'</span>,1);
+0112     <span class="keyword">if</span> istopo,
+0113         nrtopo=fscanf(input,<span class="string">'%d\n'</span>,1);
+0114         <span class="keyword">for</span> nt=1:nrtopo,
+0115             zeile=strrep(fgetl(input),<span class="string">','</span>,<span class="string">' '</span>);
+0116             N.topo(nt,1:2)=sscanf(zeile,<span class="string">'%f'</span>,2);
+0117         <span class="keyword">end</span>
+0118         <span class="comment">%        N.topo=fscanf(input,'%f',[2 nrtopo])';</span>
+0119     <span class="keyword">end</span>
+0120 <span class="keyword">else</span>
+0121     nntyp=[3 3 4 3 3 4 4 3 0 0 8 10]; <span class="comment">%No. of columns</span>
+0122     nn=nntyp(typ);
+0123     ss=<span class="string">'%f'</span>;
+0124     <span class="keyword">for</span> nnn=2:nn+ippresent
+0125         ss=strcat(ss,<span class="string">' %f'</span>);
+0126     <span class="keyword">end</span>
+0127     ss=strcat(ss,<span class="string">'\n'</span>);
+0128     <span class="comment">%alles=fscanf(input,'%s\n',data);</span>
+0129     <span class="comment">%[DATA,data]=sscanf(alles,ss,[nn+ippresent,data]);</span>
+0130     <span class="comment">%[DATA,data]=fscanf(input,ss,[nn+ippresent,data]);</span>
+0131     DATA=zeros(nn+ippresent,data);
+0132     iserr=0;
+0133     <span class="keyword">for</span> l=1:data,
+0134         zeile=fgetl(input);
+0135         <span class="keyword">if</span> (l==1)&amp;&amp;any(strfind(zeile,<span class="string">'Error'</span>)),
+0136             iserr=1;
+0137             DATA(end+1,1)=0;
+0138             ss=[<span class="string">'%f '</span> ss];
+0139             zeile=fgetl(input); <span class="comment">% description</span>
+0140             errtype=str2num(fgetl(input)); <span class="comment">%</span>
+0141             zeile=fgetl(input); <span class="comment">% first data row</span>
+0142         <span class="keyword">end</span>
+0143         zeile(zeile==<span class="string">','</span>)=<span class="string">' '</span>;
+0144         zeile(zeile==<span class="string">';'</span>)=<span class="string">''</span>;
+0145         <span class="keyword">if</span> l==1,
+0146             vals=str2num(zeile);
+0147             lvals=length(vals);
+0148             DATA(lvals,1)=0;
+0149         <span class="keyword">end</span>
+0150         vals=sscanf(zeile,<span class="string">'%f'</span>,[lvals,1]);
+0151         <span class="keyword">if</span> length(vals)==size(DATA,1), DATA(:,l)=vals; <span class="keyword">end</span>
+0152 <span class="comment">%         DATA(:,l)=sscanf(zeile,ss,[nn+ippresent+iserr,1]);</span>
+0153     <span class="keyword">end</span>
+0154     istopo=fscanf(input,<span class="string">'%d'</span>,1);
+0155     <span class="keyword">if</span> istopo,
+0156        nrtopo=fscanf(input,<span class="string">'%d\n'</span>,1);
+0157        <span class="keyword">for</span> nt=1:nrtopo,
+0158           zeile=strrep(fgetl(input),<span class="string">','</span>,<span class="string">' '</span>);
+0159           N.topo(nt,1:2)=sscanf(zeile,<span class="string">'%f'</span>,2);
+0160        <span class="keyword">end</span>
+0161 <span class="comment">%        N.topo=fscanf(input,'%f',[2 nrtopo])';</span>
+0162     <span class="keyword">end</span>
+0163     <span class="comment">%data=fix(data/(nn+ippresent));</span>
+0164     XX=DATA(1,:)';
+0165     EL=DATA(2,:)';
+0166     N.r=DATA(nn,:)';
+0167     sida=size(DATA,1);
+0168     simu=nn+ippresent+iserr;
+0169     <span class="keyword">if</span> sida&gt;simu, N.i=DATA(simu+1,:)'/1000; <span class="keyword">end</span>
+0170     <span class="keyword">if</span> sida&gt;simu+1, N.u=DATA(simu+2,:)'/1000; <span class="keyword">end</span>
+0171     <span class="keyword">if</span> ippresent, N.ip=DATA(nn+1,:)'; <span class="keyword">end</span>
+0172     <span class="keyword">if</span> nn==4, <span class="comment">% 4-Point-Measurement</span>
+0173         SP=round(DATA(3,:)*1200)'/1200; <span class="comment">% thirds etc.</span>
+0174     <span class="keyword">end</span>
+0175 <span class="comment">%     if isip, N.ip=DATA(nn+ippresent,:)'; end</span>
+0176     <span class="keyword">if</span> iserr, 
+0177         N.err=DATA(nn+ippresent+1,:)';
+0178         <span class="keyword">if</span> errtype==0, N.err=N.err./N.r; <span class="keyword">end</span>
+0179     <span class="keyword">end</span>
+0180     BB=[];NN=[];
+0181     <span class="keyword">if</span> typ==1, <span class="comment">% WENNER</span>
+0182         mess2=sprintf(<span class="string">'Wenner Array %d Datum Points'</span>,data);
+0183         AA=XX-location*EL*1.5;
+0184         MM=AA+EL;
+0185         NN=MM+EL;
+0186         BB=NN+EL;
+0187     <span class="keyword">end</span>
+0188     <span class="keyword">if</span> typ==2, <span class="comment">% POLE-POLE</span>
+0189         mess2=sprintf(<span class="string">'Pole-Pole Array %d Datum Points'</span>,data); 
+0190         AA=XX-location*EL*0.5;
+0191         MM=AA+EL;
+0192     <span class="keyword">end</span>
+0193     <span class="keyword">if</span> typ==3, <span class="comment">% DIPOLE-DIPOLE</span>
+0194         mess2=sprintf(<span class="string">'Dipole-Dipole Array %d Datum Points'</span>,data); 
+0195         AA=XX-location*EL.*(SP/2+1);
+0196         BB=AA+EL;
+0197         MM=BB+SP.*EL;
+0198         NN=MM+EL;
+0199     <span class="keyword">end</span>
+0200     <span class="keyword">if</span> typ==4, <span class="comment">% WENNER-BETA</span>
+0201         mess2=sprintf(<span class="string">'Wenner-Beta Array %d Datum Points'</span>,data);
+0202         AA=XX-location*EL*1.5;
+0203         BB=AA+EL;
+0204         MM=BB+EL;
+0205         NN=MM+EL;
+0206     <span class="keyword">end</span>
+0207     <span class="keyword">if</span> typ==5, <span class="comment">% WENNER-GAMMA</span>
+0208         mess2=sprintf(<span class="string">'Wenner-Gamma Array %d Datum Points'</span>,data);
+0209         AA=XX-location*EL*1.5;
+0210         MM=AA+EL;
+0211         BB=MM+EL;
+0212         NN=BB+EL;
+0213     <span class="keyword">end</span>
+0214     <span class="keyword">if</span> typ==6, <span class="comment">% POLE-DIPOLE</span>
+0215         mess2=sprintf(<span class="string">'Pole-Dipole Array %d Datum Points'</span>,data); 
+0216         AA=XX-location*SP.*EL-(SP&lt;0).*(SP-1).*EL;
+0217         MM=AA+SP.*EL;
+0218         NN=MM+sign(SP).*EL;
+0219 <span class="comment">%         fi=find(SP&lt;0);du=MM(fi);MM(fi)=NN(fi);NN(fi)=du;</span>
+0220     <span class="keyword">end</span>
+0221     <span class="keyword">if</span> typ==7, <span class="comment">% SCHLUMBERGER</span>
+0222         mess2=sprintf(<span class="string">'Schlumberger Array %d Datum Points'</span>,data);
+0223         AA=XX-location*EL.*(SP+0.5);
+0224         MM=AA+SP.*EL;
+0225         NN=MM+EL;
+0226         BB=NN+SP.*EL;
+0227     <span class="keyword">end</span>
+0228     <span class="keyword">if</span> typ==8, <span class="comment">% HALFWENNER</span>
+0229         
+0230     <span class="keyword">end</span>
+0231 <span class="keyword">end</span>
+0232 fclose(input);
+0233 fak=200;
+0234 AA=round(AA*fak)/fak;BB=round(BB*fak)/fak;
+0235 MM=round(MM*fak)/fak;NN=round(NN*fak)/fak;
+0236 message(strcat(mess1,<span class="string">' --&gt; '</span>,titel));
+0237 message(sprintf(<span class="string">'%s min=%.1f,max=%.1f'</span>,mess2,min(N.r),max(N.r)));
+0238 N.elec=unique(sortrows([AA;BB;MM;NN]),<span class="string">'rows'</span>);
+0239 anzel=size(N.elec,1);
+0240 <span class="keyword">if</span> size(N.elec,2)&lt;2, N.elec(:,2)=0; <span class="keyword">end</span>
+0241 N.a=zeros(data,1);
+0242 N.b=zeros(data,1);
+0243 N.m=zeros(data,1);
+0244 N.n=zeros(data,1);
+0245 N.k=zeros(data,1);
+0246 
+0247 fac=111111;
+0248 qel=N.elec(:,1)+N.elec(:,2)*fac;
+0249 qa=AA(:,1);qm=MM(:,1);
+0250 <span class="keyword">if</span> size(AA,2)&gt;1, qa=qa+AA(:,2)*fac; <span class="keyword">end</span>
+0251 <span class="keyword">if</span> size(MM,2)&gt;1, qm=qm+MM(:,2)*fac; <span class="keyword">end</span>
+0252 [jj,ii]=ismember(qa,qel);
+0253 <span class="comment">% [aa,bb]=meshgrid(qa,qel);</span>
+0254 <span class="comment">% [ii,jj]=find((aa-bb)==0);</span>
+0255 N.a(jj)=ii;
+0256 <span class="keyword">if</span> ~isempty(BB),
+0257     qb=BB(:,1);
+0258     <span class="keyword">if</span> size(BB,2)&gt;1, qb=qb+BB(:,2)*fac; <span class="keyword">end</span>
+0259     [jj,ii]=ismember(qb,qel);
+0260 <span class="comment">%     [aa,bb]=meshgrid(qb,qel);</span>
+0261 <span class="comment">%     [ii,jj]=find((aa-bb)==0);</span>
+0262     N.b(jj)=ii;
+0263 <span class="keyword">end</span>
+0264 [jj,ii]=ismember(qm,qel);
+0265 <span class="comment">% [aa,bb]=meshgrid(qm,qel);</span>
+0266 <span class="comment">% [ii,jj]=find((aa-bb)==0);</span>
+0267 N.m(jj)=ii;
+0268 <span class="keyword">if</span> ~isempty(NN),
+0269     qn=NN(:,1);
+0270     <span class="keyword">if</span> size(NN,2)&gt;1, qn=qn+NN(:,2)*fac; <span class="keyword">end</span>
+0271     [jj,ii]=ismember(qn,qel);
+0272 <span class="comment">%     [aa,bb]=meshgrid(qn,qel);</span>
+0273 <span class="comment">%     [ii,jj]=find((aa-bb)==0);</span>
+0274     N.n(jj)=ii;
+0275 <span class="keyword">end</span>
+0276 
+0277 <span class="keyword">if</span> (typ==11)||(typ==12), <span class="comment">% Korrektur der unendlichen Elektroden von Typ 11</span>
+0278     num=find(N.elec(:,1)==9999);
+0279     <span class="keyword">if</span> ~isempty(num),
+0280         N.b(N.b==num)=0;
+0281         fb=find(N.b&gt;num);
+0282         N.b(fb)=N.b(fb)-1;
+0283         N.n(N.n==num)=0;
+0284         fn=find(N.n&gt;num);
+0285         N.n(fn)=N.n(fn)-1;
+0286         N.elec(num,:)=[];
+0287     <span class="keyword">end</span>
+0288 <span class="keyword">end</span>
+0289 N=<a href="delmeasurement.html" class="code" title="function N=delmeasurement(N,fi)">delmeasurement</a>(N,N.r==0);
+0290 N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);
+0291 <span class="keyword">if</span> isR|(typ==13),
+0292     N.rho=N.r;
+0293     N.r=N.rho.*N.k;
+0294 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

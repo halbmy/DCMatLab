@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mesharea</title>
+  <meta name="keywords" content="mesharea">
+  <meta name="description" content="MESHAREA - Return mesh triangle areas or tetrahedra volume (dim=3)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; mesharea.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>mesharea
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>MESHAREA - Return mesh triangle areas or tetrahedra volume (dim=3)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function meshareas=mesharea(Mesh) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MESHAREA - Return mesh triangle areas or tetrahedra volume (dim=3)
+ areas = mesharea(Mesh)
+ Mesh consists of nodes (n x dim) and cells (c x nodepercell)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function meshareas=mesharea(Mesh)</a>
+0002 
+0003 <span class="comment">% MESHAREA - Return mesh triangle areas or tetrahedra volume (dim=3)</span>
+0004 <span class="comment">% areas = mesharea(Mesh)</span>
+0005 <span class="comment">% Mesh consists of nodes (n x dim) and cells (c x nodepercell)</span>
+0006 
+0007 meshareas=zeros(Mesh.ncells,1);
+0008 <span class="keyword">if</span> Mesh.dim==2,
+0009     <span class="keyword">for</span> i=1:Mesh.ncells,
+0010         nodes=Mesh.node(Mesh.cell(i,:),:);
+0011         a=sqrt(sum(diff(nodes(1:2,:)).^2));
+0012         b=sqrt(sum(diff(nodes(2:3,:)).^2));
+0013         c=sqrt(sum(diff(nodes(1:2:3,:)).^2));
+0014         s=(a+b+c)/2;
+0015         meshareas(i)=sqrt(s*(s-a)*(s-b)*(s-c));
+0016     <span class="keyword">end</span>
+0017 <span class="keyword">end</span>
+0018 <span class="keyword">if</span> Mesh.dim==3,
+0019     <span class="keyword">for</span> i=1:Mesh.ncells,
+0020         nodes=Mesh.node(Mesh.cell(i,:),:);
+0021         u2=sum((nodes(1,:)-nodes(2,:)).^2);
+0022         U2=sum((nodes(3,:)-nodes(4,:)).^2);
+0023         v2=sum((nodes(1,:)-nodes(3,:)).^2);
+0024         V2=sum((nodes(2,:)-nodes(4,:)).^2);
+0025         w2=sum((nodes(1,:)-nodes(4,:)).^2);
+0026         W2=sum((nodes(2,:)-nodes(3,:)).^2);
+0027         v=sqrt(4*u2*v2*w2 - u2*(v2+w2-U2)^2 - v2*(w2+u2-V2)^2 - w2*(u2+v2-W2)^2 +<span class="keyword">...</span>
+0028             (v2+w2-U2)*(w2+u2-V2)*(u2+v2-W2))/12;
+0029         meshareas(i)=v;
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

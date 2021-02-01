@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pmatrix</title>
+  <meta name="keywords" content="pmatrix">
+  <meta name="description" content="PMATRIX - Form p-matrix from sensitivity by minimum coverage">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; pmatrix.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>pmatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PMATRIX - Form p-matrix from sensitivity by minimum coverage</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function P = pmatrix(x,z,S,mincov) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PMATRIX - Form p-matrix from sensitivity by minimum coverage
+ P = pmatrix(x,z)
+ or P = pmatrix(x,z,S,mincov)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function P = pmatrix(x,z,S,mincov)</a>
+0002 
+0003 <span class="comment">% PMATRIX - Form p-matrix from sensitivity by minimum coverage</span>
+0004 <span class="comment">% P = pmatrix(x,z)</span>
+0005 <span class="comment">% or P = pmatrix(x,z,S,mincov)</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'2 input arguments required!'</span>); <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;4, mincov=0.5; <span class="keyword">end</span>
+0009 lx=length(x)-1;
+0010 lz=length(z)-1;
+0011 dx=mean(diff(x));
+0012 dz=diff(z);
+0013 P=speye(lx*lz);
+0014 <span class="keyword">for</span> k=lz:-1:2,
+0015   start=lx*(k-1);
+0016   nx=round(dz(k)/dx);
+0017   <span class="keyword">if</span> nx&gt;1,
+0018     kx=fix(lx/nx);
+0019     nn=nx+lx-nx*kx;
+0020     <span class="keyword">for</span> kk=kx:-1:1,
+0021       first=start+(kk-1)*nx+1;
+0022       P(:,first)=sum(P(:,first:first+nn-1),2);
+0023       P(:,first+1:first+nn-1)=[];
+0024       nn=nx;
+0025     <span class="keyword">end</span>
+0026   <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin&gt;2, <span class="comment">%mincov given</span>
+0029     COV=sum(abs(S))*P./sum(P);
+0030     P(:,find(COV&lt;mincov))=[];
+0031 <span class="comment">%     COV=sum(abs(S));</span>
+0032 <span class="comment">%     P(:,find((COV&lt;mincov)*P))=[];</span>
+0033 <span class="keyword">end</span>
+0034 <span class="comment">% if size(P,2)&lt;size(P,1),</span>
+0035 <span class="comment">%     message(sprintf('reduced parameter from %d to %d',size(P,1),size(P,2)));</span>
+0036 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readSPL</title>
+  <meta name="keywords" content="readSPL">
+  <meta name="description" content="readSPL - Read resecs binary traces">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readSPL.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readSPL
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>readSPL - Read resecs binary traces</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [data, valid] = readSPL( filename, version ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> readSPL - Read resecs binary traces
+ [data,valid] = readSPL(filename[,version])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [data, valid] = readSPL( filename, version )</a>
+0002 
+0003 <span class="comment">% readSPL - Read resecs binary traces</span>
+0004 <span class="comment">% [data,valid] = readSPL(filename[,version])</span>
+0005 
+0006 <span class="keyword">if</span> ( nargin == 1 )
+0007     version = <span class="string">'neu'</span>;
+0008 <span class="keyword">end</span>
+0009 
+0010 valid = 0;
+0011 fid=fopen( filename,<span class="string">'r'</span> );
+0012 <span class="keyword">if</span> ( fid &lt; 0 )
+0013   <span class="comment">%  [ 'File not found: ' filename ]</span>
+0014     data = 0;
+0015     <span class="keyword">return</span> ;
+0016     error( [ <span class="string">'File not found: '</span> filename ] ); 
+0017 <span class="keyword">end</span>
+0018 
+0019 valid = 1;
+0020 <span class="keyword">if</span> ( version == <span class="string">'alt'</span>)
+0021     header=fread(fid, 8*16+10, <span class="string">'char'</span>); 
+0022     data.onTime = fread( fid, 1, <span class="string">'int32'</span> ); <span class="comment">% x008a</span>
+0023     data.delay_ui= fread( fid, 1, <span class="string">'int32'</span> );
+0024     data.delay_m= fread( fid, 1, <span class="string">'int32'</span> );
+0025     data.offTime = fread( fid, 1, <span class="string">'int32'</span> );
+0026     data.duration_m = fread( fid, 1, <span class="string">'int32'</span> );
+0027     data.nCycles = fread( fid, 1, <span class="string">'int16'</span> );
+0028     dummy = fread( fid, 4, <span class="string">'char'</span> );
+0029     allData = fread( fid, <span class="string">'float'</span> );
+0030 <span class="keyword">else</span>
+0031     header=fread(fid, 7*16+2, <span class="string">'char'</span>); 
+0032     data.onTime = fread( fid, 1, <span class="string">'int32'</span> ); <span class="comment">% x0072</span>
+0033     data.delay_ui= fread( fid, 1, <span class="string">'int32'</span> ); 
+0034     data.delay_m= fread( fid, 1, <span class="string">'int32'</span> );
+0035     data.offTime = fread( fid, 1, <span class="string">'int32'</span> );
+0036     data.duration_m = fread( fid, 1, <span class="string">'int32'</span> );
+0037     data.nCycles = fread( fid, 1, <span class="string">'int16'</span> );
+0038     dummy=fread(fid, 10, <span class="string">'char'</span>);
+0039     allData=fread( fid, <span class="string">'float'</span> ); <span class="comment">%% x008e</span>
+0040 <span class="keyword">end</span>
+0041 
+0042 nData = (data.onTime + data.offTime) * 2 * data.nCycles;
+0043     
+0044 fclose(fid);
+0045 
+0046 data.nTraces = floor( size(allData,1) / nData );
+0047 
+0048 data.d=[];
+0049 <span class="keyword">for</span> i=1:data.nTraces
+0050     data.d=[data.d allData( ((i-1)*nData+1):(i*nData), 1) ];
+0051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

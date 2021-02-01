@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gps2xyz</title>
+  <meta name="keywords" content="gps2xyz">
+  <meta name="description" content="GPS2XYZ - converts gps output (5412.09) to xyz">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; gps2xyz.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>gps2xyz
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GPS2XYZ - converts gps output (5412.09) to xyz</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x,y,z,Zone]=gps2xyz(lat,lon,h,lcm) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GPS2XYZ - converts gps output (5412.09) to xyz
+           based on the geodetic toolbox by Michael R. Craymer 
+ [x,y,z] = gps2xyz(lat,lon[,h])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [N,E,h,Zone]=ell2utm(lat,lon,a,e2,lcm)</a></li><li><a href="#_sub2" class="code">function deg=rad2deg(rad)</a></li><li><a href="#_sub3" class="code">function rad=deg2rad(deg)</a></li><li><a href="#_sub4" class="code">function [x,y,z]=ell2xyz(lat,lon,h,a,e2)</a></li><li><a href="#_sub5" class="code">function rad=dms2rad(dms)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,y,z,Zone]=gps2xyz(lat,lon,h,lcm)</a>
+0002 
+0003 <span class="comment">% GPS2XYZ - converts gps output (5412.09) to xyz</span>
+0004 <span class="comment">%           based on the geodetic toolbox by Michael R. Craymer</span>
+0005 <span class="comment">% [x,y,z] = gps2xyz(lat,lon[,h])</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;3, h=zeros(size(lat)); <span class="keyword">end</span>
+0008 a=6378137.0;finv=298.257223563; <span class="comment">%WGS84</span>
+0009 e2=1-(1-1/finv)^2; 
+0010 
+0011 de=floor(lat/100);
+0012 mi=floor(lat-de*100);
+0013 se=(lat-mi-de*100)*60;
+0014 nlat=<a href="#_sub5" class="code" title="subfunction rad=dms2rad(dms)">dms2rad</a>([de mi se]);
+0015 de=floor(lon/100);
+0016 mi=floor(lon-de*100);
+0017 se=(lon-mi-de*100)*60;
+0018 nlon=<a href="#_sub5" class="code" title="subfunction rad=dms2rad(dms)">dms2rad</a>([de mi se]);
+0019 <span class="comment">% [x,y,z]=ell2xyz(nlat,nlon,h,a,e2);</span>
+0020 <span class="keyword">if</span> nargin&gt;3,
+0021     [x,y,z,Zone]=<a href="#_sub1" class="code" title="subfunction [N,E,h,Zone]=ell2utm(lat,lon,a,e2,lcm)">ell2utm</a>(nlat,nlon,a,e2,lcm);
+0022 <span class="keyword">else</span>
+0023     [x,y,z,Zone]=<a href="#_sub1" class="code" title="subfunction [N,E,h,Zone]=ell2utm(lat,lon,a,e2,lcm)">ell2utm</a>(nlat,nlon,a,e2);
+0024 <span class="keyword">end</span>
+0025 <span class="comment">% x=-x;%y=-y;</span>
+0026 
+0027 <a name="_sub1" href="#_subfunctions" class="code">function [N,E,h,Zone]=ell2utm(lat,lon,a,e2,lcm)</a>
+0028 <span class="comment">% ELL2UTM  Converts ellipsoidal coordinates to UTM.</span>
+0029 <span class="comment">%   UTM northing and easting coordinates in a 6 degree</span>
+0030 <span class="comment">%   system.  Zones begin with zone 1 at longitude 180E</span>
+0031 <span class="comment">%   to 186E and increase eastward.  Formulae from E.J.</span>
+0032 <span class="comment">%   Krakiwsky, &quot;Conformal Map Projections in Geodesy&quot;,</span>
+0033 <span class="comment">%   Dept. Surveying Engineering Lecture Notes No. 37,</span>
+0034 <span class="comment">%   University of New Brunswick, Fredericton, N.B.</span>
+0035 <span class="comment">%   Vectorized.</span>
+0036 <span class="comment">% Version: 31 Mar 2005</span>
+0037 <span class="comment">% Useage:  [N,E,Zone]=ell2utm(lat,lon,a,e2,lcm)</span>
+0038 <span class="comment">% Input:   lat - vector of latitudes (rad)</span>
+0039 <span class="comment">%          lon - vector of longitudes (rad)</span>
+0040 <span class="comment">%          a   - major semi-axis of ref. ell (m)</span>
+0041 <span class="comment">%          e2  - eccentricity squared of ref. ell.</span>
+0042 <span class="comment">%          lcm - optional central meridian (default =</span>
+0043 <span class="comment">%                standard UTM den'n)</span>
+0044 <span class="comment">% Output:  N   - vector of UTM northings (m)</span>
+0045 <span class="comment">%          E   - vector of UTM eastings (m)</span>
+0046 <span class="comment">%          Zone- vector of UTM zones</span>
+0047 
+0048 ko=0.9996;      <span class="comment">% Scale factor</span>
+0049 <span class="keyword">if</span> lat&gt;=0
+0050   No=0;         <span class="comment">% False northing (north)</span>
+0051 <span class="keyword">else</span>
+0052   No=10000000;  <span class="comment">% False northing (south)</span>
+0053 <span class="keyword">end</span>
+0054 Eo=500000;      <span class="comment">% False easting</span>
+0055 
+0056 <span class="keyword">if</span> nargin==5
+0057   Zone=zeros(size(lat));
+0058 <span class="keyword">else</span>
+0059   Zone=floor((<a href="#_sub2" class="code" title="subfunction deg=rad2deg(rad)">rad2deg</a>(lon)-180)/6)+1;
+0060   Zone=Zone+(Zone&lt;0)*60-(Zone&gt;60)*60;
+0061   lcm=<a href="#_sub3" class="code" title="subfunction rad=deg2rad(deg)">deg2rad</a>(Zone*6-183);
+0062 <span class="keyword">end</span>
+0063 
+0064 lam=lon-lcm;
+0065 lam=lam-(lam&gt;=pi)*(2*pi);
+0066   
+0067 <span class="comment">%fprintf('\nZones\n');</span>
+0068 <span class="comment">%fprintf('%3d\n',Zone');</span>
+0069 <span class="comment">%fprintf('\nCentral Meridians\n');</span>
+0070 <span class="comment">%fprintf('%3d %2d %9.6f\n',rad2dms(lcm)');</span>
+0071 <span class="comment">%fprintf('\nLongitudes wrt Central Meridian\n');</span>
+0072 <span class="comment">%fprintf('%3d %2d %9.6f\n',rad2dms(lam)');</span>
+0073 
+0074 f=1-sqrt(1-e2);
+0075 RN=a./(1-e2*sin(lat).^2).^0.5;
+0076 RM=a*(1-e2)./(1-e2*sin(lat).^2).^1.5;
+0077 t=tan(lat);
+0078 h=sqrt(e2*cos(lat).^2/(1-e2));
+0079 n=f/(2-f);
+0080 
+0081 a0=1+n^2/4+n^4/64;
+0082 a2=1.5*(n-n^3/8);
+0083 a4=15/16*(n^2-n^4/4);
+0084 a6=35/48*n^3;
+0085 a8=315/512*n^4;
+0086 
+0087 s=a/(1+n)*(a0*lat-a2*sin(2*lat)+a4*sin(4*lat)- <span class="keyword">...</span>
+0088   a6*sin(6*lat)+a8*sin(8*lat));
+0089 
+0090 E1=lam .* cos(lat);
+0091 E2=lam.^3 .* cos(lat).^3/6 .* (1-t.^2+h.^2);
+0092 E3=lam.^5 .* cos(lat).^5/120 .* <span class="keyword">...</span>
+0093     (5-18*t.^2+t.^4+14*h.^2-58*t.^2 .*h.^2+13*h.^4+<span class="keyword">...</span>
+0094      4*h.^6-64*t.^2 .*h.^4-24*t.^2 .*h.^6);
+0095 E4=lam.^7 .*cos(lat).^7/5040 .* <span class="keyword">...</span>
+0096     (61-479*t.^2+179*t.^4-t.^6);
+0097 E=Eo + ko*RN.*(E1 + E2 + E3 + E4);
+0098 
+0099 N1=lam.^2/2 .* sin(lat) .* cos(lat);
+0100 N2=lam.^4/24 .* sin(lat) .* cos(lat).^3 .* <span class="keyword">...</span>
+0101     (5-t.^2+9*h.^2+4*h.^4);
+0102 N3=lam.^6/720 .* sin(lat) .* cos(lat).^5 .* <span class="keyword">...</span>
+0103     (61-58*t.^2+t.^4+270*h.^2-<span class="keyword">...</span>
+0104      330*t.^2 .*h.^2+445*h.^4+<span class="keyword">...</span>
+0105      324*h.^6-680*t.^2 .*h.^4+<span class="keyword">...</span>
+0106      88*h.^8-600*t.^2 .*h.^6-<span class="keyword">...</span>
+0107      192*t.^2 .*h.^8);
+0108 N4=lam.^8/40320 .* sin(lat) .* cos(lat).^7 .* <span class="keyword">...</span>
+0109    (1385-311*t.^2+543*t.^4-t.^6);
+0110 N=No + ko*RN.*(s./RN + N1 + N2 + N3 + N4); 
+0111 
+0112 <a name="_sub2" href="#_subfunctions" class="code">function deg=rad2deg(rad)</a>
+0113 <span class="comment">% RAD2DEG  Converts radians to decimal degrees. Vectorized.</span>
+0114 <span class="comment">% Version: 8 Mar 00</span>
+0115 <span class="comment">% Useage:  deg=rad2deg(rad)</span>
+0116 <span class="comment">% Input:   rad - vector of angles in radians</span>
+0117 <span class="comment">% Output:  deg - vector of angles in decimal degrees</span>
+0118 deg=rad.*180./pi;
+0119 <span class="comment">%ind=(deg&lt;0);</span>
+0120 <span class="comment">%deg(ind)=deg(ind)+360;</span>
+0121 
+0122 <a name="_sub3" href="#_subfunctions" class="code">function rad=deg2rad(deg)</a>
+0123 <span class="comment">% DEG2RAD  Converts decimal degrees to radians. Vectorized.</span>
+0124 <span class="comment">% Version: 18 Jan 96</span>
+0125 <span class="comment">% Useage:  rad=deg2rad(deg)</span>
+0126 <span class="comment">% Input:   deg - vector of angles in decimal degrees</span>
+0127 <span class="comment">% Output:  rad - vector of angles in radians</span>
+0128 rad=deg.*pi./180; 
+0129 
+0130 <a name="_sub4" href="#_subfunctions" class="code">function [x,y,z]=ell2xyz(lat,lon,h,a,e2)</a>
+0131 <span class="comment">% ELL2XYZ  Converts ellipsoidal coordinates to cartesian.</span>
+0132 <span class="comment">%   Vectorized.</span>
+0133 <span class="comment">% Version: 18 Jan 96</span>
+0134 <span class="comment">% Useage:  [x,y,z]=ell2xyz(lat,lon,h,a,e2)</span>
+0135 <span class="comment">% Input:   lat - vector of ellipsoidal latitudes (radians)</span>
+0136 <span class="comment">%          lon - vector of ellipsoidal E longitudes (radians)</span>
+0137 <span class="comment">%          h   - vector of ellipsoidal heights (m)</span>
+0138 <span class="comment">%          a   - ref. ellipsoid major semi-axis (m)</span>
+0139 <span class="comment">%          e2  - ref. ellipsoid eccentricity squared</span>
+0140 <span class="comment">% Output:  x \</span>
+0141 <span class="comment">%          y  &gt; vectors of cartesian coordinates in CT system (m)</span>
+0142 <span class="comment">%          z /</span>
+0143 v=a./sqrt(1-e2*sin(lat).*sin(lat));
+0144 x=(v+h).*cos(lat).*cos(lon);
+0145 y=(v+h).*cos(lat).*sin(lon);
+0146 z=(v.*(1-e2)+h).*sin(lat); 
+0147 
+0148 <a name="_sub5" href="#_subfunctions" class="code">function rad=dms2rad(dms)</a>
+0149 <span class="comment">% DMS2RAD  Converts degrees-minutes-seconds to radians.</span>
+0150 <span class="comment">%   Vectorized.</span>
+0151 <span class="comment">% Version: 12 Mar 00</span>
+0152 <span class="comment">% Useage:  rad=dms2rad(dms)</span>
+0153 <span class="comment">% Input:   dms - [d m s] array of angles in deg-min-sec, where</span>
+0154 <span class="comment">%                d = vector of degrees</span>
+0155 <span class="comment">%                m = vector of minutes</span>
+0156 <span class="comment">%                s = vector of seconds</span>
+0157 <span class="comment">% Output: rad - vector of angles in radians</span>
+0158 d=dms(:,1);
+0159 m=dms(:,2);
+0160 s=dms(:,3);
+0161 dec=abs(d)+abs(m)./60+abs(s)./3600;
+0162 rad=dec.*pi./180;
+0163 ind=(d&lt;0 | m&lt;0 | s&lt;0);
+0164 rad(ind)=-rad(ind);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

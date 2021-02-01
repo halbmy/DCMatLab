@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of midkonf2d</title>
+  <meta name="keywords" content="midkonf2d">
+  <meta name="description" content="MIDKONF2D - midpoint and konfiguration of data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; midkonf2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>midkonf2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>MIDKONF2D - midpoint and konfiguration of data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [mids,seps,ii,kk,midpoint,dm]=midkonf2d(N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MIDKONF2D - midpoint and konfiguration of data
+ [mids,seps,ii,kk]=midkonf2d(N)
+ mids - midpoint/reference point of datum
+ konf - konfiguration = 
+   type*10000 + dipole_length*100 + separation
+ in relation to minimum electrode spacing
+ type = 0 - pole-pole
+        1 - pole-dipole forward
+        2 - pole-dipole reverse
+        3 - Wenner (or other wenner)
+        4 - Schlumberger
+        5 - dipole-dipole (or other gamma)
+        6 - dipole-dipole (or other gamma)
+        7 - dipole-dipole (or other gamma)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="exportres2dinv.html" class="code" title="function exportres2dinv(N,basename)">exportres2dinv</a>	EXPORTRES2DINV - Export res2dinv file(s)</li><li><a href="newdataplot.html" class="code" title="">newdataplot</a>	</li><li><a href="patch2ddata.html" class="code" title="">patch2ddata</a>	</li><li><a href="showdata2d.html" class="code" title="function [mids,seps,ii,kk]=showdata2d(NN,feld,MAL)">showdata2d</a>	SHOWDATA2D show datum points</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [mids,seps,ii,kk,midpoint,dm]=midkonf2d(N)</a>
+0002 
+0003 <span class="comment">% MIDKONF2D - midpoint and konfiguration of data</span>
+0004 <span class="comment">% [mids,seps,ii,kk]=midkonf2d(N)</span>
+0005 <span class="comment">% mids - midpoint/reference point of datum</span>
+0006 <span class="comment">% konf - konfiguration =</span>
+0007 <span class="comment">%   type*10000 + dipole_length*100 + separation</span>
+0008 <span class="comment">% in relation to minimum electrode spacing</span>
+0009 <span class="comment">% type = 0 - pole-pole</span>
+0010 <span class="comment">%        1 - pole-dipole forward</span>
+0011 <span class="comment">%        2 - pole-dipole reverse</span>
+0012 <span class="comment">%        3 - Wenner (or other wenner)</span>
+0013 <span class="comment">%        4 - Schlumberger</span>
+0014 <span class="comment">%        5 - dipole-dipole (or other gamma)</span>
+0015 <span class="comment">%        6 - dipole-dipole (or other gamma)</span>
+0016 <span class="comment">%        7 - dipole-dipole (or other gamma)</span>
+0017 
+0018 del=diff(unique(N.elec(:,1)));
+0019 <span class="comment">%dx=min(del(find(del&gt;1e-4)));</span>
+0020 dx=median(del(del&gt;1e-4));
+0021 dx=round(dx*10000)/10000;
+0022 <span class="comment">% 2-Punkt = Pol-Pol</span>
+0023 sep=abs(N.elec(N.a,1)-N.elec(N.m,1))/dx; <span class="comment">% 0 + sep</span>
+0024 midpoint=(N.elec(N.a,1)+N.elec(N.m,1))/2; <span class="comment">% 2-Punkt</span>
+0025 fn=find(N.n&gt;0);
+0026 <span class="keyword">if</span> ~isempty(fn), <span class="comment">% 3-Punkt oder MN&lt;&lt;AB</span>
+0027 <span class="comment">%     midpoint(fn)=(2*N.elec(N.a(fn),1)+N.elec(N.m(fn),1)+...</span>
+0028 <span class="comment">%         N.elec(N.n(fn),1))/4;</span>
+0029     mn=abs(N.elec(N.m(fn),1)-N.elec(N.n(fn),1));
+0030     midpoint(fn)=(N.elec(N.m(fn),1)+N.elec(N.n(fn),1))/2;
+0031     sep(fn)=abs(N.elec(N.m(fn),1)-N.elec(N.a(fn),1))/dx+<span class="keyword">...</span>
+0032         10000+10000*abs(N.elec(N.a(fn),1)&gt;N.elec(N.m(fn),1))+<span class="keyword">...</span>
+0033         100*(mn/dx-1);
+0034         <span class="comment">%abs(N.elec(N.m(fn),1)-N.elec(N.n(fn),1))+...</span>
+0035 <span class="keyword">end</span> <span class="comment">% PD=10000(forward),20000(reverse)</span>
+0036 fb=find(N.b&gt;0);
+0037 <span class="keyword">if</span> ~isempty(fb), <span class="comment">% 4-Punkt, Vorsicht Dipol-Pol!!!</span>
+0038     ab=abs(N.elec(N.a(fb),1)-N.elec(N.b(fb),1));
+0039     mn=abs(N.elec(N.m(fb),1)-N.elec(N.n(fb),1));
+0040     am=abs(N.elec(N.a(fb),1)-N.elec(N.m(fb),1));
+0041     bn=abs(N.elec(N.b(fb),1)-N.elec(N.n(fb),1));
+0042     an=abs(N.elec(N.a(fb),1)-N.elec(N.n(fb),1));
+0043     bm=abs(N.elec(N.b(fb),1)-N.elec(N.m(fb),1));
+0044     ab=round(ab*10000)/10000;mn=round(mn*10000)/10000;
+0045     am=round(am*10000)/10000;bn=round(bn*10000)/10000;
+0046     bm=round(bm*10000)/10000;
+0047     sep(fb)=abs(N.elec(N.m(fb),1)-N.elec(N.b(fb),1))/dx;
+0048     f1=find(ab~=mn); <span class="comment">% CPPC, C-PP-C</span>
+0049     f1b=fb(f1);
+0050     <span class="keyword">if</span> ~isempty(f1),
+0051         midpoint(f1b)=(N.elec(N.m(f1b),1)+N.elec(N.n(f1b),1))/2;
+0052         spac=abs(N.elec(N.n(f1b),1)-N.elec(N.b(f1b),1));
+0053 <span class="comment">%         sep(f1)=spac/dx+30000+(3*mn(f1)&lt;ab(f1))*10000;</span>
+0054          abmn3=round((3*mn(f1)-ab(f1))*10000)/10000;
+0055          sep(f1b)=spac./dx+(mn(f1)/dx-1)*100.*(abmn3~=0)+30000+(abmn3&lt;0)*10000;
+0056     <span class="keyword">end</span> <span class="comment">% WE=30000, SL=40000</span>
+0057     f3=fb(find((ab&gt;mn).*(abs(am-bn)&gt;1e-4))); <span class="comment">% find MUST stay here!</span>
+0058     <span class="keyword">if</span> ~isempty(f3),  <span class="comment">% C---PP--C (gradient type)</span>
+0059 <span class="comment">%         sep(f3)=70000+mn(f3)/dx+(ab(f3)/dx/2-1)*100;</span>
+0060 <span class="comment">%         sep(f3)=70000+mn(f3)/dx*1000+ab(f3)/dx+am(f3)*10+bn(f3)*100;</span>
+0061 <span class="comment">%         sep(f3)=70000+mn(f3)/dx*1000+ab(f3)/dx+min(am(f3),bn(3))/dx*10-abs(am(f3)-bn(f3))/dx*100;</span>
+0062 <span class="comment">%         sep(f1)=70000+(mn(f1)/dx-1)*100+ab(f1)/dx;</span>
+0063 <span class="comment">%         sep(f1)=70000+(mn(f1)/dx-1)*100+ab(f1)/dx; % assume there are no additional wenner/schlumberger</span>
+0064         mab=(N.elec(N.a(f1),1)+N.elec(N.b(f1),1))/2;
+0065         mmn=(N.elec(N.m(f1),1)+N.elec(N.n(f1),1))/2;        
+0066 <span class="comment">%         sep(f1)=70000+(ab(f1)/dx+1)*100+mmn-mab;</span>
+0067         sep(f1)=70000+(ab(f1)/dx+1)*100+abs(mmn-mab);
+0068         fi=find(mmn-mab&lt;0);sep(f1(fi))=sep(f1(fi))+10000;
+0069         midpoint(f3)=(N.elec(N.m(f3),1)+N.elec(N.n(f3),1))/2;
+0070 <span class="comment">%         dx=dx/2;</span>
+0071     <span class="keyword">end</span>
+0072     f2=find(ab==mn); <span class="comment">% CPCP,CCPP, CC-PP</span>
+0073     <span class="keyword">if</span> ~isempty(f2), <span class="comment">% CCPP=50000</span>
+0074         spac=min([am(f2) bn(f2) bm(f2) an(f2)],[],2);
+0075 <span class="comment">%         sep(fb(f2))=spac/dx+50000+(ab(f2)/dx-1)*10;</span>
+0076 <span class="comment">%         sep(fb(f2))=spac./ab(f2)+50000+(ab(f2)/dx-1)*100;</span>
+0077         sep(fb(f2))=spac./dx+50000+(ab(f2)/dx-1)*100; 
+0078     <span class="keyword">end</span>
+0079 <span class="comment">%     midpoint(fb(f2))=(N.elec(N.b(fb(f2)),1)+N.elec(N.m(fb(f2)),1))/2;</span>
+0080     midpoint(fb(f2))=(N.elec(N.b(fb(f2)),1)+N.elec(N.m(fb(f2)),1)+<span class="keyword">...</span>
+0081         N.elec(N.a(fb(f2)),1)+N.elec(N.n(fb(f2)),1))/4;
+0082 <span class="keyword">end</span>
+0083 sep=round(sep*10)/10;
+0084 <span class="comment">% sep(find(sep==0))=9999; % Circulating=9999</span>
+0085 fi=find(fix(sep/10000)==4); <span class="comment">% single wenner/schlumberger=circulate!</span>
+0086 <span class="keyword">if</span> length(fi)==1, sep(fi)=70000+mn(fi); <span class="keyword">end</span>
+0087 <span class="keyword">if</span> max(sep)&lt;0, sep=abs(sep); <span class="keyword">end</span>
+0088 seps=unique(sep);
+0089 <span class="comment">% [aa,bb]=meshgrid(sep,seps);</span>
+0090 <span class="comment">% [kk,jj]=find((aa-bb)==0);</span>
+0091 [tf,kk]=ismember(sep,seps);
+0092 midpoint=round(midpoint*1000)/1000;
+0093 mids=unique(midpoint); <span class="comment">%alt!</span>
+0094 dm=min(diff(mids));
+0095 <span class="comment">% if dm&gt;5*dx, %possibly 1d</span>
+0096 <span class="comment">%     dm=dx; end</span>
+0097 <span class="keyword">if</span> isempty(dm)||(dm&lt;0.0499)&amp;&amp;(max(mids)-min(mids)&gt;10), dm=1; <span class="keyword">end</span>
+0098 <span class="keyword">if</span> (dm&lt;0.001)&amp;&amp;(max(mids)-min(mids)&gt;0.1), 
+0099     dm=0.001;
+0100     mids=round(mids*1000)/1000;
+0101     midpoint=round(midpoint*1000)/1000;
+0102 <span class="keyword">end</span>
+0103 <span class="comment">% if isfield(N,'eind'), dm=10^fix(log10(dm)); end</span>
+0104 dm=round(dm*1000)/1000;
+0105 <span class="keyword">if</span> isempty(dm)||(dm&lt;=0), dm=1; <span class="keyword">end</span>
+0106 mul=dm/2;
+0107 
+0108 <span class="comment">% [tf,ii]=ismember(round(midpoint/mul)*mul,round(mids/mul)*mul);</span>
+0109 mids=round((min(mids):dm:max(mids))/mul)*mul;
+0110 [tf,ii]=ismember(round(midpoint/mul)*mul,mids);
+0111 <span class="comment">% [aa,bb]=meshgrid(midpoint,mids);</span>
+0112 <span class="comment">% [ii,jj]=find((aa-bb)==0);</span>
+0113</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

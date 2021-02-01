@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of joindata</title>
+  <meta name="keywords" content="joindata">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; joindata.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>joindata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>	READINV2DFILE - Read INV2D data file</li><li><a href="readunishot.html" class="code" title="function Shot=readunishot(filename)">readunishot</a>	READUNISHOT - Read shot from unified data format</li><li><a href="saveinv2dfile.html" class="code" title="function saveinv2dfile(fname,N,maxi,eltoken)">saveinv2dfile</a>	SAVEINV2DFILE - Save INV2D file format</li><li><a href="savesgtfile.html" class="code" title="function savesgtfile(filename,Shot,s,g)">savesgtfile</a>	SAVESGTFILE - Save file to unified data format with Shot,Geophone,Time</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="keyword">if</span> 0,
+0002     dcfile=<span class="string">'d:\Guenther.T\2d\parkdeck\Parkdeck2.dat'</span>;
+0003     ttfile=<span class="string">'d:\Guenther.T\2d\parkdeck\parkdeck.sgt'</span>;
+0004 <span class="keyword">else</span>
+0005     [fname,pname]=uigetfile(<span class="string">'*.dat;*.ohm'</span>);<span class="keyword">if</span> ~ischar(fname), <span class="keyword">return</span>; <span class="keyword">end</span>
+0006     dcfile=fullfile(pname,fname);
+0007     [fname,pname]=uigetfile(<span class="string">'*.dat;*.sgt'</span>);<span class="keyword">if</span> ~ischar(fname), <span class="keyword">return</span>; <span class="keyword">end</span>
+0008     ttfile=fullfile(pname,fname);
+0009 <span class="keyword">end</span>
+0010 N=<a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>(dcfile);
+0011 Shot=<a href="readunishot.html" class="code" title="function Shot=readunishot(filename)">readunishot</a>(ttfile);
+0012 pos=unique([N.elec;Shot.pos],<span class="string">'rows'</span>);
+0013 [tf,idc]=ismember(N.elec,pos,<span class="string">'rows'</span>);
+0014 [tf,itt]=ismember(Shot.pos,pos,<span class="string">'rows'</span>);
+0015 N.elec=pos;
+0016 N.a=idc(N.a);N.m=idc(N.m);
+0017 fi=find(N.b);N.b(fi)=idc(N.b(fi));
+0018 fi=find(N.n);N.n(fi)=idc(N.n(fi));
+0019 <span class="comment">% showdata2d(N);</span>
+0020 Shot.pos=pos;
+0021 <span class="keyword">for</span> i=1:length(Shot.ns), Shot.ns{i}=itt(Shot.ns{i});
+0022     Shot.nx{i}=itt(Shot.nx{i}); <span class="keyword">end</span>
+0023 plotshot(Shot)
+0024 [pp,ff,ee]=fileparts(ttfile);
+0025 <a href="savesgtfile.html" class="code" title="function savesgtfile(filename,Shot,s,g)">savesgtfile</a>(fullfile(pp,[<span class="string">'j'</span> lower(ff) ee]),Shot);
+0026 [pp,ff,ee]=fileparts(dcfile);
+0027 <a href="saveinv2dfile.html" class="code" title="function saveinv2dfile(fname,N,maxi,eltoken)">saveinv2dfile</a>(fullfile(pp,[<span class="string">'j'</span> lower(ff) ee]),N);
+0028</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

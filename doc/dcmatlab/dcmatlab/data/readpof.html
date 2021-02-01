@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readpof</title>
+  <meta name="keywords" content="readpof">
+  <meta name="description" content="READPOF - Read promax output file (POF)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readpof.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readpof
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READPOF - Read promax output file (POF)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Shot = readpof(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READPOF - Read promax output file (POF)
+ Shot = readpof(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="writetom.html" class="code" title="function writetom(Shot,filename)">writetom</a>	WRITETOM - Write *.tom file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Shot = readpof(filename)</a>
+0002 
+0003 <span class="comment">% READPOF - Read promax output file (POF)</span>
+0004 <span class="comment">% Shot = readpof(filename)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'Specify filename'</span>); <span class="keyword">end</span>
+0007 <span class="comment">%filename='c:\halbmy\2d\sollstedt\fb_2.pof';</span>
+0008 <span class="comment">% A=textread(filename,'','headerlines',5);</span>
+0009 Shot=[];
+0010 l=0;sh=[];ge={};Shot.t=[];
+0011 fid=fopen(filename,<span class="string">'r'</span>);
+0012 <span class="keyword">if</span> fid&lt;0, error([<span class="string">'File '</span> filename <span class="string">' could not be opened'</span>]); <span class="keyword">end</span>
+0013 zeile=fgetl(fid);
+0014 <span class="keyword">while</span> ischar(zeile),
+0015     aa=str2num(zeile);
+0016     <span class="keyword">if</span> length(aa)==3, <span class="comment">% new shot</span>
+0017         l=l+1;
+0018         sh(l)=aa(1);
+0019         ge{l}=aa(2);
+0020         Shot.loc(l)=aa(1);
+0021         Shot.x{l}=aa(2);
+0022         Shot.tt{l}=aa(3);
+0023         Shot.t(end+1)=aa(3)/1000;
+0024     <span class="keyword">end</span>
+0025     <span class="keyword">if</span> (l&gt;0)&amp;&amp;(length(aa)==2), <span class="comment">% new position</span>
+0026         ge{l}(end+1)=aa(1);
+0027         Shot.x{l}(end+1)=aa(1);
+0028         Shot.tt{l}(end+1)=aa(2);
+0029         Shot.t(end+1)=aa(2)/1000;
+0030     <span class="keyword">end</span>
+0031     zeile=fgetl(fid);
+0032 <span class="keyword">end</span>
+0033 fclose(fid);
+0034 pos=sh(:);Shot.t=Shot.t(:);
+0035 <span class="keyword">for</span> i=1:length(ge), pos=[pos;ge{i}(:)]; <span class="keyword">end</span>
+0036 Shot.pos=unique(pos);
+0037 <span class="keyword">for</span> i=1:length(ge), 
+0038     Shot.ns{i}=find(Shot.pos==sh(i));
+0039     [tf,Shot.nx{i}]=ismember(ge{i},Shot.pos);
+0040 <span class="keyword">end</span>
+0041 Shot.pos(:,2)=0;Shot.locz=zeros(size(Shot.loc));
+0042 <a href="writetom.html" class="code" title="function writetom(Shot,filename)">writetom</a>(Shot,<span class="string">'fb2.tom'</span>);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

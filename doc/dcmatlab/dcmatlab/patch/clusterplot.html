@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of clusterplot</title>
+  <meta name="keywords" content="clusterplot">
+  <meta name="description" content="CLUSTERPLOT - two variables crossplot using cluster colors">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; clusterplot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>clusterplot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CLUSTERPLOT - two variables crossplot using cluster colors</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [cc,cl,mf] = clusterplot(para1,para2,ncluster,names,marker) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CLUSTERPLOT - two variables crossplot using cluster colors
+ clusterplot(var1,var2,ncluster[,names])
+ clusterplot(var1,var2,clusterresult[,names])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fcmcluster.html" class="code" title="function result = fcmcluster(data,param)">fcmcluster</a>	FCMCLUSTER - Fuzzy c-means clustering</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [cc,cl,mf] = clusterplot(para1,para2,ncluster,names,marker)</a>
+0002 
+0003 <span class="comment">% CLUSTERPLOT - two variables crossplot using cluster colors</span>
+0004 <span class="comment">% clusterplot(var1,var2,ncluster[,names])</span>
+0005 <span class="comment">% clusterplot(var1,var2,clusterresult[,names])</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;5, marker=<span class="string">'.'</span>; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> (nargin&lt;4)||isempty(names), names={<span class="string">'resistivity'</span>,<span class="string">'velocity'</span>}; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;3, ncluster=3; <span class="keyword">end</span>
+0010 <span class="comment">% cols={'b','br','bgr','bcgr','bcgrm','bcgyrm'};</span>
+0011 cols={<span class="string">'b'</span>,<span class="string">'br'</span>,<span class="string">'bgr'</span>,<span class="string">'bcyg'</span>,<span class="string">'bcgyr'</span>,<span class="string">'bcgyrm'</span>,<span class="string">'bcgyrmk'</span>};
+0012 <span class="keyword">if</span> isstruct(ncluster), <span class="comment">% already clustering</span>
+0013     result=ncluster;
+0014 <span class="keyword">else</span> <span class="comment">% do the clustering</span>
+0015     param.c=ncluster;
+0016     result=<a href="fcmcluster.html" class="code" title="function result = fcmcluster(data,param)">fcmcluster</a>([log10(para1(:)) log10(para2(:))],param);
+0017 <span class="keyword">end</span>
+0018 cc=10.^result.cluster.v;
+0019 col=cols{min(result.param.c,length(cols))};
+0020 ncols=length(col);
+0021 <span class="keyword">for</span> i=1:result.param.c,
+0022     fi=find(result.cl==i);
+0023     coli=col(mod(i-1,ncols)+1);
+0024     loglog(para1(fi),para2(fi),[coli marker],<span class="string">'MarkerSize'</span>,5);
+0025     hold on
+0026 <span class="keyword">end</span>
+0027 hold off
+0028 xlim(minmax(para1));
+0029 ylim(minmax(para2));
+0030 grid on
+0031 xlabel(names{1});
+0032 ylabel(names{2});</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

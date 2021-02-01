@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of potxy</title>
+  <meta name="keywords" content="potxy">
+  <meta name="description" content="% POTXY - Compute total potential from normal and anomal parts">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; potxy.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>potxy
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% POTXY - Compute total potential from normal and anomal parts</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function pot=potxy(x,y,sq,Phis,X,Y,RA,RB) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% POTXY - Compute total potential from normal and anomal parts
+% pot = potxy(x,y,Phis,X,Y,RA,RB) where x and y are vectors of coordinates
+% needs RA RB X Y Phis sq as gloabl variables</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fdfwd3d.html" class="code" title="function [R,Rrez,MEA,zus]=fdfwd3d(x,y,z,M,Bg,N,FOR)">fdfwd3d</a>	FDFWD3D - 3D DC Forward Calculation with finite differences</li><li><a href="mfdfwd3d.html" class="code" title="function [R,Rrez,MEA]=mfdfwd3d(Mod,N,FOR)">mfdfwd3d</a>	FDFWD3D - 3D DC Forward Calculation with finite differences</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function pot=potxy(x,y,sq,Phis,X,Y,RA,RB)</a>
+0002 <span class="comment">%% POTXY - Compute total potential from normal and anomal parts</span>
+0003 <span class="comment">%% pot = potxy(x,y,Phis,X,Y,RA,RB) where x and y are vectors of coordinates</span>
+0004 <span class="comment">%% needs RA RB X Y Phis sq as gloabl variables</span>
+0005 
+0006 I=length(X);
+0007 J=length(Y);
+0008 IA=1-0.5*(RA(3)&gt;0); <span class="comment">% Source on/below surface</span>
+0009 IB=0;
+0010 <span class="keyword">if</span> nargin&gt;7, IB=-1+0.5*(RB(3)&gt;0);  <span class="keyword">end</span>
+0011 
+0012 RR=[x(:) y(:)]';
+0013 RR(3,1)=0;
+0014 lx=length(x);
+0015 ra=sqrt(sum((RR-repmat(RA(:),1,lx)).^2));
+0016 <span class="keyword">if</span> IB~=0, rb=sqrt(sum((RR-repmat(RB(:),1,lx)).^2)); <span class="keyword">end</span>
+0017 fa=find(ra);
+0018 phip=zeros(size(ra));
+0019 phip(fa)=IA./ra(fa);
+0020 <span class="keyword">if</span> IB~=0,
+0021   fb=find(rb);
+0022   phip(fb)=phip(fb)+IB./rb(fb);
+0023 <span class="keyword">end</span>
+0024 <span class="keyword">while</span> length(phip)&lt;lx, phip=[phip 0]; <span class="keyword">end</span>
+0025 pot=phip/(2*pi*sq);
+0026 k=1;
+0027 <span class="keyword">for</span> nn=1:length(x),
+0028   <span class="comment">%i=1;j=1;k=1;</span>
+0029   <span class="comment">%while (X(i)&lt;x(nn))&amp;(i&lt;I), i=i+1; end</span>
+0030   <span class="comment">%while (Y(j)&lt;y(nn))&amp;(j&lt;J), j=j+1; end</span>
+0031   i=max(find(X&lt;x(nn)));
+0032   j=max(find(Y&lt;y(nn)));
+0033 <span class="comment">%  if (i&lt;I)&amp;(j&lt;J),</span>
+0034       phis=Phis(i+1,j+1,k)*(x(nn)-X(i))*(y(nn)-Y(j))+Phis(i,j+1,k)*(X(i+1)-x(nn))*(y(nn)-Y(j))+Phis(i+1,j,k)*(x(nn)-X(i))*(Y(j+1)-y(nn))+Phis(i,j,k)*(X(i+1)-x(nn))*(Y(j+1)-y(nn));
+0035       phis=phis/(X(i+1)-X(i))/(Y(j+1)-Y(j));
+0036       pot(nn)=pot(nn)+phis;
+0037       <span class="comment">%  else</span>
+0038 <span class="comment">%      fprintf('Index too big! i=%d j=%d\n',i,j);</span>
+0039 <span class="comment">%  end</span>
+0040 <span class="keyword">end</span>
+0041 <span class="comment">%return;</span>
+0042 <span class="comment">%fprintf('(%g;%g) found in (%g..%g);(%g..%g)\n',x,y,X(i),X(i+1),Y(j),Y(j+1));</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

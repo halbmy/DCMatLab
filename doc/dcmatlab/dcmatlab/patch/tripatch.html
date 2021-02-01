@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of tripatch</title>
+  <meta name="keywords" content="tripatch">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; tripatch.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>tripatch
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="patch2dmesh.html" class="code" title="function patch2dmesh(Mesh,field,alphavalue)">patch2dmesh</a>	PATCH2DMESH - Patch a 2D mesh</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 Mesh=loadmesh(meshname);
+0002 <span class="keyword">if</span> exist(vecname)==2,
+0003     att=load(vecname);
+0004 <span class="keyword">else</span>
+0005     patch(<span class="string">'Vertices'</span>,Mesh.node,<span class="string">'Faces'</span>,Mesh.cell,<span class="string">'FaceColor'</span>,[1 1 1]);
+0006     axis equal tight
+0007     <span class="keyword">return</span>;
+0008     fprintf([<span class="string">'file '</span> vecname <span class="string">' does not exist!'</span>]);
+0009     att=1;
+0010 <span class="keyword">end</span>
+0011 <span class="keyword">if</span> ~exist(<span class="string">'perc'</span>), perc=5; <span class="keyword">end</span>
+0012 di=max(Mesh.node)-min(Mesh.node);
+0013 po=get(gcf,<span class="string">'Position'</span>);
+0014 po(1)=50;po(3)=800;po(4)=di(2)/di(1)*1.3*800+50;
+0015 <span class="keyword">while</span> po(4)&gt;800, po(3:4)=po(3:4)/2; <span class="keyword">end</span>
+0016 set(gcf,<span class="string">'Position'</span>,po);
+0017 <span class="keyword">if</span> length(att)&lt;Mesh.ncells, att(Mesh.ncells)=1; <span class="keyword">end</span>
+0018 <span class="keyword">if</span> length(att)&gt;Mesh.ncells, att(Mesh.ncells+1:end)=[]; <span class="keyword">end</span>
+0019 islog=(min(att)&gt;0);
+0020 <span class="keyword">if</span> islog, att=log10(att); <span class="keyword">end</span>
+0021 <span class="keyword">if</span> ~exist(<span class="string">'cmin'</span>), 
+0022   [N,X]=hist(att,100);
+0023   C=cumsum(N)/sum(N);
+0024   cmin=X(min(find(C&gt;perc/100)));<span class="comment">%min(att);</span>
+0025 <span class="keyword">end</span>
+0026 <span class="keyword">if</span> ~exist(<span class="string">'cmax'</span>),
+0027   [N,X]=hist(att,100);
+0028   C=cumsum(N)/sum(N);
+0029   cmax=X(max(find(C&lt;1-perc/100)));<span class="comment">%max(att);</span>
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">if</span> ~(cmax&gt;cmin), cmax=cmin+1; <span class="keyword">end</span>
+0032 <span class="keyword">if</span> islog, colormap(jet); <span class="keyword">else</span>
+0033   colormap(b2r);
+0034   cmax=max(abs([cmin cmax]));cmin=-cmax;
+0035 <span class="keyword">end</span>
+0036 <span class="comment">%if (length(att)&lt;100)|(length(unique(att))&lt;10), emap(:)=0; end</span>
+0037 amap=ones(size(att));
+0038 <span class="keyword">if</span> exist(<span class="string">'sensCov.vector'</span>,<span class="string">'file'</span>),
+0039   senscov=log(load(<span class="string">'sensCov.vector'</span>,<span class="string">'-ascii'</span>));
+0040   [nn,hh]=hist(senscov,50);
+0041   nnn=cumsum(nn)/length(senscov);
+0042   mi=hh(min(find(nnn&gt;0.02)));
+0043   ma=hh(max(find(nnn&lt;0.5)));
+0044   amap=(senscov-mi)/(ma-mi);
+0045   amap(find(amap&lt;0))=0;
+0046   amap(find(amap&gt;1))=1;
+0047 <span class="keyword">end</span>
+0048 att(find(att&lt;cmin))=cmin;
+0049 att(find(att&gt;cmax))=cmax;
+0050 <a href="patch2dmesh.html" class="code" title="function patch2dmesh(Mesh,field,alphavalue)">patch2dmesh</a>(Mesh,att,amap);
+0051 caxis([cmin cmax]);
+0052 xtl=cellstr(get(gca,<span class="string">'XTickLabel'</span>));
+0053 xtl{end-1}=<span class="string">'x/m'</span>;
+0054 set(gca,<span class="string">'XTickLabel'</span>,xtl);
+0055 ytl=cellstr(get(gca,<span class="string">'YTickLabel'</span>));
+0056 ytl{end-1}=<span class="string">'z/m'</span>;
+0057 set(gca,<span class="string">'YTickLabelMode'</span>,<span class="string">'manual'</span>,<span class="string">'YTickLabel'</span>,ytl);
+0058 cb=colorbar(<span class="string">'horiz'</span>);
+0059 set(cb,<span class="string">'DataAspectRatio'</span>,[1 64 1]);
+0060 <span class="keyword">if</span> islog,
+0061   xt=get(cb,<span class="string">'XTick'</span>);
+0062   xt=rndig(10.^xt,3);
+0063   <span class="comment">%fi=find(xt&gt;1);xt(fi)=round(xt(fi)*10)/10;</span>
+0064   <span class="comment">%fi=find(xt&gt;10);xt(fi)=round(xt(fi));</span>
+0065   set(cb,<span class="string">'XTickLabel'</span>,num2strcell(xt));
+0066 <span class="keyword">end</span>
+0067 set(cb,<span class="string">'YTick'</span>,mean(get(cb,<span class="string">'Ylim'</span>)),<span class="string">'YTickLabel'</span>,<span class="string">'Ohmm'</span>);
+0068 elec=[];
+0069 <span class="keyword">if</span> exist(<span class="string">'datafile'</span>,<span class="string">'file'</span>),
+0070   N=readinv2dfile(datafile);
+0071   elec=N.elec;<span class="comment">%[N.elec;N.elec(1,:)];</span>
+0072 <span class="keyword">else</span>
+0073   rad=max(abs([xlim ylim]));
+0074   <span class="keyword">if</span> rad&lt;1, <span class="comment">%obviously a tree</span>
+0075     nel=24;
+0076     elec=rad*sin((0:nel)'/nel*2*pi);
+0077     elec(:,2)=rad*cos((0:nel)'/nel*2*pi);
+0078   <span class="keyword">end</span>
+0079 <span class="keyword">end</span>
+0080 <span class="keyword">if</span> ~isempty(elec),
+0081     hold on;plot(elec(:,1),elec(:,2),<span class="string">'k.-'</span>,<span class="string">'MarkerSize'</span>,1);hold off
+0082 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

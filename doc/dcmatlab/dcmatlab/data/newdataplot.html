@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of newdataplot</title>
+  <meta name="keywords" content="newdataplot">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; newdataplot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>newdataplot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="midkonf2d.html" class="code" title="function [mids,seps,ii,kk,midpoint,dm]=midkonf2d(N)">midkonf2d</a>	MIDKONF2D - midpoint and konfiguration of data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 [mids,seps,ii,kk,midpoint,dm]=<a href="midkonf2d.html" class="code" title="function [mids,seps,ii,kk,midpoint,dm]=midkonf2d(N)">midkonf2d</a>(N);
+0002 xx=repmat(midpoint,1,4)+repmat([-1 1 1 -1]*dm/2,length(midpoint),1);
+0003 yy=repmat(kk,1,4)+repmat([-1 -1 1 1]/2,length(kk),1);
+0004 clf;cmap=jet(64);
+0005 aa=log10(N.r);mi=min(aa);ma=max(aa);
+0006 jj=round((aa-mi)/(ma-mi)*(size(cmap,1)-1))+1;
+0007 jj(jj&lt;1)=1;jj(jj&gt;size(cmap,1))=size(cmap,1);
+0008 <span class="comment">% p=patch(xx,yy,aa,'Faces',cmap(jj,:))</span>
+0009 clf;<span class="keyword">for</span> i=1:length(jj),
+0010     patch(xx(i,:),yy(i,:),cmap(jj(i),:),<span class="string">'Linestyle'</span>,<span class="string">'none'</span>,<span class="string">'UserData'</span>,i);
+0011 <span class="keyword">end</span>
+0012 set(gca,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>);axis tight
+0013 
+0014 vor=<span class="string">'pppddpweslddddgr'</span>;
+0015 yt=get(gca,<span class="string">'YTick'</span>);
+0016 <span class="keyword">if</span> find(yt-round(yt)), <span class="comment">%0.5 etc</span>
+0017     yt=round(min(yt)):floor(max(yt));
+0018     set(gca,<span class="string">'YTick'</span>,yt);
+0019 <span class="keyword">end</span>
+0020 <span class="keyword">for</span> i=1:length(yt),
+0021     yy=seps(yt(i));
+0022     <span class="keyword">switch</span> yy,
+0023         <span class="keyword">case</span> 9999, <span class="comment">% circulated dipole</span>
+0024             ytli=<span class="string">'cc'</span>;
+0025         <span class="keyword">case</span> 30001, <span class="comment">% wenner=schlumberger sep.1</span>
+0026             ytli=<span class="string">'ws1'</span>;
+0027         <span class="keyword">otherwise</span>
+0028             st=fix(yy/10000)*2+1;
+0029             <span class="keyword">if</span> st&lt;length(vor)-1, ytli=vor(st:st+1); <span class="keyword">else</span> ytli=<span class="string">'gr'</span>; <span class="keyword">end</span>
+0030             aa=mod(yy,10000);
+0031             bb=fix(aa/100+1);
+0032             <span class="keyword">if</span> bb&gt;1, ytli=[ytli num2str(bb) <span class="string">'-'</span>]; <span class="keyword">end</span>
+0033             <span class="keyword">if</span> st==15, ytli(end)=<span class="string">'+'</span>; <span class="keyword">end</span>
+0034             <span class="comment">%                 if st==17, cc=mod(100-aa,100); else</span>
+0035             cc=mod(aa,100); 
+0036             <span class="comment">%                 end</span>
+0037             ytli=[ytli num2str(cc)];
+0038         <span class="keyword">end</span>
+0039         ytl(i,1:length(ytli))=ytli;
+0040     <span class="keyword">end</span>
+0041     set(gca,<span class="string">'YTickMode'</span>,<span class="string">'manual'</span>,<span class="string">'YTickLabel'</span>,ytl);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

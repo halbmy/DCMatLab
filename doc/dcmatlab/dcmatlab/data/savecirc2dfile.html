@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of savecirc2dfile</title>
+  <meta name="keywords" content="savecirc2dfile">
+  <meta name="description" content="SAVECIRC2DFILE - Save INV2D file format (circular)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; savecirc2dfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>savecirc2dfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVECIRC2DFILE - Save INV2D file format (circular)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function savecirc2dfile(fname,N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVECIRC2DFILE - Save INV2D file format (circular)
+ savecirc2dfile(filename,N)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function savecirc2dfile(fname,N)</a>
+0002 
+0003 <span class="comment">% SAVECIRC2DFILE - Save INV2D file format (circular)</span>
+0004 <span class="comment">% savecirc2dfile(filename,N)</span>
+0005 
+0006 fid=fopen(fname,<span class="string">'w'</span>);
+0007 s=1;
+0008 <span class="keyword">if</span> fid&lt;0,
+0009     error(<span class="string">'File not found!'</span>);
+0010 <span class="keyword">end</span>
+0011 <span class="comment">%newline='\r\n';</span>
+0012 newline=<span class="string">'\n'</span>;
+0013 fprintf(fid,[<span class="string">'%d'</span> newline],size(N.elec,1));
+0014 <span class="comment">%fprintf(fid,'# Positions(x,z) for all electrodes\r\n');</span>
+0015 ss=<span class="string">''</span>;
+0016 <span class="keyword">for</span> l=1:size(N.elec,2), ss=[ss <span class="string">'\t%g'</span>]; <span class="keyword">end</span>
+0017 ss=[ss newline];
+0018 ss(1:2)=[];
+0019 fprintf(fid,ss,N.elec');
+0020 fprintf(fid,[<span class="string">'%d'</span> newline],length(N.r));
+0021 <span class="comment">%fprintf(fid,'# Electrode numbers A B M N (0=inf), rhoa, error, ...\r\n');</span>
+0022 mess=[N.a(:) N.b(:) N.m(:) N.n(:) N.r(:)];
+0023 ss=[<span class="string">'%3d  %3d  %3d  %3d  %.3f'</span>];
+0024 doku=<span class="string">'#A B M N rho_a'</span>;
+0025 <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>),
+0026     mess=[mess N.err(:)];
+0027     ss=[ss <span class="string">'  %.3f'</span>];
+0028     doku=[doku <span class="string">' error'</span>];
+0029 <span class="keyword">end</span>
+0030 <span class="comment">% if isfield(N,'i'),</span>
+0031 <span class="comment">%     mess(1:length(N.i),end+1)=N.i(:);</span>
+0032 <span class="comment">%     ss=[ss '  %.4f'];</span>
+0033 <span class="comment">%     doku=[doku ' I/A'];</span>
+0034 <span class="comment">% end</span>
+0035 <span class="comment">% if isfield(N,'u'),</span>
+0036 <span class="comment">%     mess(1:length(N.u),end+1)=N.u(:);</span>
+0037 <span class="comment">%     ss=[ss '  %.4f'];</span>
+0038 <span class="comment">%     doku=[doku ' U/V'];</span>
+0039 <span class="comment">% end</span>
+0040 <span class="comment">% if isfield(N,'ip')&amp;&amp;(~isempty(find(N.ip))),</span>
+0041 <span class="comment">%     mess(1:length(N.ip),end+1)=N.ip(:);</span>
+0042 <span class="comment">%     ss=[ss '  %.3f'];</span>
+0043 <span class="comment">%     doku=[doku ' IP'];</span>
+0044 <span class="comment">% end</span>
+0045 ss=[ss newline];
+0046 doku=[doku newline];
+0047 <span class="comment">%fprintf(fid,doku);</span>
+0048 fprintf(fid,ss,mess');
+0049 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

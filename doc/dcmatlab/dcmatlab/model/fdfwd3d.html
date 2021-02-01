@@ -1,0 +1,447 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fdfwd3d</title>
+  <meta name="keywords" content="fdfwd3d">
+  <meta name="description" content="FDFWD3D - 3D DC Forward Calculation with finite differences">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; fdfwd3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>fdfwd3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>FDFWD3D - 3D DC Forward Calculation with finite differences</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [R,Rrez,MEA,zus]=fdfwd3d(x,y,z,M,Bg,N,FOR) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FDFWD3D - 3D DC Forward Calculation with finite differences
+ Rhoa = fdfwd3d(x,y,z,M,Bg,N,OPT)
+   x/y/z  - Model Coordinates 
+   M      - Model resistivities (1 shorter)
+   N      - Structure of electrode numbers(a,b,m,n), 
+            k-factors(k) and measurements(r)
+            elec - Electrode Positions
+   OPT    - structure of possible fields
+            method 0-electrodewise (default)
+                   1-as measured
+                   2-by sensitivity
+            acc - (relative) Accuracy for pcg (1e-4)
+            tol - Tolerance for incomplete preconditioner (1e-4)
+            maxit - Maximum Iterations for pcg (50)
+            rand - boundaring cells (4)
+            prolong - prolonging factor (4)
+            zusatz - equdistant cells outside Electrodes (2)
+            direct - equation solver (0=cg, 1=direct, -1=auto)
+
+ R is geometrical mean of normal and reciprocal simulation
+ [R,Rrez] = ... returns also reciprocal simulation
+ [R,Rrez,MEA] = ... returns also potential matrix MEA</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="calc_phip_pol.html" class="code" title="function phip=calc_phip(X,Y,Z,sq,RR,RA)">calc_phip_pol</a>	</li><li><a href="diskr.html" class="code" title="function C=diskr(x,y,z,sigma,type,bound)">diskr</a>	DISKR - apply discretization scheme to obtain matrix C</li><li><a href="getbg.html" class="code" title="function bg=getbg(x,y,M,el)">getbg</a>	GETBG - returns (background) parameter</li><li><a href="potmap.html" class="code" title="function C=potmap(elec,x,y,z)">potmap</a>	POTMAP - Matrix to extract potential data</li><li><a href="potxy.html" class="code" title="function pot=potxy(x,y,sq,Phis,X,Y,RA,RB)">potxy</a>	% POTXY - Compute total potential from normal and anomal parts</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mfdfwd3d.html" class="code" title="function [R,Rrez,MEA]=mfdfwd3d(Mod,N,FOR)">mfdfwd3d</a>	FDFWD3D - 3D DC Forward Calculation with finite differences</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [R,Rrez,MEA,zus]=fdfwd3d(x,y,z,M,Bg,N,FOR)</a>
+0002 
+0003 <span class="comment">% FDFWD3D - 3D DC Forward Calculation with finite differences</span>
+0004 <span class="comment">% Rhoa = fdfwd3d(x,y,z,M,Bg,N,OPT)</span>
+0005 <span class="comment">%   x/y/z  - Model Coordinates</span>
+0006 <span class="comment">%   M      - Model resistivities (1 shorter)</span>
+0007 <span class="comment">%   N      - Structure of electrode numbers(a,b,m,n),</span>
+0008 <span class="comment">%            k-factors(k) and measurements(r)</span>
+0009 <span class="comment">%            elec - Electrode Positions</span>
+0010 <span class="comment">%   OPT    - structure of possible fields</span>
+0011 <span class="comment">%            method 0-electrodewise (default)</span>
+0012 <span class="comment">%                   1-as measured</span>
+0013 <span class="comment">%                   2-by sensitivity</span>
+0014 <span class="comment">%            acc - (relative) Accuracy for pcg (1e-4)</span>
+0015 <span class="comment">%            tol - Tolerance for incomplete preconditioner (1e-4)</span>
+0016 <span class="comment">%            maxit - Maximum Iterations for pcg (50)</span>
+0017 <span class="comment">%            rand - boundaring cells (4)</span>
+0018 <span class="comment">%            prolong - prolonging factor (4)</span>
+0019 <span class="comment">%            zusatz - equdistant cells outside Electrodes (2)</span>
+0020 <span class="comment">%            direct - equation solver (0=cg, 1=direct, -1=auto)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% R is geometrical mean of normal and reciprocal simulation</span>
+0023 <span class="comment">% [R,Rrez] = ... returns also reciprocal simulation</span>
+0024 <span class="comment">% [R,Rrez,MEA] = ... returns also potential matrix MEA</span>
+0025 
+0026 <span class="keyword">if</span> nargin&lt;6, error(<span class="string">'At least 6 input arguments!'</span>); <span class="keyword">end</span>
+0027 <span class="keyword">if</span> nargin&lt;7,
+0028     FOR=struct(<span class="string">'method'</span>,0,<span class="string">'acc'</span>,1e-4,<span class="string">'tol'</span>,1e-4,<span class="string">'maxit'</span>,50,<span class="keyword">...</span>
+0029         <span class="string">'rand'</span>,4,<span class="string">'prolong'</span>,4,<span class="string">'zusatz'</span>,2,<span class="string">'direct'</span>,-1);
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'method'</span>), FOR.method=0; <span class="keyword">end</span>
+0032 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'acc'</span>), FOR.acc=1e-4; <span class="keyword">end</span>
+0033 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'tol'</span>), FOR.tol=1e-4; <span class="keyword">end</span>
+0034 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'maxit'</span>), FOR.maxit=50; <span class="keyword">end</span>
+0035 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'zusatz'</span>), FOR.zusatz=2; <span class="keyword">end</span>
+0036 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'rand'</span>), FOR.rand=4; <span class="keyword">end</span>
+0037 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'prolong'</span>), FOR.prolong=4; <span class="keyword">end</span>
+0038 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'refine'</span>), FOR.refine=0; <span class="keyword">end</span>
+0039 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'fillup'</span>), FOR.fillup=1; <span class="keyword">end</span>
+0040 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'direct'</span>), FOR.direct=-1; <span class="keyword">end</span>
+0041 <span class="keyword">if</span> ~isfield(FOR,<span class="string">'directnodes'</span>), FOR.directnodes=100000; <span class="keyword">end</span>
+0042 
+0043 <span class="comment">% something wrong !!!!!</span>
+0044 <span class="comment">% if isempty(M), %f. compiler</span>
+0045 <span class="comment">%     message('Model empty, loading from model.mat!');</span>
+0046     M=getfield(load([tempdir <span class="string">'model.mat'</span>]),<span class="string">'M'</span>); 
+0047 <span class="comment">% end</span>
+0048 <span class="keyword">if</span> isempty(M),
+0049     R=ones(length(N.a),1);
+0050     message(<span class="string">'Model still empty, forward calculation failed!'</span>);
+0051     <span class="keyword">return</span>
+0052 <span class="keyword">end</span>
+0053 zus=[0 0 0];MEA=[];R=1;Rrez=1;
+0054 Rbg=<a href="getbg.html" class="code" title="function bg=getbg(x,y,M,el)">getbg</a>(x,y,M(:,:,1),N.elec); <span class="comment">% background resistivities</span>
+0055 message(sprintf(<span class="string">'Background resistivities of %.1f-%.1f'</span>,min(Rbg),max(Rbg)));
+0056 <span class="comment">%Rbg(:)=median(Rbg); % warum klappt das nicht??!</span>
+0057 sq=1/median(Rbg);
+0058 <span class="keyword">if</span> Bg(1)==0, Bg=median(Rbg); <span class="keyword">end</span>
+0059 sq=1/Bg(1);
+0060 di=FOR.refine;
+0061 <span class="keyword">if</span> FOR.refine==0, 
+0062     di=round(min(diff(x))/(z(2)-z(1))); 
+0063     <span class="keyword">if</span> di&lt;1, di=1; <span class="keyword">end</span>
+0064     dj=round(min(diff(y))/(z(2)-z(1))); 
+0065     <span class="keyword">if</span> dj&lt;1, dj=1; <span class="keyword">end</span>
+0066 <span class="keyword">end</span>
+0067 dj=di;
+0068 <span class="comment">%refining?</span>
+0069 <span class="keyword">if</span> di*dj&gt;1,
+0070     xx=zeros(1,(length(x)-1)*di+1);
+0071     xx(1:di:end)=x;
+0072     <span class="keyword">for</span> ii=2:di,
+0073         xx(ii:di:end-1)=x(1:end-1)+diff(x)*(ii-1)/di;
+0074     <span class="keyword">end</span>
+0075     x=xx;
+0076     xx=zeros(1,(length(y)-1)*dj+1);
+0077     xx(1:dj:end)=y;
+0078     <span class="keyword">for</span> jj=2:dj,
+0079         xx(jj:dj:end-1)=y(1:end-1)+diff(y)*(jj-1)/dj;
+0080     <span class="keyword">end</span>
+0081     y=xx;
+0082 <span class="keyword">end</span>
+0083 <span class="comment">% Blowing up coordinates</span>
+0084 Prolong=1:FOR.zusatz;
+0085 pp=1;
+0086 <span class="keyword">for</span> l=1:FOR.rand
+0087     pp=pp*FOR.prolong;
+0088     Prolong=[Prolong Prolong(end)+pp];
+0089 <span class="keyword">end</span>
+0090 <span class="keyword">if</span> FOR.rand&gt;0,
+0091     X=[min(x)-(x(2)-x(1))*flipud(Prolong(:));x(:);max(x)+(x(end)-x(end-1))*Prolong(:)]';
+0092     Y=[min(y)-(y(2)-y(1))*flipud(Prolong(:));y(:);max(y)+(y(end)-y(end-1))*Prolong(:)]';
+0093     Z=[z(:);max(z)+(z(end)-z(end-1))*Prolong(:)]';
+0094     <span class="comment">%     dzend=z(end)-z(end-1);</span>
+0095     <span class="comment">%     Z=[z max(z)+(1:3)*dzend];</span>
+0096     <span class="comment">%     Z=[Z max(Z)+dzend*Prolong];</span>
+0097 <span class="keyword">else</span> 
+0098     X=x(:);
+0099     Y=y(:);
+0100     Z=z(:);
+0101 <span class="keyword">end</span>
+0102 horz=max(X(end)-X(1),Y(end)-Y(1));
+0103 ra=FOR.rand+FOR.zusatz;
+0104 zra=ra;
+0105 <span class="keyword">while</span> Z(end)&gt;horz,
+0106     Z(end)=[];
+0107     zra=zra-1;
+0108 <span class="keyword">end</span>
+0109 I=length(X);
+0110 J=length(Y);
+0111 K=length(Z);
+0112 SIGMA=ones(I+1,J+1,K+1)*sq;
+0113 SIGMA(:)=sq;
+0114 <span class="keyword">for</span> l=1:length(Bg),
+0115     SIGMA(:,:,l+1)=1/Bg(l);    
+0116 <span class="keyword">end</span>
+0117 SIGMA(:,:,l+1:end)=1/Bg(l);
+0118 SIGMA(:,:,1)=0.0;
+0119 <span class="keyword">if</span> ~isempty(M),
+0120     <span class="comment">%SIGMA(ra+2:end-ra-1,ra+2:end-ra-1,3:end-ra-1)=1./M;</span>
+0121     <span class="keyword">for</span> ii=0:di-1,
+0122         <span class="keyword">for</span> jj=0:dj-1,
+0123             SIGMA(ra+2+ii:di:end-ra-1+ii,ra+2+jj:dj:end-ra-1+jj,2:end-zra-1)=1./M;
+0124         <span class="keyword">end</span>
+0125     <span class="keyword">end</span>
+0126 <span class="keyword">end</span>
+0127 <span class="keyword">if</span> FOR.fillup,
+0128     <span class="keyword">for</span> rr=1:ra+1,
+0129         SIGMA(rr,:,:)=SIGMA(ra+2,:,:);
+0130         SIGMA(end-rr+1,:,:)=SIGMA(end-ra-1,:,:);
+0131         SIGMA(:,rr,:)=SIGMA(:,ra+2,:);
+0132         SIGMA(:,end-rr+1,:)=SIGMA(:,end-ra-1,:);
+0133     <span class="keyword">end</span>
+0134     <span class="keyword">for</span> rr=1:zra+1,
+0135         SIGMA(:,:,end-rr+1)=SIGMA(:,:,end-zra-1);
+0136     <span class="keyword">end</span>
+0137 <span class="keyword">end</span>
+0138 <span class="comment">% imagesc(SIGMA(:,:,2));colorbar;return</span>
+0139 <span class="comment">% imagesc(squeeze(SIGMA(:,10,1:end))');colorbar;return</span>
+0140 <span class="comment">% minmax(SIGMA(:,:,2:end)),return</span>
+0141 <span class="comment">% save('fdfwd.mat','SIGMA','X','Y','Z');</span>
+0142 I=length(X);J=length(Y);K=length(Z);
+0143 IJK=I*J*K;
+0144 <span class="keyword">if</span> FOR.direct==-1, FOR.direct=(IJK&lt;FOR.directnodes); <span class="keyword">end</span>
+0145 R=zeros(length(N.a),1);
+0146 <span class="comment">% n. Vorwaertsrechnung(Errechnung von R)</span>
+0147 <span class="keyword">if</span> FOR.method==2, <span class="comment">% primitive Version (mit Sensitivity)</span>
+0148     <span class="keyword">global</span> S M INV
+0149     message(<span class="string">'Forward modelling with sensitivity'</span>);
+0150     <span class="keyword">if</span> INV.lolo&gt;0,
+0151         R=exp(S*(log(M(:))-log(Bg(1))))*Bg(1);
+0152     <span class="keyword">else</span>
+0153         R=S*(M(:)-Bg(1))+Bg(1);   
+0154     <span class="keyword">end</span>
+0155 <span class="keyword">else</span>              <span class="comment">% mit FD</span>
+0156     message(sprintf(<span class="string">'Forward modelling %dx%dx%d=%d nodes'</span>,I,J,K,IJK));
+0157     message(sprintf(<span class="string">'Constructing matrix C for Sigma...(D&amp;M)'</span>));
+0158     C=<a href="diskr.html" class="code" title="function C=diskr(x,y,z,sigma,type,bound)">diskr</a>(X,Y,Z,SIGMA);
+0159     <span class="keyword">if</span> (FOR.method==0)&amp;&amp;(FOR.direct==1),
+0160         C1=<a href="diskr.html" class="code" title="function C=diskr(x,y,z,sigma,type,bound)">diskr</a>(X,Y,Z,(SIGMA&gt;0));
+0161         PM=<a href="potmap.html" class="code" title="function C=potmap(elec,x,y,z)">potmap</a>(N.elec,X,Y,Z);
+0162         p=symamd(C);t0=clock;
+0163         message(<span class="string">'Starting fast direct forward calculation...'</span>);
+0164         <span class="comment">%save forw X Y Z N C C1 PM Rbg p</span>
+0165         MEA=fd3dmea(X,Y,Z,N.elec,C,C1,PM,Rbg,p);
+0166         <span class="comment">%save mea MEA</span>
+0167         message(sprintf(<span class="string">'...ready(%.1fs)'</span>,etime(clock,t0)));
+0168         [R,Rrez]=collectrhoa(N,MEA);
+0169         rez=(R-Rrez)*2./(R+Rrez);
+0170         message(sprintf(<span class="string">'Standard deviation of reciprocity %.2f%% (max %.2f%%)'</span>,<span class="keyword">...</span>
+0171             std(rez)*100,max(abs(rez))*100));
+0172         <span class="keyword">if</span> nargout&lt;2, R=sqrt(abs(R.*Rrez)); <span class="keyword">end</span>
+0173         <span class="keyword">return</span>;
+0174     <span class="keyword">end</span>
+0175     RA=[Inf Inf 0];RB=[Inf Inf 0];
+0176     OLDRA=[0.11 0.11 0];OLDRB=OLDRA;
+0177     
+0178     t0=clock;
+0179     map=symamd(C);<span class="comment">%map=(1:IJK)';</span>
+0180     C=C(map,map);map=map(:);
+0181     <span class="keyword">if</span> FOR.direct==1,
+0182        message(sprintf(<span class="string">'Calculating AMD Cholesky factor...'</span>));
+0183        Chol=chol(C);
+0184        message(sprintf(<span class="string">'ready(%.2f seconds) %d nonzero elements(%dMB)'</span>,<span class="keyword">...</span>
+0185          etime(clock,t0),nnz(Chol),round(nnz(Chol)*8/1024/1024)));
+0186     <span class="keyword">elseif</span> (FOR.direct==2)&amp;&amp;(FOR.method==0),
+0187         <span class="comment">%B=zeros(IJK,length(N.a));</span>
+0188         B=zeros(length(N.a),IJK);
+0189     <span class="keyword">else</span> <span class="comment">% iterative solution</span>
+0190         <span class="keyword">if</span> isfield(FOR,<span class="string">'tol'</span>)&amp;&amp;isnumeric(FOR.tol)
+0191             <span class="keyword">if</span> FOR.tol==999,
+0192                 <span class="keyword">if</span> ~isequal(size(Chol),size(C)),
+0193                     Chol=cholinc(C,1e-4); <span class="keyword">end</span>
+0194             <span class="keyword">elseif</span> FOR.tol&gt;=2, <span class="comment">%Jacobi</span>
+0195                 message(sprintf(<span class="string">'Calculating Preconditioner(Jacobi)...'</span>));
+0196                 Chol=spdiags(sqrt(diag(C)),0,size(C,1),size(C,1)); 
+0197             <span class="keyword">elseif</span> FOR.tol&gt;=1, <span class="comment">% SSOR</span>
+0198                 message(sprintf(<span class="string">'Calculating Preconditioner(SSOR)...'</span>));
+0199                 L=triu(C);D=spdiags(diag(C),0,size(C,1),size(C,1))/FOR.tol;
+0200                 Chol=inv(sqrt(D))*(D+L)/sqrt(2-FOR.tol); 
+0201             <span class="keyword">elseif</span> FOR.tol&gt;0, 
+0202                     message(sprintf(<span class="string">'Calculating Preconditioner(Chol-Inc)...'</span>));
+0203                     Chol=cholinc(C,FOR.tol);
+0204             <span class="keyword">else</span>     
+0205                 message(sprintf(<span class="string">'Calculating Preconditioner(Chol-Inc(SP))...'</span>));
+0206                 Chol=cholinc(C,<span class="string">'0'</span>); 
+0207             <span class="keyword">end</span>
+0208         <span class="keyword">else</span> <span class="comment">%standard</span>
+0209             message(sprintf(<span class="string">'Calculating Preconditioner(Chol-Inc(SP))...'</span>));
+0210             Chol=cholinc(C,<span class="string">'0'</span>);
+0211         <span class="keyword">end</span>
+0212         message(sprintf(<span class="string">'ready(%.2f seconds) %d nonzero elements'</span>,etime(clock,t0),nnz(Chol)));
+0213     <span class="keyword">end</span> <span class="comment">% iterative solution</span>
+0214     Cholt=Chol';
+0215     RR=[reshape(repmat(X,1,J*K),1,IJK);reshape(repmat(repmat(Y,1,K),I,1),1,IJK);reshape(repmat(Z,I*J,1),1,IJK)];                                         
+0216     t0=clock;
+0217     data=length(N.a);
+0218     Phis=zeros(I,J,K);
+0219     iter=0;flag=0;
+0220     warning(<span class="string">'off'</span>,<span class="string">'MATLAB:divideByZero'</span>);
+0221     <span class="keyword">if</span> FOR.method==1,
+0222         <span class="comment">% ehemals forward;  % Rechnung mit &quot;echten Dipolen&quot;</span>
+0223         lauf=0;itsum=0;
+0224         message(sprintf(<span class="string">'Constructing matrix CQ for Sigma_q...(D&amp;M)'</span>));
+0225         DSIGMA=-SIGMA+sq;DSIGMA(:,:,1)=0;
+0226         CQ=<a href="diskr.html" class="code" title="function C=diskr(x,y,z,sigma,type,bound)">diskr</a>(X,Y,Z,DSIGMA);CQ=CQ(map,map);
+0227 <span class="comment">%         C1=diskr(X,Y,Z,(SIGMA&gt;0));</span>
+0228         wb=waitbar(0,<span class="string">'Forward calculations(as measured)...'</span>);
+0229         aller=fix(data/25);mal=aller;
+0230         [XX,YY,ZZ]=ndgrid(X,Y,Z);
+0231         <span class="keyword">for</span> l = 1:data,
+0232             RB=[Inf Inf 0];
+0233             RA=N.elec(N.a(l),:);
+0234             <span class="keyword">if</span> N.b(l)&gt;0, RB=N.elec(N.b(l),:); <span class="keyword">end</span>
+0235             <span class="keyword">if</span> (norm(RA-OLDRA)+norm(RB-OLDRB))&gt;0,
+0236                 lauf=lauf+1;
+0237                 <span class="keyword">if</span> RB(1)==Inf   <span class="comment">% single source</span>
+0238                     <span class="comment">%   fprintf('A=(%g %g %g)',RA(1),RA(2),RA(3));</span>
+0239                     Phip=<a href="calc_phip_pol.html" class="code" title="function phip=calc_phip(X,Y,Z,sq,RR,RA)">calc_phip_pol</a>(X,Y,Z,sq,RR,RA);
+0240                 <span class="keyword">else</span>            <span class="comment">% bipole source</span>
+0241                     <span class="comment">%   fprintf('A=(%g %g %g) B=(%g %g %g)',RA(1),RA(2),RA(3),RB(1),RB(2),RB(3));</span>
+0242 <span class="comment">%                     Phip=calc_phip(X,Y,Z,sq,RR,RA,RB);</span>
+0243                     rada=sqrt((XX-RA(1)).^2+(YY-RA(2)).^2+(ZZ-RA(3)).^2);
+0244                     radb=sqrt((XX-RB(1)).^2+(YY-RB(2)).^2+(ZZ-RB(3)).^2);
+0245                     radas=sqrt((XX-RA(1)).^2+(YY-RA(2)).^2+(ZZ+RA(3)).^2);
+0246                     radbs=sqrt((XX-RB(1)).^2+(YY-RB(2)).^2+(ZZ+RB(3)).^2);
+0247                     Phip=(1./rada(:)+1./radas(:)-1./radb(:)-1./radbs(:))/(4*pi*sq);
+0248                     fi=isinf(Phip);Phip(fi)=sign(Phip(fi));
+0249                 <span class="keyword">end</span>
+0250                 b=CQ*Phip(map);
+0251                 <span class="keyword">if</span> FOR.direct==1,
+0252                     <span class="comment">%Phis(map)=Chol\(b'/Chol)'; %Mist, aber wohl am besten?</span>
+0253                     <span class="comment">%Phis(map)=((Chol\b)'/Chol)';</span>
+0254                     Phis(map)=Chol\(Cholt\b); <span class="comment">% Speicherintensiv aber schnell</span>
+0255                 <span class="keyword">else</span>
+0256                     [Phis(map),flag,err,iter,res]=pcgichol(C,b,FOR.acc,FOR.maxit,Chol,Phis(map));
+0257                     <span class="keyword">if</span> flag==0,
+0258                         <span class="comment">%fprintf('(%d) Time=%g s Iter=%g\n',l,ttt,iter);</span>
+0259                     <span class="keyword">else</span>
+0260                         message(sprintf(<span class="string">'no Convergence (flag=%d)!'</span>,flag));
+0261                     <span class="keyword">end</span>
+0262                 <span class="keyword">end</span>
+0263                 itsum=itsum+iter;
+0264                 OLDRA=RA;
+0265                 OLDRB=RB;
+0266                 mal=mal-1;
+0267                 <span class="keyword">if</span> mal==0,
+0268                     waitbar(l/data,wb);
+0269                     mal=aller;
+0270                 <span class="keyword">end</span>
+0271             <span class="keyword">end</span>
+0272             RM=N.elec(N.m(l),:);
+0273             <span class="keyword">if</span> N.n(l)&gt;0, 
+0274                 RN=N.elec(N.n(l),:);
+0275                 R(l)=<a href="potxy.html" class="code" title="function pot=potxy(x,y,sq,Phis,X,Y,RA,RB)">potxy</a>(RM(1),RM(2),sq,Phis,X,Y,RA,RB)-<a href="potxy.html" class="code" title="function pot=potxy(x,y,sq,Phis,X,Y,RA,RB)">potxy</a>(RN(1),RN(2),sq,Phis,X,Y,RA,RB);  
+0276             <span class="keyword">else</span>
+0277                 R(l)=<a href="potxy.html" class="code" title="function pot=potxy(x,y,sq,Phis,X,Y,RA,RB)">potxy</a>(RM(1),RM(2),sq,Phis,X,Y,RA,RB);               
+0278             <span class="keyword">end</span>
+0279         <span class="keyword">end</span>
+0280         R=R.*N.k;
+0281         Rrez=R;
+0282         close(wb);
+0283         message(sprintf(<span class="string">'Done %d forward calculations, Time=%.2f seconds %d It.(%.1f)'</span>,<span class="keyword">...</span>
+0284             lauf,etime(clock,t0),itsum,itsum/lauf));
+0285     <span class="keyword">else</span>        
+0286         message(sprintf(<span class="string">'Constructing matrix C1 for Sigma=1...(D&amp;M)'</span>));
+0287         C1=<a href="diskr.html" class="code" title="function C=diskr(x,y,z,sigma,type,bound)">diskr</a>(X,Y,Z,(SIGMA&gt;0));C1=C1(map,map);
+0288         anzel=size(N.elec,1);
+0289         <span class="comment">% Polweise Errechnung, erlaubt sens_approx und asens</span>
+0290         <span class="keyword">global</span> PHI
+0291         ia=1+FOR.rand+FOR.zusatz;ie=I-FOR.rand-FOR.zusatz;
+0292         ja=1+FOR.rand+FOR.zusatz;je=J-FOR.rand-FOR.zusatz;
+0293         ka=1;ke=K-zra;<span class="comment">%ke=K-FOR.rand-FOR.zusatz;</span>
+0294 <span class="comment">%         PHI=zeros(length(ia:di:ie)*length(ja:dj:je)*(ke-ka+1),anzel);</span>
+0295 <span class="comment">%         X(ia:di:ie), Y(ja:dj:je), Z(ka:ke)</span>
+0296         <span class="comment">%message(sprintf('Saving potential within x=%g-%g, y=%g-%g, z=%g-%g',...</span>
+0297         <span class="comment">%   X(ia),X(ie),Y(ja),Y(je),Z(ka),Z(ke)));</span>
+0298         RB=[Inf Inf 0];
+0299         flag=0;itsum=0;
+0300         MEA=zeros(anzel);
+0301         Phis=zeros(I,J,K);
+0302         aller=fix(anzel/25);
+0303         mal=aller;
+0304         flag=0;iter=0;
+0305         wb=waitbar(0,<span class="string">'Forward Calculation(every electrode)...'</span>);
+0306         <span class="keyword">for</span> l = 1:anzel,
+0307             RA=N.elec(l,:);
+0308             sq=1/Rbg(l);
+0309             Phip=<a href="calc_phip_pol.html" class="code" title="function phip=calc_phip(X,Y,Z,sq,RR,RA)">calc_phip_pol</a>(X,Y,Z,sq,RR,RA);
+0310             b=C1*Phip(map)*sq-C*Phip(map);
+0311             <span class="keyword">if</span> FOR.direct==2,
+0312                 B(l,:)=b(map)';
+0313             <span class="keyword">else</span> <span class="comment">% no assembling</span>
+0314                 <span class="keyword">if</span> FOR.direct==1,
+0315                     <span class="comment">%Phis(map)=Chol\(Cholt\b);</span>
+0316                     Phis(map)=Chol\(b'/Chol)';
+0317                     <span class="comment">%Phis(map)=Cholt\(Chol\b);</span>
+0318             <span class="comment">%if l==1, save('check.mat','C','Chol','b','map'); end</span>
+0319                 <span class="keyword">else</span> <span class="comment">% PCG</span>
+0320                     [Phis(map),flag,err,iter,res]=pcg(C,b,FOR.acc,FOR.maxit,Cholt,Chol,Phis(map));
+0321 <span class="comment">%                    [Phis(map),flag,err,iter,res]=pcgichol(C,b,FOR.acc,FOR.maxit,Chol,Phis(map));</span>
+0322                     itsum=itsum+iter;
+0323                     <span class="keyword">if</span> flag==0
+0324                         <span class="comment">%      fprintf(' t=%g s It=%g E=%g\n',ttt,iter,err);</span>
+0325                     <span class="keyword">else</span>
+0326                         message(sprintf(<span class="string">'no convergence (flag=%d)!'</span>,flag));
+0327                     <span class="keyword">end</span>
+0328                 <span class="keyword">end</span>
+0329                 <span class="comment">%Phigesamt=Phip+Phis;    % Phis nur ausgeborgt</span>
+0330                 <span class="comment">%             iphis=Phis(ia:di:ie,ja:dj:je,ka:ke);</span>
+0331                 <span class="comment">% !!!! noch besser alle, und dann besser integrieren...</span>
+0332                 <span class="comment">%             PHI(:,l)=iphis(:);</span>
+0333                 <span class="comment">%%%PHI(:,l)=reshape(,(ie-ia+1)*(je-ja+1)*(ke-ka+1),1);  % Nur für Sens. wichtigen Teil</span>
+0334                 <span class="comment">%mea=potxy(N.elec(:,1),N.elec(:,2),sq,Phis,X,Y,RA);</span>
+0335                 <span class="comment">%             phisi=Phis(ia:di:ie,ja:dj:je,ka:ke);PHI(:,l)=phisi(:);</span>
+0336                 el=N.elec;el(:,1)=el(:,1)-RA(1);el(:,2)=el(:,2)-RA(2);<span class="comment">%el(l,1)=1;</span>
+0337                 su=sqrt(sum(el.^2,2));su(l)=1;
+0338                 mea=1./su/(2*pi*sq); <span class="comment">% Phip, nur für Oberfläche</span>
+0339                 mea=mea+interp2(Y,X,Phis(:,:,1),N.elec(:,2),N.elec(:,1));
+0340                 mea(l)=0;
+0341                 <span class="keyword">if</span> find(0&gt;mea),
+0342                     message(sprintf(<span class="string">'Found %d negative potentials at source %d (%.1f,%.1f)'</span>,<span class="keyword">...</span>
+0343                         length(find(0&gt;mea)),l,N.elec(l,1),N.elec(l,2)));
+0344                 <span class="keyword">end</span>
+0345                 MEA(l,:)=mea';  <span class="comment">% Potentiale Nr. i bei Einspeisung in j</span>
+0346                 mal=mal-1;
+0347                 <span class="keyword">if</span> mal==0,
+0348                     waitbar(l/anzel,wb);
+0349                     mal=aller;
+0350                 <span class="keyword">end</span>
+0351             <span class="keyword">end</span>
+0352         <span class="keyword">end</span>
+0353         close(wb)
+0354         <span class="keyword">if</span> FOR.direct==2,
+0355             <span class="comment">%save('numtest.mat','C','B');</span>
+0356             message(sprintf(<span class="string">'Calculating AMD Cholesky factor...'</span>));t0=clock;
+0357             Chol=chol(C);
+0358             message(sprintf(<span class="string">'ready(%.2f seconds) %d nonzero elements'</span>,etime(clock,t0),nnz(Chol)));
+0359             tic;PHIS(map,:)=Chol\(B/Chol)';toc;
+0360             PM=<a href="potmap.html" class="code" title="function C=potmap(elec,x,y,z)">potmap</a>(N.elec,X,Y,Z); <span class="comment">% hier fehlt noch was !!!</span>
+0361         <span class="keyword">end</span>
+0362         message(sprintf(<span class="string">'Done %d forward calculations, Time=%.2f sec %d It.(%.1f/El.)'</span>,<span class="keyword">...</span>
+0363             size(N.elec,1),etime(clock,t0),itsum,itsum/anzel));
+0364         [R,Rrez]=collectrhoa(N,MEA);
+0365         rez=(R-Rrez)*2./(R+Rrez);
+0366         message(sprintf(<span class="string">'Standard deviation of reciprocity %.2f%% (max %.2f%%)'</span>,<span class="keyword">...</span>
+0367             std(rez)*100,max(abs(rez))*100));
+0368     <span class="keyword">end</span> <span class="comment">% pole-wise</span>
+0369     <span class="keyword">if</span> nargout&lt;2,
+0370         R=sqrt(abs(R.*Rrez));
+0371     <span class="keyword">end</span>
+0372 <span class="keyword">end</span> <span class="comment">% not by sens</span>
+0373 l=length(find(R&lt;0));
+0374 <span class="keyword">if</span> l&gt;0,
+0375     message(sprintf(<span class="string">'Attention! %d values of R were negative!'</span>,l));
+0376     R=abs(R);
+0377 <span class="keyword">end</span>
+0378 l=length(find(R==0));
+0379 <span class="keyword">if</span> l&gt;0, message(sprintf(<span class="string">'Attention! %d values of R are zero!'</span>,l)); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

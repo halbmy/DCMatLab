@@ -1,0 +1,91 @@
+<html>
+<head>
+<title>DC3DInvRes - Display Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC3DInvRes - Display menu</h2>
+<h3><a name="model"></a>Model</h3>
+The model display shows the resistivity of the model section. There are a lot 
+of options for that descibed in the <a href="options.html#graph">options menue</a>. 
+By clicking on model cells the cell boundaries and the resistivities are displayed. 
+This mode can also be used for interactive modelling by typing a resistivity value 
+into the edit window and clicking on model cells. 
+<p align="center"><img src="pic/model.png" width="437" height="371"></p>
+<p align="right">Hotkey for Model Display: Shift + M</p>
+<h3><a name="dreid"></a>3D Model Visualization</h3>
+<p>With this GUI the Model can be visualized three-dimensionally. </p>
+<p>&nbsp; </p>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td><img src="pic/3dvis.png" width="472" height="272"></td>
+    <td><img src="pic/dreid.png" width="484" height="248"></td>
+  </tr>
+</table>
+<p><b>Isovalue:</b> One ore more resistivity values can be used to draw iso-bodies 
+  of constant resistivity.<br>
+  <b>Smooth:</b> The smooth option can be used if small-spaced oscillations are 
+  to be hidden.<br>
+  <b>x/y/z-Slices:</b> An arbitrary number of values for x,y and z can be used 
+  to define the slices in the individual directions.<br>
+  <b>Azimuth/Elevation:</b> define the direction of the users view point.<br>
+  <b>Get:</b> Azimuth and Elevation can be changed in the figure window. Get reads 
+  the values into the GUI.<br>
+  <b>Aspect Ratio:</b> The Aspect ratio can be used to increase the scale for 
+  the z-direction.</p>
+<p align="right">Hotkey for 3D Model visualization: 3</p>
+<h3></h3>
+<h3><a name="cov"></a>Coverage</h3>
+The Coverage is defined by the sum of the (absolute values of) sensitivities over 
+all measurements and can be displayed like a model section.In analogy to ray path 
+tomography it's something like total raypath and gives information on how well 
+the model cells are &quot;covered&quot; by the data set. It is used for alpha 
+mapping the model section to avoid over-interpretation of anomalies in bad covered 
+regions such as near the model boundaries.
+<p></p>
+<h3><a name="sens"></a>Sensitivities</h3>
+<p>Furthermore, it is possible to display the sensitivity for every single datum 
+  point. A positive sensitivity(red) leads to an increased apparent resistivity 
+  when the cell resistivity is rised, negative sensitivity(blue) lower the apparent 
+  resistivity. The measurement is insensible to regions of zero sensitivity(white).<br>
+  Regarding this we have a first concept of detectability and resolveability of 
+  underground structures.<br>
+  By moving the slider (or typing datum number) we can switching to all data points. 
+</p>
+<h3><a name="data"></a>Data</h3>
+The measured data are plotted in form of pseudo-sections using an identical colorscale. 
+Note, that the data figure can be exported to png or eps format using the <a href="file.html#exportfig">Export 
+Figure</a> command. 
+<p align="center"><img src="pic/data.png" width="511" height="301"></p>
+<p align="right">Hotkey for data display: Shift + D</p>
+<h3><a name="forward"></a>Model Response</h3>
+<p>The forward response of the current model ist diplayed in the same way like 
+  the data.</p>
+<p align="right">Hotkey for data display: Shift + R</p>
+<h3><a name="misfit"></a>Data Misfit</h3>
+Watching the data misfit (difference between datum point and forward response 
+in percent) it is possible to see how the data are fitted by the model. Ideally, 
+the data are fitted giving a misfit of gaussian errors showing no significant 
+function of space. 
+<p align="center">&nbsp;</p>
+<h3><a name="error"></a>Data Errors</h3>
+<p>In the same manner as for plotting the data one can display the (measured or 
+  estimated) standard deviations of each datum point.</p>
+<hr>
+<h3><a name="ip"></a>IP Data</h3>
+If present, the measured induced polarization data are displayed. 
+<h3><a name="charge"></a>Chargeability</h3>
+The program is able to apply a single-step IP inversion as pointed out in (Beard, 
+Hohmann &amp; Tripp, 1996). The calculated chargeabilities are shown. 
+</body>
+</html>

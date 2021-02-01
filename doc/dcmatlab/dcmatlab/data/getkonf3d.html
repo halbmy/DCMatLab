@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getkonf3d</title>
+  <meta name="keywords" content="getkonf3d">
+  <meta name="description" content="GETKONF - Get Configuration factor from electrode positions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; getkonf3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getkonf3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GETKONF - Get Configuration factor from electrode positions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function konf=getkonf3d(N,negz) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GETKONF - Get Configuration factor from electrode positions
+ Data.k = getkonf3d(Data)
+ Data.....structure of * arrays a,b,m,n = electrode numbers(elec)
+                                  k = konfiguration factor
+                    * elec = Electrode positions ( x,z )
+ k = getkonf3d(Data,ignore_zvalues)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li><li><a href="readresecsfile.html" class="code" title="function N=readresecsfile(filename)">readresecsfile</a>	READRESECSFILE - Read RESECS ascii export file (*.TXT)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function konf=getkonf3d(N,negz)</a>
+0002 
+0003 <span class="comment">% GETKONF - Get Configuration factor from electrode positions</span>
+0004 <span class="comment">% Data.k = getkonf3d(Data)</span>
+0005 <span class="comment">% Data.....structure of * arrays a,b,m,n = electrode numbers(elec)</span>
+0006 <span class="comment">%                                  k = konfiguration factor</span>
+0007 <span class="comment">%                    * elec = Electrode positions ( x,z )</span>
+0008 <span class="comment">% k = getkonf3d(Data,ignore_zvalues)</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;2, negz=0; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> negz, N.elec(:,3)=0; <span class="keyword">end</span>
+0012 ael=N.elec(N.a,:);mel=N.elec(N.m,:);
+0013 ast=ael;ast(:,3)=-ast(:,3);
+0014 konf=1./sqrt(sum((ael-mel).^2,2))+<span class="keyword">...</span>
+0015     1./sqrt(sum((ast-mel).^2,2));
+0016 nn=find(N.n~=0);
+0017 <span class="keyword">if</span> ~isempty(nn),
+0018     nel=N.elec(N.n(nn),:);
+0019     konf(nn)=konf(nn)-1./sqrt(sum((ael(nn,:)-nel).^2,2))-<span class="keyword">...</span>
+0020         1./sqrt(sum((ast(nn,:)-nel).^2,2));
+0021 <span class="keyword">end</span>
+0022 nn=find(N.b~=0);
+0023 <span class="keyword">if</span> ~isempty(nn),
+0024     bel=N.elec(N.b(nn),:);
+0025     bst=bel;bst(:,3)=-bst(:,3);
+0026     konf(nn)=konf(nn)-1./sqrt(sum((bel-mel(nn,:)).^2,2))-<span class="keyword">...</span>
+0027     1./sqrt(sum((bst-mel(nn,:)).^2,2));
+0028 <span class="keyword">end</span>
+0029 nn=find(N.b.*N.n~=0);
+0030 <span class="keyword">if</span> ~isempty(nn),
+0031     bel=N.elec(N.b(nn),:);
+0032     bst=bel;bst(:,3)=-bst(:,3);
+0033     nel=N.elec(N.n(nn),:);
+0034     konf(nn)=konf(nn)+1./sqrt(sum((bel-nel).^2,2))+<span class="keyword">...</span>
+0035         1./sqrt(sum((bst-nel).^2,2));
+0036 <span class="keyword">end</span>
+0037 ep=1e-12;
+0038 konf=round(4*pi./konf/ep)*ep;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

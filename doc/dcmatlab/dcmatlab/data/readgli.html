@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readgli</title>
+  <meta name="keywords" content="readgli">
+  <meta name="description" content="READGLI - Read GLI arrival time file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readgli.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readgli
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READGLI - Read GLI arrival time file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Shot=readgli(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READGLI - Read GLI arrival time file
+ Shot = readgli(filename)
+ Columns are:
+ SHOT/TRACE marker x   xref    z   t/ms</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Shot=readgli(filename)</a>
+0002 
+0003 <span class="comment">% READGLI - Read GLI arrival time file</span>
+0004 <span class="comment">% Shot = readgli(filename)</span>
+0005 <span class="comment">% Columns are:</span>
+0006 <span class="comment">% SHOT/TRACE marker x   xref    z   t/ms</span>
+0007 
+0008 fid=fopen(filename,<span class="string">'r'</span>);
+0009 <span class="keyword">if</span> fid&lt;0, error([<span class="string">'Filename '</span> filename <span class="string">' could not be opened!'</span>]); <span class="keyword">end</span>
+0010 ishot=0;Shot=[];itrace=0;
+0011 zeile=fgetl(fid);
+0012 <span class="keyword">while</span> ischar(zeile),
+0013     typ=sscanf(zeile,<span class="string">'%s5%f'</span>);
+0014     nu=sscanf(zeile,<span class="string">'%*s%f%f%f%f%f'</span>);
+0015     <span class="keyword">if</span> length(nu)&lt;5, <span class="keyword">break</span>; <span class="keyword">end</span>
+0016     <span class="keyword">if</span> isequal(typ,<span class="string">'SHOT'</span>),
+0017         <span class="keyword">if</span> ishot&gt;0, fprintf(<span class="string">'%d traces\n'</span>,itrace); <span class="keyword">end</span>
+0018         ishot=ishot+1;
+0019         itrace=0;
+0020         Shot.loc(ishot)=nu(2)-nu(3);
+0021         fprintf(<span class="string">'Shot %d at x=%g '</span>,ishot,Shot.loc(ishot));
+0022         Shot.locz(ishot)=nu(4);
+0023         Shot.x{ishot}=[];
+0024         Shot.z{ishot}=[];
+0025         Shot.tt{ishot}=[];
+0026     <span class="keyword">elseif</span> isequal(typ,<span class="string">'TRACE'</span>),
+0027         itrace=itrace+1;
+0028         Shot.x{ishot}(end+1)=nu(2)-nu(3);
+0029         Shot.z{ishot}(end+1)=nu(4);
+0030         Shot.tt{ishot}(end+1)=nu(5);
+0031     <span class="keyword">else</span>
+0032         nu
+0033     <span class="keyword">end</span>
+0034     zeile=fgetl(fid);
+0035 <span class="keyword">end</span>
+0036 fprintf(<span class="string">'%d traces\n'</span>,itrace);
+0037 fclose(fid);
+0038 pos=[];Shot.t=[];posxz=[];
+0039 <span class="keyword">for</span> i=1:length(Shot.loc),
+0040     pos=[pos;Shot.x{i}(:);Shot.loc(i)];
+0041     posxz=[posxz;Shot.x{i}(:) Shot.z{i}(:)];
+0042     Shot.t=[Shot.t;Shot.tt{i}(:)];
+0043 <span class="keyword">end</span>
+0044 <span class="comment">% pos=round(pos*1000)/1000;posxz=round(posxz*1000)/1000;</span>
+0045 Shot.pos=unique(pos,<span class="string">'rows'</span>);
+0046 posxz=unique(posxz,<span class="string">'rows'</span>);
+0047 posxz(find(diff(posxz(:,1))==0),:)=[];
+0048 Shot.pos(:,2)=round(interp1(posxz(:,1),posxz(:,2),Shot.pos(:,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>)*100)/100;
+0049 <span class="keyword">for</span> i=1:length(Shot.loc),
+0050     Shot.ns{i}=find(Shot.pos(:,1)==Shot.loc(i));
+0051     [C,ia]=intersect(Shot.pos(:,1),Shot.x{i});
+0052     Shot.nx{i}=ia;
+0053 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

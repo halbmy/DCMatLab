@@ -1,0 +1,1172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exportfig</title>
+  <meta name="keywords" content="exportfig">
+  <meta name="description" content="EXPORTFIG  Export a figure.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; exportfig.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>exportfig
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>EXPORTFIG  Export a figure.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function varargout = exportfig(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">EXPORTFIG  Export a figure.
+   EXPORTFIG(H, FILENAME) writes the figure H to FILENAME.  H is
+   a figure handle and FILENAME is a string that specifies the
+   name of the output file.
+
+   EXPORTFIG(H, FILENAME, OPTIONS) writes the figure H to FILENAME
+   with options initially specified by the structure OPTIONS. The
+   field names of OPTIONS must be legal parameters listed below
+   and the field values must be legal values for the corresponding
+   parameter. Default options can be set in releases prior to R12
+   by storing the OPTIONS structure in the root object's appdata
+   with the command 
+      setappdata(0,'exportfigdefaults', OPTIONS) 
+   and for releases after R12 by setting the preference with the
+   command 
+      setpref('exportfig', 'defaults', OPTIONS) 
+
+   EXPORTFIG(...,PARAM1,VAL1,PARAM2,VAL2,...) specifies
+   parameters that control various characteristics of the output
+   file. Any parameter value can be the string 'auto' which means
+   the parameter uses the default factory behavior, overriding
+   any other default for the parameter.
+
+   Format Paramter:
+     'Format'  a string
+          specifies the output format. Defaults to 'eps'. For a
+          list of export formats type 'help print'.
+     'Preview' one of the strings 'none', 'tiff'
+          specifies a preview for EPS files. Defaults to 'none'.
+
+   Size Parameters:
+     'Width'   a positive scalar
+          specifies the width in the figure's PaperUnits
+     'Height'  a positive scalar
+          specifies the height in the figure's PaperUnits
+     'Bounds' one of the strings 'tight', 'loose'
+          specifies a tight or loose bounding box. Defaults to 'tight'.
+     'Reference' an axes handle or a string
+          specifies that the width and height parameters
+          are relative to the given axes. If a string is
+          specified then it must evaluate to an axes handle.
+
+     Specifying only one dimension sets the other dimension
+     so that the exported aspect ratio is the same as the
+     figure's or reference axes' current aspect ratio. 
+     If neither dimension is specified the size defaults to 
+     the width and height from the figure's or reference
+     axes' size. Tight bounding boxes are only computed for
+     2-D views and in that case the computed bounds enclose all
+     text objects.
+           
+   Rendering Parameters:
+     'Color'     one of the strings 'bw', 'gray', 'cmyk'
+         'bw'    specifies that lines and text are exported in
+                 black and all other objects in grayscale
+         'gray'  specifies that all objects are exported in grayscale
+         'rgb'   specifies that all objects are exported in color
+                 using the RGB color space
+         'cmyk'  specifies that all objects are exported in color
+                 using the CMYK color space
+     'Renderer'  one of 'painters', 'zbuffer', 'opengl'
+         specifies the renderer to use
+     'Resolution'   a positive scalar
+         specifies the resolution in dots-per-inch.
+     'LockAxes'  one of 0 or 1
+         specifies that all axes limits and ticks should be fixed
+         while exporting.
+     
+     The default color setting is 'bw'.
+
+   Font Parameters:
+     'FontMode'     one of the strings 'scaled', 'fixed'
+     'FontSize'     a positive scalar
+          in 'scaled' mode multiplies with the font size of each
+          text object to obtain the exported font size
+          in 'fixed' mode specifies the font size of all text
+          objects in points
+     'DefaultFixedFontSize' a positive scalar
+          in 'fixed' mode specified the default font size in
+          points
+     'FontSizeMin' a positive scalar
+          specifies the minimum font size allowed after scaling
+     'FontSizeMax' a positive scalar
+          specifies the maximum font size allowed after scaling
+     'FontEncoding' one of the strings 'latin1', 'adobe'
+          specifies the character encoding of the font
+     'SeparateText' one of 0 or 1
+          specifies that the text objects are stored in separate
+          file as EPS with the base filename having '_t' appended.
+
+     If FontMode is 'scaled' but FontSize is not specified then a
+     scaling factor is computed from the ratio of the size of the
+     exported figure to the size of the actual figure.
+
+     The default 'FontMode' setting is 'scaled'.
+
+   Line Width Parameters:
+     'LineMode'     one of the strings 'scaled', 'fixed'
+     'LineWidth'    a positive scalar
+     'DefaultFixedLineWidth' a positive scalar
+     'LineWidthMin' a positive scalar
+          specifies the minimum line width allowed after scaling
+     'LineWidthMax' a positive scalar
+          specifies the maximum line width allowed after scaling
+     The semantics of 'Line' parameters are exactly the
+     same as the corresponding 'Font' parameters, except that
+     they apply to line widths instead of font sizes.
+
+   Style Map Parameter:
+     'LineStyleMap'    one of [], 'bw', or a function name or handle
+          specifies how to map line colors to styles. An empty
+          style map means styles are not changed. The style map
+          'bw' is a built-in mapping that maps lines with the same
+          color to the same style and otherwise cycles through the
+          available styles. A user-specified map is a function
+          that takes as input a cell array of line objects and
+          outputs a cell array of line style strings. The default
+          map is [].
+      
+   Examples:
+     exportfig(gcf,'fig1.eps','height',3);
+       Exports the current figure to the file named 'fig1.eps' with
+       a height of 3 inches (assuming the figure's PaperUnits is 
+       inches) and an aspect ratio the same as the figure's aspect
+       ratio on screen.
+
+     opts = struct('FontMode','fixed','FontSize',10,'height',3);
+     exportfig(gcf, 'fig2.eps', opts, 'height', 5);
+       Exports the current figure to 'fig2.eps' with all
+       text in 10 point fonts and with height 5 inches.
+
+   See also PREVIEWFIG, APPLYTOFIG, RESTOREFIG, PRINT.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function outData = LocalPushOldData(inData, objs, prop, values)</a></li><li><a href="#_sub2" class="code">function cellArray = LocalGetAsCell(fig,prop,allowemptycell);</a></li><li><a href="#_sub3" class="code">function newArray = LocalScale(inArray, scale, minv, maxv)</a></li><li><a href="#_sub4" class="code">function gray = LocalMapToGray1(color)</a></li><li><a href="#_sub5" class="code">function newArray = LocalMapToGray(inArray);</a></li><li><a href="#_sub6" class="code">function newArray = LocalMapColorToStyle(inArray);</a></li><li><a href="#_sub7" class="code">function newArray = LocalMapCData(inArray);</a></li><li><a href="#_sub8" class="code">function outData = LocalUpdateColors(inArray, prop, inData)</a></li><li><a href="#_sub9" class="code">function bool = LocalIsPositiveScalar(value)</a></li><li><a href="#_sub10" class="code">function value = LocalToNum(value,auto)</a></li><li><a href="#_sub11" class="code">function c = LocalToCell(s)</a></li><li><a href="#_sub12" class="code">function c = LocalIsHG(obj,hgtype)</a></li><li><a href="#_sub13" class="code">function c = LocalHas3DPlot(a)</a></li><li><a href="#_sub14" class="code">function r = LocalUnionRect(r1,r2)</a></li><li><a href="#_sub15" class="code">function c = LocalLabelsMatchTicks(labs,ticks)</a></li><li><a href="#_sub16" class="code">function r = LocalAxesTightBoundingBox(axesR, a)</a></li><li><a href="#_sub17" class="code">function c = LocalManualAxesMode(old, allAxes, base)</a></li><li><a href="#_sub18" class="code">function val = LocalCheckAuto(val, auto)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = exportfig(varargin)</a>
+0002 <span class="comment">%EXPORTFIG  Export a figure.</span>
+0003 <span class="comment">%   EXPORTFIG(H, FILENAME) writes the figure H to FILENAME.  H is</span>
+0004 <span class="comment">%   a figure handle and FILENAME is a string that specifies the</span>
+0005 <span class="comment">%   name of the output file.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   EXPORTFIG(H, FILENAME, OPTIONS) writes the figure H to FILENAME</span>
+0008 <span class="comment">%   with options initially specified by the structure OPTIONS. The</span>
+0009 <span class="comment">%   field names of OPTIONS must be legal parameters listed below</span>
+0010 <span class="comment">%   and the field values must be legal values for the corresponding</span>
+0011 <span class="comment">%   parameter. Default options can be set in releases prior to R12</span>
+0012 <span class="comment">%   by storing the OPTIONS structure in the root object's appdata</span>
+0013 <span class="comment">%   with the command</span>
+0014 <span class="comment">%      setappdata(0,'exportfigdefaults', OPTIONS)</span>
+0015 <span class="comment">%   and for releases after R12 by setting the preference with the</span>
+0016 <span class="comment">%   command</span>
+0017 <span class="comment">%      setpref('exportfig', 'defaults', OPTIONS)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   EXPORTFIG(...,PARAM1,VAL1,PARAM2,VAL2,...) specifies</span>
+0020 <span class="comment">%   parameters that control various characteristics of the output</span>
+0021 <span class="comment">%   file. Any parameter value can be the string 'auto' which means</span>
+0022 <span class="comment">%   the parameter uses the default factory behavior, overriding</span>
+0023 <span class="comment">%   any other default for the parameter.</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%   Format Paramter:</span>
+0026 <span class="comment">%     'Format'  a string</span>
+0027 <span class="comment">%          specifies the output format. Defaults to 'eps'. For a</span>
+0028 <span class="comment">%          list of export formats type 'help print'.</span>
+0029 <span class="comment">%     'Preview' one of the strings 'none', 'tiff'</span>
+0030 <span class="comment">%          specifies a preview for EPS files. Defaults to 'none'.</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%   Size Parameters:</span>
+0033 <span class="comment">%     'Width'   a positive scalar</span>
+0034 <span class="comment">%          specifies the width in the figure's PaperUnits</span>
+0035 <span class="comment">%     'Height'  a positive scalar</span>
+0036 <span class="comment">%          specifies the height in the figure's PaperUnits</span>
+0037 <span class="comment">%     'Bounds' one of the strings 'tight', 'loose'</span>
+0038 <span class="comment">%          specifies a tight or loose bounding box. Defaults to 'tight'.</span>
+0039 <span class="comment">%     'Reference' an axes handle or a string</span>
+0040 <span class="comment">%          specifies that the width and height parameters</span>
+0041 <span class="comment">%          are relative to the given axes. If a string is</span>
+0042 <span class="comment">%          specified then it must evaluate to an axes handle.</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">%     Specifying only one dimension sets the other dimension</span>
+0045 <span class="comment">%     so that the exported aspect ratio is the same as the</span>
+0046 <span class="comment">%     figure's or reference axes' current aspect ratio.</span>
+0047 <span class="comment">%     If neither dimension is specified the size defaults to</span>
+0048 <span class="comment">%     the width and height from the figure's or reference</span>
+0049 <span class="comment">%     axes' size. Tight bounding boxes are only computed for</span>
+0050 <span class="comment">%     2-D views and in that case the computed bounds enclose all</span>
+0051 <span class="comment">%     text objects.</span>
+0052 <span class="comment">%</span>
+0053 <span class="comment">%   Rendering Parameters:</span>
+0054 <span class="comment">%     'Color'     one of the strings 'bw', 'gray', 'cmyk'</span>
+0055 <span class="comment">%         'bw'    specifies that lines and text are exported in</span>
+0056 <span class="comment">%                 black and all other objects in grayscale</span>
+0057 <span class="comment">%         'gray'  specifies that all objects are exported in grayscale</span>
+0058 <span class="comment">%         'rgb'   specifies that all objects are exported in color</span>
+0059 <span class="comment">%                 using the RGB color space</span>
+0060 <span class="comment">%         'cmyk'  specifies that all objects are exported in color</span>
+0061 <span class="comment">%                 using the CMYK color space</span>
+0062 <span class="comment">%     'Renderer'  one of 'painters', 'zbuffer', 'opengl'</span>
+0063 <span class="comment">%         specifies the renderer to use</span>
+0064 <span class="comment">%     'Resolution'   a positive scalar</span>
+0065 <span class="comment">%         specifies the resolution in dots-per-inch.</span>
+0066 <span class="comment">%     'LockAxes'  one of 0 or 1</span>
+0067 <span class="comment">%         specifies that all axes limits and ticks should be fixed</span>
+0068 <span class="comment">%         while exporting.</span>
+0069 <span class="comment">%</span>
+0070 <span class="comment">%     The default color setting is 'bw'.</span>
+0071 <span class="comment">%</span>
+0072 <span class="comment">%   Font Parameters:</span>
+0073 <span class="comment">%     'FontMode'     one of the strings 'scaled', 'fixed'</span>
+0074 <span class="comment">%     'FontSize'     a positive scalar</span>
+0075 <span class="comment">%          in 'scaled' mode multiplies with the font size of each</span>
+0076 <span class="comment">%          text object to obtain the exported font size</span>
+0077 <span class="comment">%          in 'fixed' mode specifies the font size of all text</span>
+0078 <span class="comment">%          objects in points</span>
+0079 <span class="comment">%     'DefaultFixedFontSize' a positive scalar</span>
+0080 <span class="comment">%          in 'fixed' mode specified the default font size in</span>
+0081 <span class="comment">%          points</span>
+0082 <span class="comment">%     'FontSizeMin' a positive scalar</span>
+0083 <span class="comment">%          specifies the minimum font size allowed after scaling</span>
+0084 <span class="comment">%     'FontSizeMax' a positive scalar</span>
+0085 <span class="comment">%          specifies the maximum font size allowed after scaling</span>
+0086 <span class="comment">%     'FontEncoding' one of the strings 'latin1', 'adobe'</span>
+0087 <span class="comment">%          specifies the character encoding of the font</span>
+0088 <span class="comment">%     'SeparateText' one of 0 or 1</span>
+0089 <span class="comment">%          specifies that the text objects are stored in separate</span>
+0090 <span class="comment">%          file as EPS with the base filename having '_t' appended.</span>
+0091 <span class="comment">%</span>
+0092 <span class="comment">%     If FontMode is 'scaled' but FontSize is not specified then a</span>
+0093 <span class="comment">%     scaling factor is computed from the ratio of the size of the</span>
+0094 <span class="comment">%     exported figure to the size of the actual figure.</span>
+0095 <span class="comment">%</span>
+0096 <span class="comment">%     The default 'FontMode' setting is 'scaled'.</span>
+0097 <span class="comment">%</span>
+0098 <span class="comment">%   Line Width Parameters:</span>
+0099 <span class="comment">%     'LineMode'     one of the strings 'scaled', 'fixed'</span>
+0100 <span class="comment">%     'LineWidth'    a positive scalar</span>
+0101 <span class="comment">%     'DefaultFixedLineWidth' a positive scalar</span>
+0102 <span class="comment">%     'LineWidthMin' a positive scalar</span>
+0103 <span class="comment">%          specifies the minimum line width allowed after scaling</span>
+0104 <span class="comment">%     'LineWidthMax' a positive scalar</span>
+0105 <span class="comment">%          specifies the maximum line width allowed after scaling</span>
+0106 <span class="comment">%     The semantics of 'Line' parameters are exactly the</span>
+0107 <span class="comment">%     same as the corresponding 'Font' parameters, except that</span>
+0108 <span class="comment">%     they apply to line widths instead of font sizes.</span>
+0109 <span class="comment">%</span>
+0110 <span class="comment">%   Style Map Parameter:</span>
+0111 <span class="comment">%     'LineStyleMap'    one of [], 'bw', or a function name or handle</span>
+0112 <span class="comment">%          specifies how to map line colors to styles. An empty</span>
+0113 <span class="comment">%          style map means styles are not changed. The style map</span>
+0114 <span class="comment">%          'bw' is a built-in mapping that maps lines with the same</span>
+0115 <span class="comment">%          color to the same style and otherwise cycles through the</span>
+0116 <span class="comment">%          available styles. A user-specified map is a function</span>
+0117 <span class="comment">%          that takes as input a cell array of line objects and</span>
+0118 <span class="comment">%          outputs a cell array of line style strings. The default</span>
+0119 <span class="comment">%          map is [].</span>
+0120 <span class="comment">%</span>
+0121 <span class="comment">%   Examples:</span>
+0122 <span class="comment">%     exportfig(gcf,'fig1.eps','height',3);</span>
+0123 <span class="comment">%       Exports the current figure to the file named 'fig1.eps' with</span>
+0124 <span class="comment">%       a height of 3 inches (assuming the figure's PaperUnits is</span>
+0125 <span class="comment">%       inches) and an aspect ratio the same as the figure's aspect</span>
+0126 <span class="comment">%       ratio on screen.</span>
+0127 <span class="comment">%</span>
+0128 <span class="comment">%     opts = struct('FontMode','fixed','FontSize',10,'height',3);</span>
+0129 <span class="comment">%     exportfig(gcf, 'fig2.eps', opts, 'height', 5);</span>
+0130 <span class="comment">%       Exports the current figure to 'fig2.eps' with all</span>
+0131 <span class="comment">%       text in 10 point fonts and with height 5 inches.</span>
+0132 <span class="comment">%</span>
+0133 <span class="comment">%   See also PREVIEWFIG, APPLYTOFIG, RESTOREFIG, PRINT.</span>
+0134 
+0135 <span class="comment">%  Copyright 2000 Ben Hinkle</span>
+0136 <span class="comment">%  Email bug reports and comments to bhinkle@mathworks.com</span>
+0137 
+0138 <span class="keyword">if</span> (nargin &lt; 2)
+0139   error(<span class="string">'Too few input arguments'</span>);
+0140 <span class="keyword">end</span>
+0141 
+0142 <span class="comment">% exportfig(H, filename, [options,] ...)</span>
+0143 H = varargin{1};
+0144 <span class="keyword">if</span> ~<a href="#_sub12" class="code" title="subfunction c = LocalIsHG(obj,hgtype)">LocalIsHG</a>(H,<span class="string">'figure'</span>)
+0145   error(<span class="string">'First argument must be a handle to a figure.'</span>);
+0146 <span class="keyword">end</span>
+0147 filename = varargin{2};
+0148 <span class="keyword">if</span> ~ischar(filename)
+0149   error(<span class="string">'Second argument must be a string.'</span>);
+0150 <span class="keyword">end</span>
+0151 paramPairs = {varargin{3:end}};
+0152 <span class="keyword">if</span> nargin &gt; 2
+0153   <span class="keyword">if</span> isstruct(paramPairs{1})
+0154     pcell = <a href="#_sub11" class="code" title="subfunction c = LocalToCell(s)">LocalToCell</a>(paramPairs{1});
+0155     paramPairs = {pcell{:}, paramPairs{2:end}};
+0156   <span class="keyword">end</span>
+0157 <span class="keyword">end</span>
+0158 verstr = version;
+0159 majorver = str2num(verstr(1));
+0160 defaults = [];
+0161 <span class="keyword">if</span> majorver &gt; 5
+0162   <span class="keyword">if</span> ispref(<span class="string">'exportfig'</span>,<span class="string">'defaults'</span>)
+0163     defaults = getpref(<span class="string">'exportfig'</span>,<span class="string">'defaults'</span>);
+0164   <span class="keyword">end</span>
+0165 <span class="comment">%elseif exist('getappdata')</span>
+0166 <span class="keyword">else</span>
+0167   defaults = getappdata(0,<span class="string">'exportfigdefaults'</span>);
+0168 <span class="keyword">end</span>
+0169 <span class="keyword">if</span> ~isempty(defaults)
+0170   dcell = <a href="#_sub11" class="code" title="subfunction c = LocalToCell(s)">LocalToCell</a>(defaults);
+0171   paramPairs = {dcell{:}, paramPairs{:}};
+0172 <span class="keyword">end</span>
+0173 
+0174 <span class="comment">% Do some validity checking on param-value pairs</span>
+0175 <span class="keyword">if</span> (rem(length(paramPairs),2) ~= 0)
+0176   error([<span class="string">'Invalid input syntax. Optional parameters and values'</span> <span class="keyword">...</span>
+0177      <span class="string">' must be in pairs.'</span>]);
+0178 <span class="keyword">end</span>
+0179 
+0180 auto.format = <span class="string">'eps'</span>;
+0181 auto.preview = <span class="string">'none'</span>;
+0182 auto.width = -1;
+0183 auto.height = -1;
+0184 auto.color = <span class="string">'bw'</span>;
+0185 auto.defaultfontsize=10;
+0186 auto.fontsize = -1;
+0187 auto.fontmode=<span class="string">'scaled'</span>;
+0188 auto.fontmin = 8;
+0189 auto.fontmax = 60;
+0190 auto.defaultlinewidth = 1.0;
+0191 auto.linewidth = -1;
+0192 auto.linemode=[];
+0193 auto.linemin = 0.5;
+0194 auto.linemax = 100;
+0195 auto.fontencoding = <span class="string">'latin1'</span>;
+0196 auto.renderer = [];
+0197 auto.resolution = [];
+0198 auto.stylemap = [];
+0199 auto.applystyle = 0;
+0200 auto.refobj = -1;
+0201 auto.bounds = <span class="string">'tight'</span>;
+0202 explicitbounds = 0;
+0203 auto.lockaxes = 1;
+0204 auto.separatetext = 0;
+0205 opts = auto;
+0206 
+0207 <span class="comment">% Process param-value pairs</span>
+0208 args = {};
+0209 <span class="keyword">for</span> k = 1:2:length(paramPairs)
+0210   param = lower(paramPairs{k});
+0211   <span class="keyword">if</span> ~ischar(param)
+0212     error(<span class="string">'Optional parameter names must be strings'</span>);
+0213   <span class="keyword">end</span>
+0214   value = paramPairs{k+1};
+0215   
+0216   <span class="keyword">switch</span> (param)
+0217    <span class="keyword">case</span> <span class="string">'format'</span>
+0218     opts.format = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(lower(value),auto.format);
+0219     <span class="keyword">if</span> strcmp(opts.format,<span class="string">'preview'</span>)
+0220       error([<span class="string">'Format ''preview'' no longer supported. Use PREVIEWFIG'</span> <span class="keyword">...</span>
+0221          <span class="string">' instead.'</span>]);
+0222     <span class="keyword">end</span>
+0223    <span class="keyword">case</span> <span class="string">'preview'</span>
+0224     opts.preview = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(lower(value),auto.preview);
+0225     <span class="keyword">if</span> ~strcmp(opts.preview,{<span class="string">'none'</span>,<span class="string">'tiff'</span>})
+0226       error(<span class="string">'Preview must be ''none'' or ''tiff''.'</span>);
+0227     <span class="keyword">end</span>
+0228    <span class="keyword">case</span> <span class="string">'width'</span>
+0229     opts.width = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value, auto.width);
+0230     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0231       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.width)
+0232     error(<span class="string">'Width must be a numeric scalar &gt; 0'</span>);
+0233       <span class="keyword">end</span>
+0234     <span class="keyword">end</span>
+0235    <span class="keyword">case</span> <span class="string">'height'</span>
+0236     opts.height = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value, auto.height);
+0237     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0238       <span class="keyword">if</span>(~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.height))
+0239     error(<span class="string">'Height must be a numeric scalar &gt; 0'</span>);
+0240       <span class="keyword">end</span>
+0241     <span class="keyword">end</span>
+0242    <span class="keyword">case</span> <span class="string">'color'</span>
+0243     opts.color = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(lower(value),auto.color);
+0244     <span class="keyword">if</span> ~strcmp(opts.color,{<span class="string">'bw'</span>,<span class="string">'gray'</span>,<span class="string">'rgb'</span>,<span class="string">'cmyk'</span>})
+0245       error(<span class="string">'Color must be ''bw'', ''gray'',''rgb'' or ''cmyk''.'</span>);
+0246     <span class="keyword">end</span>
+0247    <span class="keyword">case</span> <span class="string">'fontmode'</span>
+0248     opts.fontmode = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(lower(value),auto.fontmode);
+0249     <span class="keyword">if</span> ~strcmp(opts.fontmode,{<span class="string">'scaled'</span>,<span class="string">'fixed'</span>})
+0250       error(<span class="string">'FontMode must be ''scaled'' or ''fixed''.'</span>);
+0251     <span class="keyword">end</span>
+0252    <span class="keyword">case</span> <span class="string">'fontsize'</span>
+0253     opts.fontsize = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.fontsize);
+0254     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0255       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.fontsize)
+0256     error(<span class="string">'FontSize must be a numeric scalar &gt; 0'</span>);
+0257       <span class="keyword">end</span>
+0258     <span class="keyword">end</span>
+0259    <span class="keyword">case</span> <span class="string">'defaultfixedfontsize'</span>
+0260     opts.defaultfontsize = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.defaultfontsize);
+0261     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0262       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.defaultfontsize)
+0263     error(<span class="string">'DefaultFixedFontSize must be a numeric scalar &gt; 0'</span>);
+0264       <span class="keyword">end</span>
+0265     <span class="keyword">end</span>
+0266    <span class="keyword">case</span> <span class="string">'fontsizemin'</span>
+0267     opts.fontmin = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.fontmin);
+0268     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0269       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.fontmin)
+0270     error(<span class="string">'FontSizeMin must be a numeric scalar &gt; 0'</span>);
+0271       <span class="keyword">end</span>
+0272     <span class="keyword">end</span>
+0273    <span class="keyword">case</span> <span class="string">'fontsizemax'</span>
+0274     opts.fontmax = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.fontmax);
+0275     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0276       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.fontmax)
+0277     error(<span class="string">'FontSizeMax must be a numeric scalar &gt; 0'</span>);
+0278       <span class="keyword">end</span>
+0279     <span class="keyword">end</span>
+0280    <span class="keyword">case</span> <span class="string">'fontencoding'</span>
+0281     opts.fontencoding = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(lower(value),auto.fontencoding);
+0282     <span class="keyword">if</span> ~strcmp(opts.fontencoding,{<span class="string">'latin1'</span>,<span class="string">'adobe'</span>})
+0283       error(<span class="string">'FontEncoding must be ''latin1'' or ''adobe''.'</span>);
+0284     <span class="keyword">end</span>
+0285    <span class="keyword">case</span> <span class="string">'linemode'</span>
+0286     opts.linemode = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(lower(value),auto.linemode);
+0287     <span class="keyword">if</span> ~strcmp(opts.linemode,{<span class="string">'scaled'</span>,<span class="string">'fixed'</span>})
+0288       error(<span class="string">'LineMode must be ''scaled'' or ''fixed''.'</span>);
+0289     <span class="keyword">end</span>
+0290    <span class="keyword">case</span> <span class="string">'linewidth'</span>
+0291     opts.linewidth = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.linewidth);
+0292     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0293       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.linewidth)
+0294     error(<span class="string">'LineWidth must be a numeric scalar &gt; 0'</span>);
+0295       <span class="keyword">end</span>
+0296     <span class="keyword">end</span>
+0297    <span class="keyword">case</span> <span class="string">'defaultfixedlinewidth'</span>
+0298     opts.defaultlinewidth = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.defaultlinewidth);
+0299     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0300       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.defaultlinewidth)
+0301     error([<span class="string">'DefaultFixedLineWidth must be a numeric scalar &gt;'</span> <span class="keyword">...</span>
+0302            <span class="string">' 0'</span>]);
+0303       <span class="keyword">end</span>
+0304     <span class="keyword">end</span>
+0305    <span class="keyword">case</span> <span class="string">'linewidthmin'</span>
+0306     opts.linemin = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.linemin);
+0307     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0308       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.linemin)
+0309     error(<span class="string">'LineWidthMin must be a numeric scalar &gt; 0'</span>);
+0310       <span class="keyword">end</span>
+0311     <span class="keyword">end</span>
+0312    <span class="keyword">case</span> <span class="string">'linewidthmax'</span>
+0313     opts.linemax = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.linemax);
+0314     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0315       <span class="keyword">if</span> ~<a href="#_sub9" class="code" title="subfunction bool = LocalIsPositiveScalar(value)">LocalIsPositiveScalar</a>(opts.linemax)
+0316     error(<span class="string">'LineWidthMax must be a numeric scalar &gt; 0'</span>);
+0317       <span class="keyword">end</span>
+0318     <span class="keyword">end</span>
+0319    <span class="keyword">case</span> <span class="string">'linestylemap'</span>
+0320     opts.stylemap = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(value,auto.stylemap);
+0321    <span class="keyword">case</span> <span class="string">'renderer'</span>
+0322     opts.renderer = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(lower(value),auto.renderer);
+0323     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0324       <span class="keyword">if</span> ~strcmp(opts.renderer,{<span class="string">'painters'</span>,<span class="string">'zbuffer'</span>,<span class="string">'opengl'</span>})
+0325     error([<span class="string">'Renderer must be ''painters'', ''zbuffer'' or'</span> <span class="keyword">...</span>
+0326            <span class="string">' ''opengl''.'</span>]);
+0327       <span class="keyword">end</span>
+0328     <span class="keyword">end</span>
+0329    <span class="keyword">case</span> <span class="string">'resolution'</span>
+0330     opts.resolution = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.resolution);
+0331     <span class="keyword">if</span> ~ischar(value) | ~strcmp(value,<span class="string">'auto'</span>)
+0332       <span class="keyword">if</span> ~(isnumeric(value) &amp; (prod(size(value)) == 1) &amp; (value &gt;= 0));
+0333     error(<span class="string">'Resolution must be a numeric scalar &gt;= 0'</span>);
+0334       <span class="keyword">end</span>
+0335     <span class="keyword">end</span>
+0336    <span class="keyword">case</span> <span class="string">'applystyle'</span> <span class="comment">% means to apply the options and not export</span>
+0337     opts.applystyle = 1;
+0338    <span class="keyword">case</span> <span class="string">'reference'</span>
+0339     <span class="keyword">if</span> ischar(value)
+0340       <span class="keyword">if</span> strcmp(value,<span class="string">'auto'</span>)
+0341     opts.refobj = auto.refobj;
+0342       <span class="keyword">else</span>
+0343     opts.refobj = eval(value);
+0344       <span class="keyword">end</span>
+0345     <span class="keyword">else</span>
+0346       opts.refobj = value;
+0347     <span class="keyword">end</span>
+0348     <span class="keyword">if</span> ~<a href="#_sub12" class="code" title="subfunction c = LocalIsHG(obj,hgtype)">LocalIsHG</a>(opts.refobj,<span class="string">'axes'</span>)
+0349       error(<span class="string">'Reference object must evaluate to an axes handle.'</span>);
+0350     <span class="keyword">end</span>
+0351    <span class="keyword">case</span> <span class="string">'bounds'</span>
+0352     opts.bounds = <a href="#_sub18" class="code" title="subfunction val = LocalCheckAuto(val, auto)">LocalCheckAuto</a>(lower(value),auto.bounds);
+0353     explicitbounds = 1;
+0354     <span class="keyword">if</span> ~strcmp(opts.bounds,{<span class="string">'tight'</span>,<span class="string">'loose'</span>})
+0355       error(<span class="string">'Bounds must be ''tight'' or ''loose''.'</span>);
+0356     <span class="keyword">end</span>
+0357    <span class="keyword">case</span> <span class="string">'lockaxes'</span>
+0358     opts.lockaxes = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.lockaxes);
+0359    <span class="keyword">case</span> <span class="string">'separatetext'</span>
+0360     opts.separatetext = <a href="#_sub10" class="code" title="subfunction value = LocalToNum(value,auto)">LocalToNum</a>(value,auto.separatetext);
+0361    <span class="keyword">otherwise</span>
+0362     error([<span class="string">'Unrecognized option '</span> param <span class="string">'.'</span>]);
+0363   <span class="keyword">end</span>
+0364 <span class="keyword">end</span>
+0365 
+0366 <span class="comment">% make sure figure is up-to-date</span>
+0367 drawnow;
+0368 
+0369 allLines  = findall(H, <span class="string">'type'</span>, <span class="string">'line'</span>);
+0370 allText   = findall(H, <span class="string">'type'</span>, <span class="string">'text'</span>);
+0371 allAxes   = findall(H, <span class="string">'type'</span>, <span class="string">'axes'</span>);
+0372 allImages = findall(H, <span class="string">'type'</span>, <span class="string">'image'</span>);
+0373 allLights = findall(H, <span class="string">'type'</span>, <span class="string">'light'</span>);
+0374 allPatch  = findall(H, <span class="string">'type'</span>, <span class="string">'patch'</span>);
+0375 allSurf   = findall(H, <span class="string">'type'</span>, <span class="string">'surface'</span>);
+0376 allRect   = findall(H, <span class="string">'type'</span>, <span class="string">'rectangle'</span>);
+0377 allFont   = [allText; allAxes];
+0378 allColor  = [allLines; allText; allAxes; allLights];
+0379 allMarker = [allLines; allPatch; allSurf];
+0380 allEdge   = [allPatch; allSurf];
+0381 allCData  = [allImages; allPatch; allSurf];
+0382 
+0383 old.objs = {};
+0384 old.prop = {};
+0385 old.values = {};
+0386 
+0387 <span class="comment">% Process format</span>
+0388 <span class="keyword">if</span> strncmp(opts.format,<span class="string">'eps'</span>,3) &amp; ~strcmp(opts.preview,<span class="string">'none'</span>)
+0389   args = {args{:}, [<span class="string">'-'</span> opts.preview]};
+0390 <span class="keyword">end</span>
+0391 
+0392 hadError = 0;
+0393 oldwarn = warning;
+0394 <span class="keyword">try</span>
+0395 
+0396   <span class="comment">% lock axes limits, ticks and labels if requested</span>
+0397   <span class="keyword">if</span> opts.lockaxes
+0398     old = <a href="#_sub17" class="code" title="subfunction c = LocalManualAxesMode(old, allAxes, base)">LocalManualAxesMode</a>(old, allAxes, <span class="string">'TickMode'</span>);
+0399     old = <a href="#_sub17" class="code" title="subfunction c = LocalManualAxesMode(old, allAxes, base)">LocalManualAxesMode</a>(old, allAxes, <span class="string">'TickLabelMode'</span>);
+0400     old = <a href="#_sub17" class="code" title="subfunction c = LocalManualAxesMode(old, allAxes, base)">LocalManualAxesMode</a>(old, allAxes, <span class="string">'LimMode'</span>);
+0401   <span class="keyword">end</span>  
+0402 
+0403   <span class="comment">% Process size parameters</span>
+0404   figurePaperUnits = get(H, <span class="string">'PaperUnits'</span>);
+0405   oldFigureUnits = get(H, <span class="string">'Units'</span>);
+0406   oldFigPos = get(H,<span class="string">'Position'</span>);
+0407   set(H, <span class="string">'Units'</span>, figurePaperUnits);
+0408   figPos = get(H,<span class="string">'Position'</span>);
+0409   refsize = figPos(3:4);
+0410   <span class="keyword">if</span> opts.refobj ~= -1
+0411     oldUnits = get(opts.refobj, <span class="string">'Units'</span>);
+0412     set(opts.refobj, <span class="string">'Units'</span>, figurePaperUnits);
+0413     r = get(opts.refobj, <span class="string">'Position'</span>);
+0414     refsize = r(3:4);
+0415     set(opts.refobj, <span class="string">'Units'</span>, oldUnits);
+0416   <span class="keyword">end</span>
+0417   aspectRatio = refsize(1)/refsize(2);
+0418   <span class="keyword">if</span> (opts.width == -1) &amp; (opts.height == -1)
+0419     opts.width = refsize(1);
+0420     opts.height = refsize(2);
+0421   <span class="keyword">elseif</span> (opts.width == -1)
+0422     opts.width = opts.height * aspectRatio;
+0423   <span class="keyword">elseif</span> (opts.height == -1)
+0424     opts.height = opts.width / aspectRatio;
+0425   <span class="keyword">end</span>
+0426   wscale = opts.width/refsize(1);
+0427   hscale = opts.height/refsize(2);
+0428   sizescale = min(wscale,hscale);
+0429   old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old,H,<span class="string">'PaperPositionMode'</span>, <span class="keyword">...</span>
+0430              get(H,<span class="string">'PaperPositionMode'</span>));
+0431   set(H, <span class="string">'PaperPositionMode'</span>, <span class="string">'auto'</span>);
+0432   newPos = [figPos(1) figPos(2)+figPos(4)*(1-hscale) <span class="keyword">...</span>
+0433         wscale*figPos(3) hscale*figPos(4)];
+0434   set(H, <span class="string">'Position'</span>, newPos);
+0435   set(H, <span class="string">'Units'</span>, oldFigureUnits);
+0436   
+0437   <span class="comment">% process line-style map</span>
+0438   <span class="keyword">if</span> ~isempty(opts.stylemap) &amp; ~isempty(allLines)
+0439     oldlstyle = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allLines,<span class="string">'LineStyle'</span>);
+0440     old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allLines, {<span class="string">'LineStyle'</span>}, <span class="keyword">...</span>
+0441                oldlstyle);
+0442     newlstyle = oldlstyle;
+0443     <span class="keyword">if</span> ischar(opts.stylemap) &amp; strcmpi(opts.stylemap,<span class="string">'bw'</span>)
+0444       newlstyle = <a href="#_sub6" class="code" title="subfunction newArray = LocalMapColorToStyle(inArray);">LocalMapColorToStyle</a>(allLines);
+0445     <span class="keyword">else</span>
+0446       <span class="keyword">try</span>
+0447     newlstyle = feval(opts.stylemap,allLines);
+0448       <span class="keyword">catch</span>
+0449     warning([<span class="string">'Skipping stylemap. '</span> lasterr]);
+0450       <span class="keyword">end</span>
+0451     <span class="keyword">end</span>
+0452     set(allLines,{<span class="string">'LineStyle'</span>},newlstyle);
+0453   <span class="keyword">end</span>
+0454 
+0455   <span class="comment">% Process rendering parameters</span>
+0456   <span class="keyword">switch</span> (opts.color)
+0457    <span class="keyword">case</span> {<span class="string">'bw'</span>, <span class="string">'gray'</span>}
+0458     <span class="keyword">if</span> ~strcmp(opts.color,<span class="string">'bw'</span>) &amp; strncmp(opts.format,<span class="string">'eps'</span>,3)
+0459       opts.format = [opts.format <span class="string">'c'</span>];
+0460     <span class="keyword">end</span>
+0461     args = {args{:}, [<span class="string">'-d'</span> opts.format]};
+0462     
+0463     <span class="comment">%compute and set gray colormap</span>
+0464     oldcmap = get(H,<span class="string">'Colormap'</span>);
+0465     newgrays = 0.30*oldcmap(:,1) + 0.59*oldcmap(:,2) + 0.11*oldcmap(:,3);
+0466     newcmap = [newgrays newgrays newgrays];
+0467     old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, H, <span class="string">'Colormap'</span>, oldcmap);
+0468     set(H, <span class="string">'Colormap'</span>, newcmap);
+0469 
+0470     <span class="comment">%compute and set ColorSpec and CData properties</span>
+0471     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allColor, <span class="string">'color'</span>, old);
+0472     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allAxes, <span class="string">'xcolor'</span>, old);
+0473     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allAxes, <span class="string">'ycolor'</span>, old);
+0474     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allAxes, <span class="string">'zcolor'</span>, old);
+0475     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allMarker, <span class="string">'MarkerEdgeColor'</span>, old);
+0476     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allMarker, <span class="string">'MarkerFaceColor'</span>, old);
+0477     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allEdge, <span class="string">'EdgeColor'</span>, old);
+0478     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allEdge, <span class="string">'FaceColor'</span>, old);
+0479     old = <a href="#_sub8" class="code" title="subfunction outData = LocalUpdateColors(inArray, prop, inData)">LocalUpdateColors</a>(allCData, <span class="string">'CData'</span>, old);
+0480     
+0481    <span class="keyword">case</span> {<span class="string">'rgb'</span>,<span class="string">'cmyk'</span>}
+0482     <span class="keyword">if</span> strncmp(opts.format,<span class="string">'eps'</span>,3)
+0483       opts.format = [opts.format <span class="string">'c'</span>];
+0484       args = {args{:}, [<span class="string">'-d'</span> opts.format]};
+0485       <span class="keyword">if</span> strcmp(opts.color,<span class="string">'cmyk'</span>)
+0486     args = {args{:}, <span class="string">'-cmyk'</span>};
+0487       <span class="keyword">end</span>
+0488     <span class="keyword">else</span>
+0489       args = {args{:}, [<span class="string">'-d'</span> opts.format]};
+0490     <span class="keyword">end</span>
+0491    <span class="keyword">otherwise</span>
+0492     error(<span class="string">'Invalid Color parameter'</span>);
+0493   <span class="keyword">end</span>
+0494   <span class="keyword">if</span> (~isempty(opts.renderer))
+0495     args = {args{:}, [<span class="string">'-'</span> opts.renderer]};
+0496   <span class="keyword">end</span>
+0497   <span class="keyword">if</span> (~isempty(opts.resolution)) | ~strncmp(opts.format,<span class="string">'eps'</span>,3)
+0498     <span class="keyword">if</span> isempty(opts.resolution)
+0499       opts.resolution = 0;
+0500     <span class="keyword">end</span>
+0501     args = {args{:}, [<span class="string">'-r'</span> int2str(opts.resolution)]};
+0502   <span class="keyword">end</span>
+0503 
+0504   <span class="comment">% Process font parameters</span>
+0505   <span class="keyword">if</span> ~isempty(opts.fontmode)
+0506     oldfonts = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allFont,<span class="string">'FontSize'</span>);
+0507     oldfontunits = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allFont,<span class="string">'FontUnits'</span>);
+0508     set(allFont,<span class="string">'FontUnits'</span>,<span class="string">'points'</span>);
+0509     <span class="keyword">switch</span> (opts.fontmode)
+0510      <span class="keyword">case</span> <span class="string">'fixed'</span>
+0511       <span class="keyword">if</span> (opts.fontsize == -1)
+0512     set(allFont,<span class="string">'FontSize'</span>,opts.defaultfontsize);
+0513       <span class="keyword">else</span>
+0514     set(allFont,<span class="string">'FontSize'</span>,opts.fontsize);
+0515       <span class="keyword">end</span>
+0516      <span class="keyword">case</span> <span class="string">'scaled'</span>
+0517       <span class="keyword">if</span> (opts.fontsize == -1)
+0518     scale = sizescale;
+0519       <span class="keyword">else</span>
+0520     scale = opts.fontsize;
+0521       <span class="keyword">end</span>
+0522       newfonts = <a href="#_sub3" class="code" title="subfunction newArray = LocalScale(inArray, scale, minv, maxv)">LocalScale</a>(oldfonts,scale,opts.fontmin,opts.fontmax);
+0523       set(allFont,{<span class="string">'FontSize'</span>},newfonts);
+0524      <span class="keyword">otherwise</span>
+0525       error(<span class="string">'Invalid FontMode parameter'</span>);
+0526     <span class="keyword">end</span>
+0527     old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allFont, {<span class="string">'FontSize'</span>}, oldfonts);
+0528     old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allFont, {<span class="string">'FontUnits'</span>}, oldfontunits);
+0529   <span class="keyword">end</span>
+0530   <span class="keyword">if</span> strcmp(opts.fontencoding,<span class="string">'adobe'</span>) &amp; strncmp(opts.format,<span class="string">'eps'</span>,3)
+0531     args = {args{:}, <span class="string">'-adobecset'</span>};
+0532   <span class="keyword">end</span>
+0533 
+0534   <span class="comment">% Process line parameters</span>
+0535   <span class="keyword">if</span> ~isempty(opts.linemode)
+0536     oldlines = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allMarker,<span class="string">'LineWidth'</span>);
+0537     old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allMarker, {<span class="string">'LineWidth'</span>}, oldlines);
+0538     <span class="keyword">switch</span> (opts.linemode)
+0539      <span class="keyword">case</span> <span class="string">'fixed'</span>
+0540       <span class="keyword">if</span> (opts.linewidth == -1)
+0541     set(allMarker,<span class="string">'LineWidth'</span>,opts.defaultlinewidth);
+0542       <span class="keyword">else</span>
+0543     set(allMarker,<span class="string">'LineWidth'</span>,opts.linewidth);
+0544       <span class="keyword">end</span>
+0545      <span class="keyword">case</span> <span class="string">'scaled'</span>
+0546       <span class="keyword">if</span> (opts.linewidth == -1)
+0547     scale = sizescale;
+0548       <span class="keyword">else</span>
+0549     scale = opts.linewidth;
+0550       <span class="keyword">end</span>
+0551       newlines = <a href="#_sub3" class="code" title="subfunction newArray = LocalScale(inArray, scale, minv, maxv)">LocalScale</a>(oldlines, scale, opts.linemin, opts.linemax);
+0552       set(allMarker,{<span class="string">'LineWidth'</span>},newlines);
+0553     <span class="keyword">end</span>
+0554   <span class="keyword">end</span>
+0555 
+0556   <span class="comment">% adjust figure bounds to surround axes</span>
+0557   <span class="keyword">if</span> strcmp(opts.bounds,<span class="string">'tight'</span>)
+0558     <span class="keyword">if</span> (~strncmp(opts.format,<span class="string">'eps'</span>,3) &amp; <a href="#_sub13" class="code" title="subfunction c = LocalHas3DPlot(a)">LocalHas3DPlot</a>(allAxes)) | <span class="keyword">...</span>
+0559       (strncmp(opts.format,<span class="string">'eps'</span>,3) &amp; opts.separatetext)
+0560       <span class="keyword">if</span> (explicitbounds == 1)
+0561     warning([<span class="string">'Cannot compute ''tight'' bounds. Using ''loose'''</span> <span class="keyword">...</span>
+0562          <span class="string">' bounds.'</span>]);
+0563       <span class="keyword">end</span>
+0564       opts.bounds = <span class="string">'loose'</span>;
+0565     <span class="keyword">end</span>
+0566   <span class="keyword">end</span>
+0567   warning(<span class="string">'off'</span>);
+0568   <span class="keyword">if</span> ~isempty(allAxes)
+0569     <span class="keyword">if</span> strncmp(opts.format,<span class="string">'eps'</span>,3)
+0570       <span class="keyword">if</span> strcmp(opts.bounds,<span class="string">'loose'</span>)
+0571     args = {args{:}, <span class="string">'-loose'</span>};
+0572       <span class="keyword">end</span>
+0573       old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old,H,<span class="string">'Position'</span>, oldFigPos);
+0574     <span class="keyword">elseif</span> strcmp(opts.bounds,<span class="string">'tight'</span>)
+0575       oldaunits = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'Units'</span>);
+0576       oldapos = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'Position'</span>);
+0577       oldtunits = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allText,<span class="string">'units'</span>);
+0578       oldtpos = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allText,<span class="string">'Position'</span>);
+0579       set(allAxes,<span class="string">'units'</span>,<span class="string">'points'</span>);
+0580       apos = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'Position'</span>);
+0581       oldunits = get(H,<span class="string">'Units'</span>);
+0582       set(H,<span class="string">'units'</span>,<span class="string">'points'</span>);
+0583       origfr = get(H,<span class="string">'position'</span>);
+0584       fr = [];
+0585       <span class="keyword">for</span> k=1:length(allAxes)
+0586     <span class="keyword">if</span> ~strcmpi(get(allAxes(k),<span class="string">'Tag'</span>),<span class="string">'legend'</span>)
+0587       axesR = apos{k};
+0588       r = <a href="#_sub16" class="code" title="subfunction r = LocalAxesTightBoundingBox(axesR, a)">LocalAxesTightBoundingBox</a>(axesR, allAxes(k));
+0589       r(1:2) = r(1:2) + axesR(1:2);
+0590       fr = <a href="#_sub14" class="code" title="subfunction r = LocalUnionRect(r1,r2)">LocalUnionRect</a>(fr,r);
+0591     <span class="keyword">end</span>
+0592       <span class="keyword">end</span>
+0593       <span class="keyword">if</span> isempty(fr)
+0594     fr = [0 0 origfr(3:4)];
+0595       <span class="keyword">end</span>
+0596       <span class="keyword">for</span> k=1:length(allAxes)
+0597     ax = allAxes(k);
+0598     r = apos{k};
+0599     r(1:2) = r(1:2) - fr(1:2);
+0600     set(ax,<span class="string">'Position'</span>,r);
+0601       <span class="keyword">end</span>
+0602       old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allAxes, {<span class="string">'Position'</span>}, oldapos);
+0603       old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allText, {<span class="string">'Position'</span>}, oldtpos);
+0604       old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allText, {<span class="string">'Units'</span>}, oldtunits);
+0605       old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allAxes, {<span class="string">'Units'</span>}, oldaunits);
+0606       old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, H, <span class="string">'Position'</span>, oldFigPos);
+0607       old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, H, <span class="string">'Units'</span>, oldFigureUnits);
+0608       r = [origfr(1) origfr(2)+origfr(4)-fr(4) fr(3:4)];
+0609       set(H,<span class="string">'Position'</span>,r);
+0610     <span class="keyword">else</span>
+0611       args = {args{:}, <span class="string">'-loose'</span>};
+0612       old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old,H,<span class="string">'Position'</span>, oldFigPos);
+0613     <span class="keyword">end</span>
+0614   <span class="keyword">end</span>
+0615   
+0616   <span class="comment">% Process text in a separate file if needed</span>
+0617   <span class="keyword">if</span> opts.separatetext &amp; ~opts.applystyle
+0618     <span class="comment">% First hide all text and export</span>
+0619     oldtvis = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allText,<span class="string">'visible'</span>);
+0620     set(allText,<span class="string">'visible'</span>,<span class="string">'off'</span>);
+0621     oldax = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'XTickLabel'</span>,1);
+0622     olday = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'YTickLabel'</span>,1);
+0623     oldaz = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'ZTickLabel'</span>,1);
+0624     null = cell(length(oldax),1);
+0625     [null{:}] = deal([]);
+0626     set(allAxes,{<span class="string">'XTickLabel'</span>},null);
+0627     set(allAxes,{<span class="string">'YTickLabel'</span>},null);
+0628     set(allAxes,{<span class="string">'ZTickLabel'</span>},null);
+0629     print(H, filename, args{:});
+0630     set(allText,{<span class="string">'Visible'</span>},oldtvis);
+0631     set(allAxes,{<span class="string">'XTickLabel'</span>},oldax);
+0632     set(allAxes,{<span class="string">'YTickLabel'</span>},olday);
+0633     set(allAxes,{<span class="string">'ZTickLabel'</span>},oldaz);
+0634     <span class="comment">% Now hide all non-text and export as eps in painters</span>
+0635     [path, name, ext] = fileparts(filename);
+0636     tfile = fullfile(path,[name <span class="string">'_t.eps'</span>]);
+0637     tfile2 = fullfile(path,[name <span class="string">'_t2.eps'</span>]);
+0638     foundRenderer = 0;
+0639     <span class="keyword">for</span> k=1:length(args)
+0640       <span class="keyword">if</span> strncmp(<span class="string">'-d'</span>,args{k},2)
+0641     args{k} = <span class="string">'-deps'</span>;
+0642       <span class="keyword">elseif</span> strncmp(<span class="string">'-zbuffer'</span>,args{k},8) | <span class="keyword">...</span>
+0643         strncmp(<span class="string">'-opengl'</span>, args{k},6)
+0644     args{k} = <span class="string">'-painters'</span>;
+0645     foundRenderer = 1;
+0646       <span class="keyword">end</span>
+0647     <span class="keyword">end</span>
+0648     <span class="keyword">if</span> ~foundRenderer
+0649       args = {args{:}, <span class="string">'-painters'</span>};
+0650     <span class="keyword">end</span>
+0651     allNonText = [allLines; allLights; allPatch; <span class="keyword">...</span>
+0652           allImages; allSurf; allRect];
+0653     oldvis = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allNonText,<span class="string">'visible'</span>);
+0654     oldc = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'color'</span>);
+0655     oldaxg = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'XGrid'</span>);
+0656     oldayg = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'YGrid'</span>);
+0657     oldazg = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,<span class="string">'ZGrid'</span>);
+0658     [null{:}] = deal(<span class="string">'off'</span>);
+0659     set(allAxes,{<span class="string">'XGrid'</span>},null);
+0660     set(allAxes,{<span class="string">'YGrid'</span>},null);
+0661     set(allAxes,{<span class="string">'ZGrid'</span>},null);
+0662     set(allNonText,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0663     set(allAxes,<span class="string">'Color'</span>,<span class="string">'none'</span>);
+0664     print(H, tfile2, args{:});
+0665     set(allNonText,{<span class="string">'Visible'</span>},oldvis);
+0666     set(allAxes,{<span class="string">'Color'</span>},oldc);
+0667     set(allAxes,{<span class="string">'XGrid'</span>},oldaxg);
+0668     set(allAxes,{<span class="string">'YGrid'</span>},oldayg);
+0669     set(allAxes,{<span class="string">'ZGrid'</span>},oldazg);
+0670     <span class="comment">%hack up the postscript file</span>
+0671     fid1 = fopen(tfile,<span class="string">'w'</span>);
+0672     fid2 = fopen(tfile2,<span class="string">'r'</span>);
+0673     line = fgetl(fid2);
+0674     <span class="keyword">while</span> ischar(line)
+0675       <span class="keyword">if</span> strncmp(line,<span class="string">'%%Title'</span>,7)
+0676     fprintf(fid1,<span class="string">'%s\n'</span>,[<span class="string">'%%Title: '</span>, tfile]);
+0677       <span class="keyword">elseif</span> (length(line) &lt; 3) 
+0678     fprintf(fid1,<span class="string">'%s\n'</span>,line);
+0679       <span class="keyword">elseif</span> ~strcmp(line(end-2:end),<span class="string">' PR'</span>) &amp; <span class="keyword">...</span>
+0680         ~strcmp(line(end-1:end),<span class="string">' L'</span>)
+0681     fprintf(fid1,<span class="string">'%s\n'</span>,line);
+0682       <span class="keyword">end</span>
+0683       line = fgetl(fid2);
+0684     <span class="keyword">end</span>
+0685     fclose(fid1);
+0686     fclose(fid2);
+0687     delete(tfile2);
+0688     
+0689   <span class="keyword">elseif</span> ~opts.applystyle
+0690     drawnow;
+0691     print(H, filename, args{:});
+0692   <span class="keyword">end</span>
+0693   warning(oldwarn);
+0694   
+0695 <span class="keyword">catch</span>
+0696   warning(oldwarn);
+0697   hadError = 1;
+0698 <span class="keyword">end</span>
+0699 
+0700 <span class="comment">% Restore figure settings</span>
+0701 <span class="keyword">if</span> opts.applystyle
+0702   varargout{1} = old;
+0703 <span class="keyword">else</span>
+0704   <span class="keyword">for</span> n=1:length(old.objs)
+0705     <span class="keyword">if</span> ~iscell(old.values{n}) &amp; iscell(old.prop{n})
+0706       old.values{n} = {old.values{n}};
+0707     <span class="keyword">end</span>
+0708     set(old.objs{n}, old.prop{n}, old.values{n});
+0709   <span class="keyword">end</span>
+0710 <span class="keyword">end</span>
+0711 
+0712 <span class="keyword">if</span> hadError
+0713   error(deblank(lasterr));
+0714 <span class="keyword">end</span>
+0715 
+0716 <span class="comment">%</span>
+0717 <span class="comment">%  Local Functions</span>
+0718 <span class="comment">%</span>
+0719 
+0720 <a name="_sub1" href="#_subfunctions" class="code">function outData = LocalPushOldData(inData, objs, prop, values)</a>
+0721 outData.objs = {objs, inData.objs{:}};
+0722 outData.prop = {prop, inData.prop{:}};
+0723 outData.values = {values, inData.values{:}};
+0724 
+0725 <a name="_sub2" href="#_subfunctions" class="code">function cellArray = LocalGetAsCell(fig,prop,allowemptycell);</a>
+0726 cellArray = get(fig,prop);
+0727 <span class="keyword">if</span> nargin &lt; 3
+0728   allowemptycell = 0;
+0729 <span class="keyword">end</span>
+0730 <span class="keyword">if</span> ~iscell(cellArray) &amp; (allowemptycell | ~isempty(cellArray))
+0731   cellArray = {cellArray};
+0732 <span class="keyword">end</span>
+0733 
+0734 <a name="_sub3" href="#_subfunctions" class="code">function newArray = LocalScale(inArray, scale, minv, maxv)</a>
+0735 n = length(inArray);
+0736 newArray = cell(n,1);
+0737 <span class="keyword">for</span> k=1:n
+0738   newArray{k} = min(maxv,max(minv,scale*inArray{k}(1)));
+0739 <span class="keyword">end</span>
+0740 
+0741 <a name="_sub4" href="#_subfunctions" class="code">function gray = LocalMapToGray1(color)</a>
+0742 gray = color;
+0743 <span class="keyword">if</span> ischar(color)
+0744   <span class="keyword">switch</span> color(1)
+0745    <span class="keyword">case</span> <span class="string">'y'</span>
+0746     color = [1 1 0];
+0747    <span class="keyword">case</span> <span class="string">'m'</span>
+0748     color = [1 0 1];
+0749    <span class="keyword">case</span> <span class="string">'c'</span>
+0750     color = [0 1 1];
+0751    <span class="keyword">case</span> <span class="string">'r'</span>
+0752     color = [1 0 0];
+0753    <span class="keyword">case</span> <span class="string">'g'</span>
+0754     color = [0 1 0];
+0755    <span class="keyword">case</span> <span class="string">'b'</span>
+0756     color = [0 0 1];
+0757    <span class="keyword">case</span> <span class="string">'w'</span>
+0758     color = [1 1 1];
+0759    <span class="keyword">case</span> <span class="string">'k'</span>
+0760     color = [0 0 0];
+0761   <span class="keyword">end</span>
+0762 <span class="keyword">end</span>
+0763 <span class="keyword">if</span> ~ischar(color)
+0764   gray = 0.30*color(1) + 0.59*color(2) + 0.11*color(3);
+0765 <span class="keyword">end</span>
+0766 
+0767 <a name="_sub5" href="#_subfunctions" class="code">function newArray = LocalMapToGray(inArray);</a>
+0768 n = length(inArray);
+0769 newArray = cell(n,1);
+0770 <span class="keyword">for</span> k=1:n
+0771   color = inArray{k};
+0772   <span class="keyword">if</span> ~isempty(color)
+0773     color = <a href="#_sub4" class="code" title="subfunction gray = LocalMapToGray1(color)">LocalMapToGray1</a>(color);
+0774   <span class="keyword">end</span>
+0775   <span class="keyword">if</span> isempty(color) | ischar(color)
+0776     newArray{k} = color;
+0777   <span class="keyword">else</span>
+0778     newArray{k} = [color color color];
+0779   <span class="keyword">end</span>
+0780 <span class="keyword">end</span>
+0781 
+0782 <a name="_sub6" href="#_subfunctions" class="code">function newArray = LocalMapColorToStyle(inArray);</a>
+0783 inArray = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(inArray,<span class="string">'Color'</span>);
+0784 n = length(inArray);
+0785 newArray = cell(n,1);
+0786 styles = {<span class="string">'-'</span>,<span class="string">'--'</span>,<span class="string">':'</span>,<span class="string">'-.'</span>};
+0787 uniques = [];
+0788 nstyles = length(styles);
+0789 <span class="keyword">for</span> k=1:n
+0790   gray = <a href="#_sub4" class="code" title="subfunction gray = LocalMapToGray1(color)">LocalMapToGray1</a>(inArray{k});
+0791   <span class="keyword">if</span> isempty(gray) | ischar(gray) | gray &lt; .05
+0792     newArray{k} = <span class="string">'-'</span>;
+0793   <span class="keyword">else</span>
+0794     <span class="keyword">if</span> ~isempty(uniques) &amp; any(gray == uniques)
+0795       ind = find(gray==uniques);
+0796     <span class="keyword">else</span>
+0797       uniques = [uniques gray];
+0798       ind = length(uniques);
+0799     <span class="keyword">end</span>
+0800     newArray{k} = styles{mod(ind-1,nstyles)+1};
+0801   <span class="keyword">end</span>
+0802 <span class="keyword">end</span>
+0803 
+0804 <a name="_sub7" href="#_subfunctions" class="code">function newArray = LocalMapCData(inArray);</a>
+0805 n = length(inArray);
+0806 newArray = cell(n,1);
+0807 <span class="keyword">for</span> k=1:n
+0808   color = inArray{k};
+0809   <span class="keyword">if</span> (ndims(color) == 3) &amp; isa(color,<span class="string">'double'</span>)
+0810     gray = 0.30*color(:,:,1) + 0.59*color(:,:,2) + 0.11*color(:,:,3);
+0811     color(:,:,1) = gray;
+0812     color(:,:,2) = gray;
+0813     color(:,:,3) = gray;
+0814   <span class="keyword">end</span>
+0815   newArray{k} = color;
+0816 <span class="keyword">end</span>
+0817 
+0818 <a name="_sub8" href="#_subfunctions" class="code">function outData = LocalUpdateColors(inArray, prop, inData)</a>
+0819 value = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(inArray,prop);
+0820 outData.objs = {inData.objs{:}, inArray};
+0821 outData.prop = {inData.prop{:}, {prop}};
+0822 outData.values = {inData.values{:}, value};
+0823 <span class="keyword">if</span> (~isempty(value))
+0824   <span class="keyword">if</span> strcmp(prop,<span class="string">'CData'</span>) 
+0825     value = <a href="#_sub7" class="code" title="subfunction newArray = LocalMapCData(inArray);">LocalMapCData</a>(value);
+0826   <span class="keyword">else</span>
+0827     value = <a href="#_sub5" class="code" title="subfunction newArray = LocalMapToGray(inArray);">LocalMapToGray</a>(value);
+0828   <span class="keyword">end</span>
+0829   set(inArray,{prop},value);
+0830 <span class="keyword">end</span>
+0831 
+0832 <a name="_sub9" href="#_subfunctions" class="code">function bool = LocalIsPositiveScalar(value)</a>
+0833 bool = isnumeric(value) &amp; <span class="keyword">...</span>
+0834        prod(size(value)) == 1 &amp; <span class="keyword">...</span>
+0835        value &gt; 0;
+0836 
+0837 <a name="_sub10" href="#_subfunctions" class="code">function value = LocalToNum(value,auto)</a>
+0838 <span class="keyword">if</span> ischar(value)
+0839   <span class="keyword">if</span> strcmp(value,<span class="string">'auto'</span>)
+0840     value = auto;
+0841   <span class="keyword">else</span>
+0842     value = str2num(value);
+0843   <span class="keyword">end</span>
+0844 <span class="keyword">end</span>
+0845 
+0846 <span class="comment">%convert a struct to {field1,val1,field2,val2,...}</span>
+0847 <a name="_sub11" href="#_subfunctions" class="code">function c = LocalToCell(s)</a>
+0848 f = fieldnames(s);
+0849 v = struct2cell(s);
+0850 opts = cell(2,length(f));
+0851 opts(1,:) = f;
+0852 opts(2,:) = v;
+0853 c = {opts{:}};
+0854 
+0855 <a name="_sub12" href="#_subfunctions" class="code">function c = LocalIsHG(obj,hgtype)</a>
+0856 c = 0;
+0857 <span class="keyword">if</span> (length(obj) == 1) &amp; ishandle(obj) 
+0858   c = strcmp(get(obj,<span class="string">'type'</span>),hgtype);
+0859 <span class="keyword">end</span>
+0860 
+0861 <a name="_sub13" href="#_subfunctions" class="code">function c = LocalHas3DPlot(a)</a>
+0862 zticks = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(a,<span class="string">'ZTickLabel'</span>);
+0863 c = 0;
+0864 <span class="keyword">for</span> k=1:length(zticks)
+0865   <span class="keyword">if</span> ~isempty(zticks{k})
+0866     c = 1;
+0867     <span class="keyword">return</span>;
+0868   <span class="keyword">end</span>
+0869 <span class="keyword">end</span>
+0870 
+0871 <a name="_sub14" href="#_subfunctions" class="code">function r = LocalUnionRect(r1,r2)</a>
+0872 <span class="keyword">if</span> isempty(r1)
+0873   r = r2;
+0874 <span class="keyword">elseif</span> isempty(r2)
+0875   r = r1;
+0876 <span class="keyword">elseif</span> max(r2(3:4)) &gt; 0
+0877   left = min(r1(1),r2(1));
+0878   bot = min(r1(2),r2(2));
+0879   right = max(r1(1)+r1(3),r2(1)+r2(3));
+0880   top = max(r1(2)+r1(4),r2(2)+r2(4));
+0881   r = [left bot right-left top-bot];
+0882 <span class="keyword">else</span>
+0883   r = r1;
+0884 <span class="keyword">end</span>
+0885 
+0886 <a name="_sub15" href="#_subfunctions" class="code">function c = LocalLabelsMatchTicks(labs,ticks)</a>
+0887 c = 0;
+0888 <span class="keyword">try</span>
+0889   t1 = num2str(ticks(1));
+0890   n = length(ticks);
+0891   tend = num2str(ticks(n));
+0892   c = strncmp(labs(1),t1,length(labs(1))) &amp; <span class="keyword">...</span>
+0893       strncmp(labs(n),tend,length(labs(n)));
+0894 <span class="keyword">end</span>
+0895 
+0896 <a name="_sub16" href="#_subfunctions" class="code">function r = LocalAxesTightBoundingBox(axesR, a)</a>
+0897 r = [];
+0898 atext = findall(a,<span class="string">'type'</span>,<span class="string">'text'</span>,<span class="string">'visible'</span>,<span class="string">'on'</span>);
+0899 <span class="keyword">if</span> ~isempty(atext)
+0900   set(atext,<span class="string">'units'</span>,<span class="string">'points'</span>);
+0901   res=<a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(atext,<span class="string">'extent'</span>);
+0902   <span class="keyword">for</span> n=1:length(atext)
+0903     r = <a href="#_sub14" class="code" title="subfunction r = LocalUnionRect(r1,r2)">LocalUnionRect</a>(r,res{n});
+0904   <span class="keyword">end</span>
+0905 <span class="keyword">end</span>
+0906 <span class="keyword">if</span> strcmp(get(a,<span class="string">'visible'</span>),<span class="string">'on'</span>)
+0907   r = <a href="#_sub14" class="code" title="subfunction r = LocalUnionRect(r1,r2)">LocalUnionRect</a>(r,[0 0 axesR(3:4)]);
+0908   oldunits = get(a,<span class="string">'fontunits'</span>);
+0909   set(a,<span class="string">'fontunits'</span>,<span class="string">'points'</span>);
+0910   label = text(0,0,<span class="string">''</span>,<span class="string">'parent'</span>,a,<span class="keyword">...</span>
+0911            <span class="string">'units'</span>,<span class="string">'points'</span>,<span class="keyword">...</span>
+0912            <span class="string">'fontsize'</span>,get(a,<span class="string">'fontsize'</span>),<span class="keyword">...</span>
+0913            <span class="string">'fontname'</span>,get(a,<span class="string">'fontname'</span>),<span class="keyword">...</span>
+0914            <span class="string">'fontweight'</span>,get(a,<span class="string">'fontweight'</span>),<span class="keyword">...</span>
+0915            <span class="string">'fontangle'</span>,get(a,<span class="string">'fontangle'</span>),<span class="keyword">...</span>
+0916            <span class="string">'visible'</span>,<span class="string">'off'</span>);
+0917   fs = get(a,<span class="string">'fontsize'</span>);
+0918 
+0919   <span class="comment">% handle y axis tick labels</span>
+0920   ry = [0 -fs/2 0 axesR(4)+fs];
+0921   ylabs = get(a,<span class="string">'yticklabels'</span>);
+0922   yticks = get(a,<span class="string">'ytick'</span>);
+0923   maxw = 0;
+0924   <span class="keyword">if</span> ~isempty(ylabs)
+0925     <span class="keyword">for</span> n=1:size(ylabs,1)
+0926       set(label,<span class="string">'string'</span>,ylabs(n,:));
+0927       ext = get(label,<span class="string">'extent'</span>);
+0928       maxw = max(maxw,ext(3));
+0929     <span class="keyword">end</span>
+0930     <span class="keyword">if</span> ~<a href="#_sub15" class="code" title="subfunction c = LocalLabelsMatchTicks(labs,ticks)">LocalLabelsMatchTicks</a>(ylabs,yticks) &amp; <span class="keyword">...</span>
+0931       strcmp(get(a,<span class="string">'xaxislocation'</span>),<span class="string">'bottom'</span>)
+0932       ry(4) = ry(4) + 1.5*ext(4);
+0933     <span class="keyword">end</span>
+0934     <span class="keyword">if</span> strcmp(get(a,<span class="string">'yaxislocation'</span>),<span class="string">'left'</span>)
+0935       ry(1) = -(maxw+5);
+0936     <span class="keyword">else</span>
+0937       ry(1) = axesR(3);
+0938     <span class="keyword">end</span>
+0939     ry(3) = maxw+5;
+0940     r = <a href="#_sub14" class="code" title="subfunction r = LocalUnionRect(r1,r2)">LocalUnionRect</a>(r,ry);
+0941   <span class="keyword">end</span>
+0942 
+0943   <span class="comment">% handle x axis tick labels</span>
+0944   rx = [0 0 0 fs+5];
+0945   xlabs = get(a,<span class="string">'xticklabels'</span>);
+0946   xticks = get(a,<span class="string">'xtick'</span>);
+0947   <span class="keyword">if</span> ~isempty(xlabs)
+0948     <span class="keyword">if</span> strcmp(get(a,<span class="string">'xaxislocation'</span>),<span class="string">'bottom'</span>)
+0949       rx(2) = -(fs+5);
+0950       <span class="keyword">if</span> ~<a href="#_sub15" class="code" title="subfunction c = LocalLabelsMatchTicks(labs,ticks)">LocalLabelsMatchTicks</a>(xlabs,xticks);
+0951     rx(4) = rx(4) + 2*fs;
+0952     rx(2) = rx(2) - 2*fs;
+0953       <span class="keyword">end</span>
+0954     <span class="keyword">else</span>
+0955       rx(2) = axesR(4);
+0956       <span class="comment">% exponent is still below axes</span>
+0957       <span class="keyword">if</span> ~<a href="#_sub15" class="code" title="subfunction c = LocalLabelsMatchTicks(labs,ticks)">LocalLabelsMatchTicks</a>(xlabs,xticks);
+0958     rx(4) = rx(4) + axesR(4) + 2*fs;
+0959     rx(2) = -2*fs;
+0960       <span class="keyword">end</span>
+0961     <span class="keyword">end</span>
+0962     set(label,<span class="string">'string'</span>,xlabs(1,:));
+0963     ext1 = get(label,<span class="string">'extent'</span>);
+0964     rx(1) = -ext1(3)/2;
+0965     set(label,<span class="string">'string'</span>,xlabs(size(xlabs,1),:));
+0966     ext2 = get(label,<span class="string">'extent'</span>);
+0967     rx(3) = axesR(3) + (ext2(3) + ext1(3))/2;
+0968     r = <a href="#_sub14" class="code" title="subfunction r = LocalUnionRect(r1,r2)">LocalUnionRect</a>(r,rx);
+0969   <span class="keyword">end</span>
+0970   set(a,<span class="string">'fontunits'</span>,oldunits);
+0971   delete(label);
+0972 <span class="keyword">end</span>
+0973 
+0974 <a name="_sub17" href="#_subfunctions" class="code">function c = LocalManualAxesMode(old, allAxes, base)</a>
+0975 xs = [<span class="string">'X'</span> base];
+0976 ys = [<span class="string">'Y'</span> base];
+0977 zs = [<span class="string">'Z'</span> base];
+0978 oldXMode = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,xs);
+0979 oldYMode = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,ys);
+0980 oldZMode = <a href="#_sub2" class="code" title="subfunction cellArray = LocalGetAsCell(fig,prop,allowemptycell);">LocalGetAsCell</a>(allAxes,zs);
+0981 old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allAxes, {xs}, oldXMode);
+0982 old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allAxes, {ys}, oldYMode);
+0983 old = <a href="#_sub1" class="code" title="subfunction outData = LocalPushOldData(inData, objs, prop, values)">LocalPushOldData</a>(old, allAxes, {zs}, oldZMode);
+0984 set(allAxes,xs,<span class="string">'manual'</span>);
+0985 set(allAxes,ys,<span class="string">'manual'</span>);
+0986 set(allAxes,zs,<span class="string">'manual'</span>);
+0987 c = old;
+0988 
+0989 <a name="_sub18" href="#_subfunctions" class="code">function val = LocalCheckAuto(val, auto)</a>
+0990 <span class="keyword">if</span> ischar(val) &amp; strcmp(val,<span class="string">'auto'</span>)
+0991   val = auto;
+0992 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

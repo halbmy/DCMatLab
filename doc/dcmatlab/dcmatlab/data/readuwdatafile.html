@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readuwdatafile</title>
+  <meta name="keywords" content="readuwdatafile">
+  <meta name="description" content="READUWDATAFILE - Read underwater data file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readuwdatafile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readuwdatafile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READUWDATAFILE - Read underwater data file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function DATA=readuwdatafile(datafile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READUWDATAFILE - Read underwater data file
+ DATA = readuwdatafile(datafile)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function DATA=readuwdatafile(datafile)</a>
+0002 
+0003 <span class="comment">% READUWDATAFILE - Read underwater data file</span>
+0004 <span class="comment">% DATA = readuwdatafile(datafile)</span>
+0005 
+0006 ilon=0;ilat=0;ii=0;iu=0;ip=0;id=0;itime=0;
+0007 <span class="comment">%%</span>
+0008 fid=fopen(datafile);
+0009 <span class="keyword">if</span> fid&lt;0, 
+0010     set(handles.statusdatafile,<span class="string">'String'</span>,[<span class="string">'Could not open '</span> datafile]);
+0011     <span class="keyword">return</span>;
+0012 <span class="keyword">end</span>
+0013 zeile=fgetl(fid);<span class="comment">%fclose(fid);</span>
+0014 i=0;formstr=<span class="string">''</span>;
+0015 <span class="keyword">while</span> ~isempty(zeile),
+0016     i=i+1;
+0017     [tok,zeile]=strtok(zeile);ss=<span class="string">'%f'</span>;
+0018     <span class="keyword">if</span> strcmp(lower(tok),<span class="string">'lon'</span>), ilon=i;ss=<span class="string">'%f %*s'</span>; 
+0019     <span class="keyword">elseif</span> strcmp(lower(tok),<span class="string">'lat'</span>), ilat=i;ss=<span class="string">'%f %*s'</span>;
+0020     <span class="keyword">elseif</span> strcmp(lower(tok),<span class="string">'i'</span>), ii=i;
+0021     <span class="keyword">elseif</span> strcmp(lower(tok),<span class="string">'u'</span>), iu=i;
+0022     <span class="keyword">elseif</span> strcmp(lower(tok),<span class="string">'p'</span>), ip=i;
+0023     <span class="keyword">elseif</span> strcmp(lower(tok),<span class="string">'d'</span>), id=i;
+0024     <span class="keyword">elseif</span> strcmp(lower(tok),<span class="string">'channel'</span>), ich=i;ss=<span class="string">'%d'</span>;
+0025     <span class="keyword">elseif</span> strcmp(lower(tok),<span class="string">'time'</span>), itime=i;ss=<span class="string">'%s %*s'</span>;
+0026     <span class="keyword">else</span> ss=<span class="string">'%*s'</span>;i=i-1; <span class="keyword">end</span>
+0027     formstr=[formstr ss <span class="string">' '</span>];
+0028 <span class="keyword">end</span>
+0029 formstr(end)=<span class="string">''</span>;
+0030 <span class="keyword">if</span> i==7,
+0031     [All{1},All{2},All{3},All{4},All{5},All{6},All{7}]=textread(datafile,formstr,<span class="string">'headerlines'</span>,1);
+0032 <span class="keyword">elseif</span> i==8,
+0033     [All{1},All{2},All{3},All{4},All{5},All{6},All{7},All{8}]=textread(datafile,formstr,<span class="string">'headerlines'</span>,1);
+0034 <span class="keyword">else</span>
+0035     display(<span class="string">'Number of fields does not match!'</span>);<span class="keyword">return</span>;
+0036 <span class="keyword">end</span>
+0037 <span class="comment">% All=textscan(fid,formstr);</span>
+0038 fclose(fid);
+0039 DATA=[];DATA.ndata=0;
+0040 <span class="keyword">if</span> iu, DATA.u=All{iu};DATA.ndata=length(DATA.u); <span class="keyword">end</span>
+0041 <span class="keyword">if</span> ii, DATA.i=All{ii}; <span class="keyword">end</span>
+0042 <span class="keyword">if</span> id, DATA.d=All{id}; <span class="keyword">end</span>
+0043 <span class="keyword">if</span> ip, DATA.p=All{ip}; <span class="keyword">end</span>
+0044 <span class="keyword">if</span> ilat, DATA.lat=All{ilat}; <span class="keyword">end</span>
+0045 <span class="keyword">if</span> ilon, DATA.lon=All{ilon}; <span class="keyword">end</span>
+0046 <span class="keyword">if</span> itime, 
+0047     DATA.tstr=All{itime}; 
+0048     t0=datenum(<span class="string">'02:00:00'</span>);
+0049     DATA.time=datenum(DATA.tstr)+t0;
+0050     DATA.time=DATA.time-floor(median(DATA.time));
+0051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sirt</title>
+  <meta name="keywords" content="sirt">
+  <meta name="description" content="% SIRT - Simultane Iterative Reconstruction technique">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; sirt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>sirt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% SIRT - Simultane Iterative Reconstruction technique</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function dm = sirt(A,b,alpha) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% SIRT - Simultane Iterative Reconstruction technique
+% dM = SIRT(S,dR,alpha) - solves inverse subproblem</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function dm = sirt(A,b,alpha)</a>
+0002 
+0003 <span class="comment">%% SIRT - Simultane Iterative Reconstruction technique</span>
+0004 <span class="comment">%% dM = SIRT(S,dR,alpha) - solves inverse subproblem</span>
+0005 
+0006 <span class="comment">%dM=S'*(dR./sum(abs(S'))')./(sum(abs(S))');</span>
+0007 <span class="keyword">if</span> nargin&lt;3, alpha=1; <span class="keyword">end</span>
+0008 zma=2-alpha;
+0009 eps=sum(abs(A).^zma,2);
+0010 oben=((b./eps)'*A)';
+0011 gamma=sum(abs(A.^alpha))';
+0012 dm=oben./gamma;
+0013 <span class="comment">% dr=A*dm;</span>
+0014 <span class="comment">% res=[];</span>
+0015 <span class="comment">% al=0.1:0.1:10;</span>
+0016 <span class="comment">% for l=1:length(al),</span>
+0017 <span class="comment">%   res=[res norm(b-al(l)*dr)];</span>
+0018 <span class="comment">% end</span>
+0019 <span class="comment">% fak=al(find(res==min(res)));</span>
+0020 <span class="comment">% dm=dm*fak;</span>
+0021 
+0022 ndm=norm(dm);
+0023 sdm=A*dm;
+0024 w=0.1;
+0025 Res=[];
+0026 W=[];
+0027 <span class="keyword">while</span> w&lt;100,
+0028     res=norm(w*sdm-b);
+0029     Res=[Res res];
+0030     W=[W w];
+0031     w=w*1.1;
+0032 <span class="keyword">end</span>
+0033 <span class="comment">%figure(9);</span>
+0034 <span class="comment">%plot(W,Res);</span>
+0035 [minres,ires]=min(Res);
+0036 w=W(ires);
+0037 message(sprintf(<span class="string">'SIRT Iterative Step: Weighting Factor = %.1f'</span>,w));
+0038 dm=w*dm;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

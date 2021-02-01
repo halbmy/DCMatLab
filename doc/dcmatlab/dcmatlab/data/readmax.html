@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readmax</title>
+  <meta name="keywords" content="readmax">
+  <meta name="description" content="READMAX - Read refraction file (Max format)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readmax.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readmax
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READMAX - Read refraction file (Max format)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Shot = readmax(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READMAX - Read refraction file (Max format)
+ Shot = readmax(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Shot = readmax(filename)</a>
+0002 
+0003 <span class="comment">% READMAX - Read refraction file (Max format)</span>
+0004 <span class="comment">% Shot = readmax(filename)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'Specify filename!'</span>); <span class="keyword">end</span>
+0007 <span class="comment">% filename='max.dat';</span>
+0008 fid=fopen(filename,<span class="string">'r'</span>);
+0009 head1=fgetl(fid);
+0010 head2=fgetl(fid);
+0011 fclose(fid);
+0012 i=0;cols=[];pos=[];
+0013 rest=head2;
+0014 <span class="keyword">while</span> ~isempty(rest),
+0015     i=i+1;
+0016     [tok,rest]=strtok(rest);
+0017     <span class="keyword">if</span> any(tok)&amp;&amp;isequal(lower(tok(1:2)),<span class="string">'sp'</span>),
+0018         cols(end+1)=i;
+0019         pos(end+1)=str2num(tok(3:end));
+0020     <span class="keyword">end</span>
+0021 <span class="keyword">end</span>
+0022 A=textread(filename,<span class="string">''</span>,<span class="string">'headerlines'</span>,2);
+0023 gpos=A(:,2);
+0024 <span class="keyword">if</span> size(A,2)&gt;max(cols), <span class="comment">% topo present</span>
+0025     gpos(:,2)=A(:,max(cols)+1);fi=find(gpos(:,2));fi1=find(gpos(:,2)==0);
+0026     <span class="keyword">if</span> any(fi)&amp;any(fi1), gpos(fi1,2)=interp1(gpos(fi,1),gpos(fi,2),gpos(fi1,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>); <span class="keyword">end</span>
+0027 <span class="keyword">else</span> gpos(:,2)=0; <span class="keyword">end</span>
+0028 posz=interp1(gpos(:,1),gpos(:,2),pos,<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0029 Shot.pos=unique([gpos;pos(:) posz(:)],<span class="string">'rows'</span>);
+0030 [tf,loc]=ismember(gpos(:,1),Shot.pos(:,1));
+0031 Shot.t=[];Shot.loc=pos(:);Shot.locz=posz(:);
+0032 <span class="comment">% [tf,Shot.ns]=ismember(pos,Shot.pos(:,1));</span>
+0033 <span class="keyword">for</span> i=1:length(cols),
+0034     [tf,Shot.ns{i}]=ismember(pos(i),Shot.pos(:,1));
+0035     fi=find(isfinite(A(:,cols(i))));
+0036     Shot.nx{i}=loc(fi);
+0037     Shot.t=[Shot.t;A(fi,cols(i))/1000];
+0038     Shot.x{i}=gpos(fi,1);
+0039     Shot.tt{i}=A(fi,cols(i));
+0040 <span class="keyword">end</span>
+0041 Shot.pos=round(Shot.pos*100)/100;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

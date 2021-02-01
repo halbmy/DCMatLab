@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of saveinv2dfile</title>
+  <meta name="keywords" content="saveinv2dfile">
+  <meta name="description" content="SAVEINV2DFILE - Save INV2D file format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; saveinv2dfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>saveinv2dfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVEINV2DFILE - Save INV2D file format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function saveinv2dfile(fname,N,maxi,eltoken) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVEINV2DFILE - Save INV2D file format
+ saveinv2dfile(filename,N)
+ saveinv2dfile(filename,N,verbose_format)
+ saveinv2dfile(filename,N,verbose_format,electrode_token)
+ help readinv2dfile for format</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="join2ddata.html" class="code" title="function [Shot,N]=join2ddata(Shot,N)">join2ddata</a>	JOIN2DDATA - Join (2d) DC and Ra file</li><li><a href="joindata.html" class="code" title="">joindata</a>	</li><li><a href="savepro.html" class="code" title="function savepro(filename,N)">savepro</a>	SAVEPRO - Save pro-file data</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function saveinv2dfile(fname,N,maxi,eltoken)</a>
+0002 
+0003 <span class="comment">% SAVEINV2DFILE - Save INV2D file format</span>
+0004 <span class="comment">% saveinv2dfile(filename,N)</span>
+0005 <span class="comment">% saveinv2dfile(filename,N,verbose_format)</span>
+0006 <span class="comment">% saveinv2dfile(filename,N,verbose_format,electrode_token)</span>
+0007 <span class="comment">% help readinv2dfile for format</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'saveinv2dfile(filename,Data)'</span>); <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;3, maxi=1; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;4, eltoken=<span class="string">'# x z'</span>; <span class="keyword">end</span>
+0012 newline=<span class="string">'\n'</span>;
+0013 <span class="keyword">if</span> maxi, newline=<span class="string">'\r\n'</span>; <span class="keyword">end</span>
+0014 fid=fopen(fname,<span class="string">'w'</span>);
+0015 <span class="keyword">if</span> fid&lt;0,
+0016     error(<span class="string">'File not found!'</span>);
+0017 <span class="keyword">end</span>
+0018 <span class="keyword">if</span> maxi==0, <span class="comment">%sorting of electrodes</span>
+0019   N2=N;
+0020   [N.elec,ind]=sortrows(N2.elec,1);
+0021   N.a=ind(N2.a);N.b=zeros(size(N.a));
+0022   fi=find(N2.b);N.b(fi)=ind(N2.b(fi));
+0023   N.m=ind(N2.m);N.n=zeros(size(N.a));
+0024   fi=find(N2.n);N.n(fi)=ind(N2.n(fi));
+0025 <span class="keyword">end</span>
+0026 fprintf(fid,<span class="string">'%d'</span>,size(N.elec,1));
+0027 <span class="keyword">if</span> maxi, fprintf(fid,<span class="string">'# Number of electrodes'</span>); <span class="keyword">end</span>
+0028 fprintf(fid,newline);
+0029 <span class="keyword">if</span> isfield(N,<span class="string">'topo'</span>),
+0030 <span class="comment">%     N.elec(:,3)=interp1(N.topo(:,1),N.topo(:,2),N.elec(:,1),'linear','extrap');</span>
+0031     <span class="keyword">if</span> maxi==0, N.elec(:,2)=[]; <span class="keyword">end</span>
+0032     <span class="keyword">if</span> maxi,
+0033       fprintf(fid,[eltoken newline]); <span class="keyword">end</span>
+0034 <span class="keyword">else</span>
+0035     <span class="keyword">if</span> maxi, fprintf(fid,[eltoken newline]); <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 ss=<span class="string">''</span>;
+0038 <span class="keyword">for</span> l=1:size(N.elec,2), ss=[ss <span class="string">'\t%g'</span>]; <span class="keyword">end</span>
+0039 ss=[ss newline];
+0040 ss(1:2)=[];
+0041 fprintf(fid,ss,N.elec');
+0042 fprintf(fid,<span class="string">'%d'</span>,length(N.a));
+0043 <span class="keyword">if</span> maxi, fprintf(fid,<span class="string">'# Number of data'</span>); <span class="keyword">end</span>
+0044 fprintf(fid,newline);
+0045 <span class="comment">% if maxi, fprintf(fid,['# Electrode numbers A B M N (0=inf), rhoa, error, ...' newline]); end</span>
+0046 mess=double([N.a(:) N.b(:) N.m(:) N.n(:)]);
+0047 elst=<span class="string">'%4d'</span>;sep=<span class="string">'\t'</span>;<span class="comment">%sep=' ';</span>
+0048 ss=[elst sep elst sep elst sep elst];<span class="comment">%sep='  ';</span>
+0049 dtab=<span class="string">'\t'</span>;doku=[<span class="string">'#a'</span> dtab <span class="string">'b'</span> dtab <span class="string">'m'</span> dtab <span class="string">'n'</span>];
+0050 <span class="keyword">if</span> isfield(N,<span class="string">'r'</span>)&amp;&amp;(length(N.r)==length(N.a))&amp;&amp;maxi,
+0051     mess=[mess N.r(:)];
+0052     doku=[doku dtab <span class="string">'rhoa'</span>];
+0053     <span class="keyword">if</span> min(N.r)&gt;1, ss=[ss sep <span class="string">'%.2f'</span>]; <span class="keyword">else</span> ss=[ss sep <span class="string">'%g'</span>]; <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 <span class="keyword">if</span> isfield(N,<span class="string">'rho'</span>)&amp;&amp;(length(N.rho)==length(N.a))&amp;&amp;maxi,
+0056     mess=[mess N.rho(:)];
+0057     <span class="keyword">if</span> min(abs(N.rho))&gt;1, ss=[ss sep <span class="string">'%.3f'</span>]; <span class="keyword">else</span> ss=[ss sep <span class="string">'%g'</span>]; <span class="keyword">end</span>
+0058     doku=[doku dtab <span class="string">'R'</span>];
+0059 <span class="keyword">end</span>
+0060 <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>)&amp;&amp;(length(N.err)==length(N.a))&amp;&amp;maxi,
+0061     mess=[mess N.err(:)];
+0062     ss=[ss sep <span class="string">'%g'</span>];
+0063     doku=[doku dtab <span class="string">'err'</span>];
+0064 <span class="keyword">end</span>
+0065 <span class="keyword">if</span> isfield(N,<span class="string">'konf'</span>)&amp;&amp;(length(N.konf)==length(N.a))&amp;&amp;maxi,
+0066 <span class="comment">%     mess(1:length(N.k),end+1)=N.k(:);</span>
+0067     mess(1:length(N.konf),end+1)=N.konf(:);
+0068     ss=[ss sep <span class="string">'%g'</span>];
+0069     doku=[doku dtab <span class="string">'k'</span>];<span class="comment">%K/m</span>
+0070 <span class="keyword">end</span>
+0071 <span class="keyword">if</span> isfield(N,<span class="string">'i'</span>)&amp;&amp;(length(N.i)==length(N.a))&amp;&amp;maxi,
+0072     mess(1:length(N.i),end+1)=N.i(:);
+0073     ss=[ss sep <span class="string">'%g'</span>];<span class="comment">%.4f</span>
+0074     doku=[doku dtab <span class="string">'I'</span>];<span class="comment">%I/A</span>
+0075 <span class="keyword">end</span>
+0076 <span class="keyword">if</span> isfield(N,<span class="string">'u'</span>)&amp;&amp;(length(N.u)==length(N.a))&amp;&amp;maxi,
+0077     mess(1:length(N.u),end+1)=N.u(:);
+0078     ss=[ss sep <span class="string">'%g'</span>];<span class="comment">%.4f</span>
+0079     doku=[doku dtab <span class="string">'U'</span>];<span class="comment">%U/V</span>
+0080 <span class="keyword">end</span>
+0081 <span class="keyword">if</span> isfield(N,<span class="string">'ip'</span>)&amp;&amp;(~isempty(find(N.ip)))&amp;&amp;(length(N.ip)==length(N.a))&amp;&amp;maxi,
+0082     mess(1:length(N.ip),end+1)=N.ip(:);
+0083     ss=[ss sep <span class="string">'%g'</span>];<span class="comment">%.3f</span>
+0084     doku=[doku dtab <span class="string">'ip'</span>];<span class="comment">%IP/mrad</span>
+0085 <span class="keyword">end</span>
+0086 ss=[ss newline];
+0087 doku=[doku newline];
+0088 <span class="keyword">if</span> maxi, fprintf(fid,doku); <span class="keyword">end</span>
+0089 fprintf(fid,ss,mess');
+0090 <span class="keyword">if</span> isfield(N,<span class="string">'topo'</span>)&amp;&amp;(length(N.topo)&gt;0)&amp;&amp;maxi,
+0091     fprintf(fid,[<span class="string">'%d # Number of topographical points'</span> newline],size(N.topo,1));
+0092     fprintf(fid,[<span class="string">'# x z positions for each topo point'</span> newline]);
+0093     fprintf(fid,[<span class="string">'%g'</span> sep <span class="string">'%g'</span> newline],N.topo(:,1:2)');
+0094 <span class="keyword">end</span>
+0095 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

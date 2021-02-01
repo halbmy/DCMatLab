@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of read2dpoly</title>
+  <meta name="keywords" content="read2dpoly">
+  <meta name="description" content="READ2DPOLY - Read triangle poly file to Poly struct">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; read2dpoly.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>read2dpoly
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READ2DPOLY - Read triangle poly file to Poly struct</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Poly = read2dpoly(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READ2DPOLY - Read triangle poly file to Poly struct
+ Poly = read2dpoly(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Poly = read2dpoly(filename)</a>
+0002 
+0003 <span class="comment">% READ2DPOLY - Read triangle poly file to Poly struct</span>
+0004 <span class="comment">% Poly = read2dpoly(filename)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;1, filename=<span class="string">'mesh.poly'</span>; <span class="keyword">end</span>
+0007 Poly=[];
+0008 fid=fopen(filename);
+0009 zeile=fgetl(fid);
+0010 aa=str2num(zeile);
+0011 Poly.dim=aa(2);
+0012 Poly.nnodes=aa(1);
+0013 ss=<span class="string">'%d'</span>;<span class="keyword">for</span> i=1:Poly.dim, ss=[ss <span class="string">'%f'</span>]; <span class="keyword">end</span>
+0014 ss=[ss <span class="string">'%d'</span>];
+0015 A=mytextscan(fid,ss,Poly.nnodes);
+0016 Poly.node=A{2};<span class="keyword">for</span> i=2:Poly.dim+1, Poly.node=[Poly.node A{i+1}]; <span class="keyword">end</span>
+0017 <span class="comment">% Poly.nodemarker=A{Poly.dim+2};</span>
+0018 zeile=<span class="string">''</span>;<span class="keyword">while</span> isempty(zeile), zeile=fgetl(fid); <span class="keyword">end</span>
+0019 aa=str2num(zeile);
+0020 Poly.nedges=aa(1);
+0021 ss=<span class="string">'%d'</span>;<span class="keyword">for</span> i=1:Poly.dim, ss=[ss <span class="string">'%f'</span>]; <span class="keyword">end</span>
+0022 ss=[ss <span class="string">'%d'</span>];
+0023 A=mytextscan(fid,ss,Poly.nedges);
+0024 Poly.edge=A{2}+1;<span class="keyword">for</span> i=2:Poly.dim, Poly.edge=[Poly.edge A{i+1}+1]; <span class="keyword">end</span>
+0025 Poly.edge=[Poly.edge A{Poly.dim+2}];
+0026 <span class="comment">% Poly.egemarker=A{Poly.dim+2};</span>
+0027 Poly.nholes=str2num(fgetl(fid));
+0028 Poly.hole=[];
+0029 <span class="keyword">for</span> i=1:Poly.nholes,
+0030    rr=str2num(fgetl(fid));
+0031    Poly.hole(i,1:length(rr)-1)=rr(2:end);
+0032 <span class="keyword">end</span>
+0033 Poly.nregions=str2num(fgetl(fid));
+0034 Poly.region=[];
+0035 <span class="keyword">for</span> i=1:Poly.nregions,
+0036    rr=str2num(fgetl(fid));
+0037    Poly.region(i,1:length(rr)-1)=rr(2:end);
+0038 <span class="keyword">end</span>
+0039 fclose(fid);
+0040 <span class="comment">%%</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

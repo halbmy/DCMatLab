@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writesurfergrid</title>
+  <meta name="keywords" content="writesurfergrid">
+  <meta name="description" content="LOADSURFERGRID - Load surfer grid (*.grd) file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; writesurfergrid.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>writesurfergrid
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>LOADSURFERGRID - Load surfer grid (*.grd) file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function loadsurfergrid(fname,A,x,y); </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> LOADSURFERGRID - Load surfer grid (*.grd) file
+ [A,x,y] = loadsurfergrid(filename);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="rndig.html" class="code" title="function c=rndig(a,n)">rndig</a>	RNDIG - Round to n counting digits</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function loadsurfergrid(fname,A,x,y);</a>
+0002 
+0003 <span class="comment">% LOADSURFERGRID - Load surfer grid (*.grd) file</span>
+0004 <span class="comment">% [A,x,y] = loadsurfergrid(filename);</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'specify matrix!'</span>); <span class="keyword">end</span>
+0007 <span class="keyword">if</span> nargin&lt;4, y=size(A,2); <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;3, x=size(A,2); <span class="keyword">end</span>
+0009 
+0010 fid=fopen(fname,<span class="string">'w'</span>);
+0011 <span class="keyword">if</span> fid&lt;0, display(<span class="string">'Could not open file'</span>); <span class="keyword">return</span>; <span class="keyword">end</span>
+0012 nbytes1=4;
+0013 nbytes2=72;
+0014 vers=1;
+0015 xll=x(1);
+0016 ncol=length(x);
+0017 xsize=<a href="rndig.html" class="code" title="function c=rndig(a,n)">rndig</a>(median(diff(x)));
+0018 yll=y(1);
+0019 nrow=length(y);
+0020 ysize=<a href="rndig.html" class="code" title="function c=rndig(a,n)">rndig</a>(median(diff(y)));
+0021 zmin=min(A(:));
+0022 zmax=max(A(:));
+0023 rotation=0;
+0024 blankvalue=0.0;
+0025 eins=77568;
+0026 <span class="comment">% Header section</span>
+0027 fwrite(fid,<span class="string">'DSRB'</span>,<span class="string">'char'</span>);
+0028 fwrite(fid,nbytes1,<span class="string">'long'</span>);
+0029 fwrite(fid,vers,<span class="string">'long'</span>);
+0030 <span class="comment">% Grid section</span>
+0031 fwrite(fid,<span class="string">'GRID'</span>,<span class="string">'char'</span>);
+0032 fwrite(fid,nbytes2,<span class="string">'long'</span>);
+0033 fwrite(fid,nrow,<span class="string">'long'</span>);
+0034 fwrite(fid,ncol,<span class="string">'long'</span>);
+0035 fwrite(fid,xll,<span class="string">'double'</span>);
+0036 fwrite(fid,yll,<span class="string">'double'</span>);
+0037 fwrite(fid,xsize,<span class="string">'double'</span>);
+0038 fwrite(fid,ysize,<span class="string">'double'</span>);
+0039 fwrite(fid,zmin,<span class="string">'double'</span>);
+0040 fwrite(fid,zmax,<span class="string">'double'</span>);
+0041 fwrite(fid,rotation,<span class="string">'double'</span>);
+0042 fwrite(fid,blankvalue,<span class="string">'double'</span>);
+0043 <span class="comment">% Data section</span>
+0044 fwrite(fid,<span class="string">'DATA'</span>,<span class="string">'char'</span>);
+0045 fwrite(fid,eins,<span class="string">'long'</span>)
+0046 fwrite(fid,A',<span class="string">'double'</span>)';
+0047 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

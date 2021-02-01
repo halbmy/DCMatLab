@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of snapline</title>
+  <meta name="keywords" content="snapline">
+  <meta name="description" content="SNAPLINE - SNAPS points (x,y) onto a straight line">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; snapline.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>snapline
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SNAPLINE - SNAPS points (x,y) onto a straight line</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [l,x1,y1] = snapline(x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SNAPLINE - SNAPS points (x,y) onto a straight line
+ [l,x1,y1] = snapline(x,y)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [l,x1,y1] = snapline(x,y)</a>
+0002 
+0003 <span class="comment">% SNAPLINE - SNAPS points (x,y) onto a straight line</span>
+0004 <span class="comment">% [l,x1,y1] = snapline(x,y)</span>
+0005 
+0006 <span class="keyword">if</span> size(x)~=size(y), error(<span class="string">'size does not match!'</span>); <span class="keyword">end</span>
+0007 nl=length(x);
+0008 G=ones(nl,2);
+0009 G(:,1)=x;
+0010 ab=G\y,a=ab(1);b=ab(2);
+0011 <span class="comment">%% description by parametric form</span>
+0012 <span class="comment">%% (x,y) = (0,b) + (1,a) * t</span>
+0013 x1=(x+y*a-a*b)/(a*a+1);
+0014 y1=x1*a+b;
+0015 xx=[min(x) max(x)];yy=xx*a+b;
+0016 plot(x,y,<span class="string">'bx'</span>,x1,y1,<span class="string">'ro'</span>,xx,yy,<span class="string">'r-'</span>);axis equal
+0017 dr=sqrt((x1-x).^2+(y1-y).^2);
+0018 <span class="comment">%% profile length</span>
+0019 l=(x-x(1))*(1+a^2);
+0020 <span class="keyword">if</span> max(l)&lt;=0, l=-l; <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

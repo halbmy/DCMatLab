@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mbm2xz</title>
+  <meta name="keywords" content="mbm2xz">
+  <meta name="description" content="MBM2XZ - Converts tape measure coordinates in topographical xz">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; mbm2xz.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>mbm2xz
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>MBM2XZ - Converts tape measure coordinates in topographical xz</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function xz=mbm2xz(xmb,topo,topoisxz,rightpoint) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MBM2XZ - Converts tape measure coordinates in topographical xz
+ xz = mbm2xz(xtape,topography[,topoisxz,rightpoint])
+ xz         .. positions in real coordinates
+ xmb        .. tape measure x coordinate
+ topo       .. topography (paired values)
+ topoisxz   .. topo is x z (otherwise tape-x z) [default=0]
+ rightpoint .. number of point whose xmb equals topox [default=1]
+ Thomas Günther (thomas@resistivity.net)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function xz=mbm2xz(xmb,topo,topoisxz,rightpoint)</a>
+0002 
+0003 <span class="comment">% MBM2XZ - Converts tape measure coordinates in topographical xz</span>
+0004 <span class="comment">% xz = mbm2xz(xtape,topography[,topoisxz,rightpoint])</span>
+0005 <span class="comment">% xz         .. positions in real coordinates</span>
+0006 <span class="comment">% xmb        .. tape measure x coordinate</span>
+0007 <span class="comment">% topo       .. topography (paired values)</span>
+0008 <span class="comment">% topoisxz   .. topo is x z (otherwise tape-x z) [default=0]</span>
+0009 <span class="comment">% rightpoint .. number of point whose xmb equals topox [default=1]</span>
+0010 <span class="comment">% Thomas Günther (thomas@resistivity.net)</span>
+0011 
+0012 <span class="keyword">if</span> nargin&lt;4, rightpoint=1; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;3, topoisxz=0; <span class="keyword">end</span>
+0014 
+0015 <span class="keyword">if</span> topoisxz, <span class="comment">% convert first topography_x to mbm</span>
+0016     topox=topo(1,1)+[0;cumsum(sqrt(sum(diff(topo).^2,2)))];
+0017     shift=topo(rightpoint,1)-topox(rightpoint);
+0018     topo(:,1)=topox+shift;
+0019 <span class="keyword">else</span>
+0020     shift=0;
+0021 <span class="keyword">end</span>
+0022 z=interp1(topo(:,1),topo(:,2),xmb,<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0023 x=xmb(1)+[0;cumsum(sqrt(diff(xmb).^2-diff(z).^2))];
+0024 xz=[x(:)-shift z(:)];
+0025 di=sqrt(sum(diff(xz).^2,2))';
+0026 fprintf(<span class="string">'min/max electrode distance are %.2f/%.2fm\n'</span>,min(di),max(di));</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

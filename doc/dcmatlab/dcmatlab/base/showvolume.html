@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showvolume</title>
+  <meta name="keywords" content="showvolume">
+  <meta name="description" content="% Isosurface/slice visualization">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; showvolume.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>showvolume
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Isosurface/slice visualization</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function showvolume(M,Xm,Ym,Zm,val,sx,sy,sz,caps) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Isosurface/slice visualization
+% showvolume(M,xm,ym,zm,iso_value,xslices,yslices,zslices,caps)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="b2r.html" class="code" title="function c = b2r(m)">b2r</a>	Create Blue-white-red colormap(for zero-symmetric data)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function showvolume(M,Xm,Ym,Zm,val,sx,sy,sz,caps)</a>
+0002 
+0003 <span class="comment">%% Isosurface/slice visualization</span>
+0004 <span class="comment">%% showvolume(M,xm,ym,zm,iso_value,xslices,yslices,zslices,caps)</span>
+0005 
+0006 <span class="keyword">global</span> MAL
+0007 sq=100;
+0008 Im=length(Xm);Jm=length(Ym);Km=length(Zm);
+0009 figure(4);
+0010 clf
+0011 <span class="comment">%% Variablen ...</span>
+0012 <span class="keyword">if</span> nargin&lt;5, val=120; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;6, sx=[]; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&lt;7, sy=[]; <span class="keyword">end</span>
+0015 <span class="keyword">if</span> nargin&lt;8, sz=[]; <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;9, caps=0; <span class="keyword">end</span>
+0017 <span class="comment">%% Mesh-Grid</span>
+0018 <span class="comment">%zz=[0 Zm(find(Zm&lt;100))];</span>
+0019 zz=Zm;
+0020 zm=length(zz);
+0021 <span class="keyword">if</span> MAL.xy==0,
+0022   W=zeros(Im,Jm,Km+1);
+0023   W(:,:,2:Km+1)=reshape(M,Im,Jm,Km);
+0024   [x,y,z]=meshgrid(Ym,Xm,zz);
+0025   xlab=<span class="string">'x in m'</span>;
+0026   ylab=<span class="string">'y in m'</span>;
+0027 <span class="keyword">else</span>
+0028   W=zeros(Jm,Im,Km);
+0029   W(:,:,2:Km+1)=reshape(rot90(M),Jm,Im,Km);
+0030   [x,y,z]=meshgrid(Xm,Ym,zz);
+0031   xlab=<span class="string">'y in m'</span>;
+0032   ylab=<span class="string">'x in m'</span>;
+0033 <span class="keyword">end</span>
+0034 W(:,:,1)=1/sq;
+0035 <span class="comment">%W=smooth3(W,'box',5);</span>
+0036 <span class="keyword">if</span> MAL.log==1,
+0037   W=log10(W);
+0038   val=log10(val);
+0039 <span class="keyword">end</span>
+0040 <span class="comment">%% Slices</span>
+0041 sl=slice(x,y,z,W,sx,sy,sz);
+0042 set(sl,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,<span class="string">'interp'</span>);
+0043 colormap default
+0044 <span class="keyword">switch</span> MAL.cmap
+0045   <span class="keyword">case</span> 1, colormap default
+0046   <span class="keyword">case</span> 2, colormap(<a href="b2r.html" class="code" title="function c = b2r(m)">b2r</a>);
+0047   <span class="keyword">case</span> 3, colormap hot
+0048   <span class="keyword">case</span> 4, colormap gray
+0049   <span class="keyword">case</span> 5, colormap jet
+0050   <span class="keyword">case</span> 6, colormap cool
+0051   <span class="keyword">otherwise</span>, colormap default
+0052 <span class="keyword">end</span>
+0053 <span class="keyword">if</span> MAL.cauto==1,
+0054     <span class="comment">%if MAL.log==1,</span>
+0055     <span class="comment">%  [NN,VV]=hist(log10(W(:)),100);</span>
+0056     <span class="comment">%else</span>
+0057       [NN,VV]=hist(W(:),100);
+0058     <span class="comment">%end</span>
+0059     CN=cumsum(NN);CN=CN/max(CN);
+0060     imin=max(find(CN&lt;0.01));
+0061     imax=min(find(CN&gt;0.99));
+0062     <span class="keyword">if</span> isempty(imin), imin=1; <span class="keyword">end</span>
+0063     <span class="keyword">if</span> isempty(imax), imax=length(VV); <span class="keyword">end</span>
+0064     cmin=VV(imin);
+0065     cmax=VV(imax);
+0066     caxis([cmin cmax]);
+0067 <span class="keyword">else</span>
+0068     <span class="keyword">if</span> MAL.log==1, 
+0069         caxis(log10([MAL.cmin MAL.cmax])); 
+0070     <span class="keyword">else</span> 
+0071         caxis([MAL.cmin MAL.cmax]); 
+0072     <span class="keyword">end</span>
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="comment">%% Isosurface</span>
+0076 cmap=colormap;
+0077 cach=caxis;
+0078 <span class="keyword">for</span> l = 1:length(val),
+0079     cind=1+round((val(l)-cach(1))/(cach(2)-cach(1))*(length(cmap)-1));
+0080     <span class="keyword">if</span> cind&gt;length(cmap), cind=length(cmap); <span class="keyword">end</span>
+0081     <span class="keyword">if</span> cind&lt;1, cind=1; <span class="keyword">end</span>
+0082     col=cmap(cind,:);
+0083     iso=patch(isosurface(x,y,z,W,val(l)),<span class="string">'FaceColor'</span>,col,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+0084         <span class="string">'SpecularExponent'</span>,5,<span class="string">'SpecularColorReflectance'</span>,0.05);
+0085       <span class="comment">%isonormals(W,iso)</span>
+0086     <span class="keyword">if</span> caps&gt;0,
+0087       patch(isocaps(x,y,z,W,val(l),caps),<span class="string">'FaceColor'</span>,<span class="string">'interp'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>)
+0088     <span class="keyword">end</span>
+0089 <span class="keyword">end</span>
+0090 <span class="comment">%% Einstellungen</span>
+0091 set(gca,<span class="string">'ZDir'</span>,<span class="string">'reverse'</span>);
+0092 <span class="comment">%zz=get(gca,'zlim');</span>
+0093 <span class="comment">%zz(1)=0;</span>
+0094 <span class="comment">%set(gca,'zlim',zz);</span>
+0095 <span class="keyword">if</span> MAL.xy==0,
+0096   set(gca,<span class="string">'ylim'</span>,[min(Xm) max(Xm)],<span class="string">'xlim'</span>,[min(Ym) max(Ym)]);
+0097 <span class="keyword">else</span>
+0098   set(gca,<span class="string">'xlim'</span>,[min(Xm) max(Xm)],<span class="string">'ylim'</span>,[min(Ym) max(Ym)]);
+0099 <span class="keyword">end</span>
+0100 set(gca,<span class="string">'zlim'</span>,[min(zz) max(zz)]);
+0101 xdir=<span class="string">'normal'</span>;
+0102 ydir=<span class="string">'normal'</span>;
+0103 <span class="keyword">if</span> MAL.xy==0,
+0104   <span class="keyword">if</span> MAL.xdir==1, xdir=<span class="string">'reverse'</span>;  <span class="keyword">end</span>
+0105   <span class="keyword">if</span> MAL.ydir==1, ydir=<span class="string">'reverse'</span>;  <span class="keyword">end</span>
+0106 <span class="keyword">else</span>
+0107   <span class="keyword">if</span> MAL.xdir==1, ydir=<span class="string">'reverse'</span>;  <span class="keyword">end</span>
+0108   <span class="keyword">if</span> MAL.ydir==1, xdir=<span class="string">'reverse'</span>;  <span class="keyword">end</span>
+0109 <span class="keyword">end</span>
+0110 set(gca,<span class="string">'XDir'</span>,xdir);
+0111 set(gca,<span class="string">'XDir'</span>,ydir);
+0112 xlabel(xlab);
+0113 ylabel(ylab);
+0114 zlabel(<span class="string">'z in m'</span>);
+0115 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1]);
+0116 drawnow;
+0117 axis vis3d
+0118 zoom(1.5)
+0119 camlight headlight
+0120 set(gcf,<span class="string">'Renderer'</span>,<span class="string">'zbuffer'</span>);
+0121 lighting gouraud
+0122 azn=200;
+0123 el=25;
+0124 view(azn,el);
+0125 drawnow</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

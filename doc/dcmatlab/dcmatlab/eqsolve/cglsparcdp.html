@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cglsparcdp</title>
+  <meta name="keywords" content="cglsparcdp">
+  <meta name="description" content="CGLSPARCDP - Least squares basing on conjugate gradients">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; cglsparcdp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cglsparcdp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CGLSPARCDP - Least squares basing on conjugate gradients</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [X,rho,eta,j] = cglsparcdp(A,b,L,D,PP,lambda) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CGLSPARCDP - Least squares basing on conjugate gradients
+              for parallel solutions for different lambda
+ solves (A'D'DA + lam*C) (P\x) = A'D'D b
+  = cglsparcdp(A,b,C,D,P,lam)
+     C .. constraint matrix
+     D .. data weighting matrix
+     P .. parameter mapping matrix
+   lam .. regularization parameters
+     X .. solution matrix (columns correspond to lams)
+ [X,rho,eta] = ... yields (inexact) model and data norms
+               which can be used for L-curve criterion</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="invshiftcdp.html" class="code" title="function [x,lambda,rho,eta,ak] = invshiftcdp(A,y,C,D,P,startlam,minlam,kuh)">invshiftcdp</a>	% INVSHIFTED - make shifted CG and choose by L-criterion</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [X,rho,eta,j] = cglsparcdp(A,b,L,D,PP,lambda)</a>
+0002 
+0003 <span class="comment">% CGLSPARCDP - Least squares basing on conjugate gradients</span>
+0004 <span class="comment">%              for parallel solutions for different lambda</span>
+0005 <span class="comment">% solves (A'D'DA + lam*C) (P\x) = A'D'D b</span>
+0006 <span class="comment">%  = cglsparcdp(A,b,C,D,P,lam)</span>
+0007 <span class="comment">%     C .. constraint matrix</span>
+0008 <span class="comment">%     D .. data weighting matrix</span>
+0009 <span class="comment">%     P .. parameter mapping matrix</span>
+0010 <span class="comment">%   lam .. regularization parameters</span>
+0011 <span class="comment">%     X .. solution matrix (columns correspond to lams)</span>
+0012 <span class="comment">% [X,rho,eta] = ... yields (inexact) model and data norms</span>
+0013 <span class="comment">%               which can be used for L-curve criterion</span>
+0014 
+0015 <span class="comment">% Initialization.</span>
+0016 <span class="keyword">if</span> nargin&lt;5, lambda=0.1.^(0:5); <span class="keyword">end</span>
+0017 [m,n] = size(A); 
+0018 x0=zeros(n,1);
+0019 kmax=length(lambda);
+0020 <span class="comment">% Prepare for CG iteration.</span>
+0021 PI=PP';
+0022 su=sum(PP,1);
+0023 we=ones(size(su));
+0024 fi=find(su);we(fi)=1./su(fi);
+0025 PI=spdiags(we(:),0,length(we),length(we))*PI;
+0026 x=PI*x0;
+0027 X=zeros(length(x),kmax);P=X;
+0028 z = D*(b - A*(PP*x)); <span class="comment">% residuum of unregularized equation</span>
+0029 Z=zeros(length(z),kmax);
+0030 r = (z'*D*A*PP)';<span class="comment">%-L*(PP*x); % residuum of normal equation</span>
+0031 p=r;
+0032 normr2 = ones(kmax,1)*(r'*r);
+0033 R=zeros(length(r),kmax);
+0034 P=zeros(length(p),kmax);
+0035 <span class="keyword">for</span> k=1:kmax,
+0036     Z(:,k)=z;
+0037     P(:,k)=p; <span class="comment">%-L*x*lambda(k)</span>
+0038 <span class="keyword">end</span>
+0039 acc=1e-8;
+0040 abbr=normr2(1)*acc; <span class="comment">% goal for norm(r)^2</span>
+0041 j=0;oldf=0;
+0042 t0=clock;
+0043 kmin=1; <span class="comment">% all lambdas</span>
+0044 wb=waitbar(0,<span class="string">'CG Least Squares Parallel CD...'</span>);
+0045 <span class="keyword">while</span>(kmin&lt;=kmax),
+0046   j=j+1;  
+0047   Q = D*(A*(PP*P));
+0048   normr2old=normr2;
+0049   fik=find(normr2&gt;abbr);
+0050 <span class="comment">%   for k=kmin:kmax,</span>
+0051   <span class="keyword">for</span> l=1:length(fik),
+0052       k=fik(l);
+0053       q=Q(:,k);p=P(:,k);
+0054       Pp=PP*p;
+0055       alpha = normr2(k)/(q'*q+Pp'*(L*Pp)*lambda(k));
+0056       X(:,k)  = X(:,k) + alpha*p;
+0057       Z(:,k)  = Z(:,k) - alpha*q;
+0058   <span class="keyword">end</span>
+0059   R(:,fik)=(Z(:,fik)'*D*A*PP)'; <span class="comment">% common part</span>
+0060 <span class="comment">%   R(:,kmin:kmax)=(Z(:,kmin:kmax)'*D*A*PP)'; % common part</span>
+0061 <span class="comment">%   for k=kmin:kmax, % only for not converged</span>
+0062   <span class="keyword">for</span> l=1:length(fik),
+0063       k=fik(l);
+0064       r = R(:,k);
+0065       r  = r - PI*(L*(PP*X(:,k)))*lambda(k); <span class="comment">% additional part</span>
+0066       normr2(k) = r'*r; <span class="comment">% this is really a bit tricky!</span>
+0067       beta = normr2(k)/normr2old(k); 
+0068       P(:,k) = r + beta*P(:,k);
+0069       R(:,k) = r;
+0070   <span class="keyword">end</span>
+0071   okmin=kmin; <span class="comment">%for waitbar</span>
+0072   kmin=min(find(normr2&gt;abbr)); <span class="comment">% check for convergence</span>
+0073   <span class="keyword">if</span> isempty(kmin), kmin=kmax+1; <span class="keyword">end</span>
+0074   <span class="comment">%   if kmin&gt;okmin, waitbar(kmin/kmax,wb); end</span>
+0075   fort=1+log10(normr2(end)/abbr)/log10(acc);
+0076   <span class="keyword">if</span> fort&gt;oldf+0.05,
+0077       waitbar(fort,wb);
+0078       oldf=fort;
+0079   <span class="keyword">end</span> 
+0080 <span class="keyword">end</span>
+0081 close(wb);
+0082 message(sprintf(<span class="string">'Solved parallel weighted normal equations in %.1fs, %d iterations,%d lambdas'</span>,<span class="keyword">...</span>
+0083     etime(clock,t0),j,length(lambda)));
+0084 X=PP*X;
+0085 rho=zeros(kmax,1);
+0086 eta=zeros(kmax,1);
+0087 <span class="keyword">if</span> nargout&gt;1, 
+0088     <span class="keyword">for</span> k=1:kmax,
+0089         rho(k)=norm(Z(:,k));
+0090         eta(k)=sqrt(X(:,k)'*(L*X(:,k)));
+0091     <span class="keyword">end</span>
+0092 <span class="keyword">end</span>
+0093 clear Q PI R Z P</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

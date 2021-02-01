@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>DC2DInvRes - Inversion Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC2DInvRes - Inversion Menu</h2>
+<h3><a name="full"></a>Full Inversion</h3>
+<p>The full inversion is carried out using the current options.<br>
+  Inversion stops as soon as the chi-squared misfit stagnates or the data are 
+  fitted within standard deviation (chi^2&lt;1). </p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+I</p>
+<h3><a name="one"></a>One inverse step</h3>
+<p>Only one inverse step including forward calculation is calculated. This is 
+  particularly usefull for testing options as regularization types and strengths.</p>
+<p><a href="hotkeys.html">Hotkey</a>: 1</p>
+<hr>
+<h3><a name="lay"></a>Create Layered Model</h3>
+Applying a one-dimensional inversion to the whole data set a starting model is 
+constructed containing the main layering of the underground. The algorithm tries 
+to equalize neighboring layers if the difference is not very large. 
+<h3><a name="mref"></a>Set as Reference Model</h3>
+The actual model is set as reference model, which is the homogeneous starting 
+model. It can be successfully applied if an a-priori model is present and the 
+inversion model is forced to keep close to is. 
+<h3><a name="back"></a>Back to old model</h3>
+Sometimes it proves useful to play with some options using the one-step inversion. 
+For that reason, it is possible to go back to the last model via this feature. 
+<hr>
+<h3><a name="clear"></a>Clear Sensitivity</h3>
+Sometimes it is useful to clear the sensitivity matrix (for recomputation or saving 
+disk space). 
+<h3><a name="calc"></a>Sensitivity Integration</h3>
+<p>Calculates the homogeneous half-space sensitivity matrix. Otherwise it is done 
+  automatically before the first inverse step. These sensitivities are saved for 
+  later use in a file with the root of the data file plus &quot;-sens.mat&quot;. 
+  Once the sensitivities are calculated, they can be investigated using <a href="display.html#sens">Show 
+  Sensitivities</a>.</p>
+<hr>
+<h3><a name="doi"></a>Display Depth of Investigation</h3>
+The depth of investigation (DOI) index shows, following (Li and Oldenburg, 1999), 
+the dependence on the starting model. One inversion step is carried out using 
+two different homogeneous half-spaces. The difference between the two models can 
+be treated as a reliability of the model cells. A well-resolved model cell is 
+supposed to obtain nearly identical inversion results. 
+<hr>
+<h3><a name="ipinv"></a>IP Inversion </h3>
+If IP data are present, a single-step is carried out following (Beard, Hohman 
+and Tripp, 1996). As a result the chargeability of the model cells can be displayed 
+using the <a href="display.html">Show menu</a>. 
+</body>
+</html>

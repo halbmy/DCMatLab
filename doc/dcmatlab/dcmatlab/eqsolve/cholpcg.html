@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cholpcg</title>
+  <meta name="keywords" content="cholpcg">
+  <meta name="description" content="CHOLPCG - Conjugate Gradient method with incomplete Cholesky factorization">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; cholpcg.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cholpcg
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CHOLPCG - Conjugate Gradient method with incomplete Cholesky factorization</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [X,flag,relres,iter] = cholpcg(A,B,tol,maxit,M1,M2,x0) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CHOLPCG - Conjugate Gradient method with incomplete Cholesky factorization
+ [x,flag] = cholpcg(A,b,tol,maxit,CholA,x0);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [X,flag,relres,iter] = cholpcg(A,B,tol,maxit,M1,M2,x0)</a>
+0002 
+0003 <span class="comment">% CHOLPCG - Conjugate Gradient method with incomplete Cholesky factorization</span>
+0004 <span class="comment">% [x,flag] = cholpcg(A,b,tol,maxit,CholA,x0);</span>
+0005 
+0006 <span class="keyword">if</span> (nargin &lt; 2)
+0007    error(<span class="string">'Not enough input arguments.'</span>);
+0008 <span class="keyword">end</span>
+0009 
+0010 <span class="comment">% Assign default values to unspecified parameters</span>
+0011 <span class="keyword">if</span> (nargin &lt; 3) | isempty(tol)
+0012    tol = 1e-6;
+0013 <span class="keyword">end</span>
+0014 <span class="keyword">if</span> (nargin &lt; 4) | isempty(maxit)
+0015    maxit = min(n,20);
+0016 <span class="keyword">end</span>
+0017 rhs=size(B,2);
+0018 n=length(A);
+0019 <span class="comment">% Check for all zero right hand side vector =&gt; all zero solution</span>
+0020 n2b = sqrt(sum(B.^2))';                      <span class="comment">% Norm of rhs vector, b</span>
+0021 X = zeros(length(A),rhs);                  <span class="comment">% then  solution is all zeros</span>
+0022 <span class="keyword">if</span> (max(n2b) == 0)                       <span class="comment">% if    rhs vector is all zeros</span>
+0023    flag = 0;                        <span class="comment">% a valid solution has been obtained</span>
+0024    relres = 0;                      <span class="comment">% the relative residual is actually 0/0</span>
+0025    iter = 0;                        <span class="comment">% no iterations need be performed</span>
+0026    <span class="keyword">return</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% Set up for the method</span>
+0030 flag = 1;
+0031 Xmin = X;                          <span class="comment">% Iterate which has minimal residual so far</span>
+0032 imin = 0;                          <span class="comment">% Iteration at which xmin was computed</span>
+0033 tolb = tol * n2b;                  <span class="comment">% Relative tolerance</span>
+0034 R = B - A * X;                  <span class="comment">% Zero-th residual</span>
+0035 normr = sqrt(sum(R.^2))';                   <span class="comment">% Norm of residual</span>
+0036 
+0037 <span class="keyword">if</span> (normr &lt;= tolb)                 <span class="comment">% Initial guess is a good enough solution</span>
+0038    flag = 0;
+0039    relres = Normr ./ n2b;
+0040    iter = 0;
+0041    <span class="keyword">return</span>
+0042 <span class="keyword">end</span>
+0043 
+0044 normrmin = normr;                  <span class="comment">% Norm of minimum residual</span>
+0045 rho = zeros(rhs,1);
+0046 stag = 0;                          <span class="comment">% stagnation of the method</span>
+0047 
+0048 <span class="comment">% loop over maxit iterations (unless convergence or failure)</span>
+0049 
+0050 <span class="keyword">for</span> i = 1 : maxit
+0051     i
+0052    Y = M1 \ R;
+0053    <span class="keyword">if</span> isinf(max(abs(Y(:))))
+0054       flag = 2;
+0055       <span class="keyword">break</span>
+0056    <span class="keyword">end</span>
+0057    
+0058    Z = M2 \ R;
+0059    <span class="keyword">if</span> isinf(max(abs(Z(:))))
+0060       flag = 2;
+0061       <span class="keyword">break</span>
+0062    <span class="keyword">end</span>
+0063    
+0064    rho1 = rho;
+0065    rho = sum(R.*Z)';
+0066    <span class="keyword">if</span> find((rho == 0) | isinf(rho))
+0067       flag = 4;
+0068       <span class="keyword">break</span>
+0069    <span class="keyword">end</span>
+0070    <span class="keyword">if</span> (i == 1)
+0071       P = Z;
+0072    <span class="keyword">else</span>
+0073       beta = rho ./ rho1;
+0074       <span class="keyword">if</span> find((beta == 0) | isinf(beta))
+0075          flag = 4;
+0076          <span class="keyword">break</span>
+0077       <span class="keyword">end</span>
+0078       <span class="keyword">for</span> k=1:rhs
+0079         P(:,k) = Z(:,k) + P(:,k)*beta(k);
+0080     <span class="keyword">end</span>
+0081    <span class="keyword">end</span>
+0082    Q = A * P;
+0083    pq = sum(P.*Q)'; <span class="comment">%p' * q;</span>
+0084    <span class="keyword">if</span> find((pq &lt;= 0) | isinf(pq))
+0085       flag = 4;
+0086       <span class="keyword">break</span>
+0087    <span class="keyword">else</span>
+0088       alpha = rho ./ pq;
+0089    <span class="keyword">end</span>
+0090    <span class="keyword">if</span> isinf(alpha)
+0091       flag = 4;
+0092       <span class="keyword">break</span>
+0093    <span class="keyword">end</span>
+0094    <span class="keyword">if</span> (alpha == 0)                  <span class="comment">% stagnation of the method</span>
+0095       stag = 1;
+0096    <span class="keyword">end</span>
+0097    
+0098    <span class="comment">% Check for stagnation of the method !!! still to do</span>
+0099 <span class="comment">%    if (stag == 0)</span>
+0100 <span class="comment">%       stagtest = zeros(n,1);</span>
+0101 <span class="comment">%       ind = (x ~= 0);</span>
+0102 <span class="comment">%       stagtest(ind) = p(ind) ./ x(ind);</span>
+0103 <span class="comment">%       stagtest(~ind &amp; p ~= 0) = Inf;</span>
+0104 <span class="comment">%       if (abs(alpha)*norm(stagtest,inf) &lt; eps)</span>
+0105 <span class="comment">%          stag = 1;</span>
+0106 <span class="comment">%       end</span>
+0107 <span class="comment">%    end</span>
+0108    
+0109    <span class="keyword">for</span> k=1:rhs,
+0110        X(:,k) = X(:,k) + P(:,k)*alpha(k);               <span class="comment">% form new iterate</span>
+0111    <span class="keyword">end</span>
+0112    <span class="comment">%normr = sqrt(sum((B - A * X)^.2))';</span>
+0113    normr=sqrt(sum(R.^2))';
+0114    
+0115    <span class="keyword">if</span> ~find(normr &gt; tolb)               <span class="comment">% check for convergence</span>
+0116       flag = 0;
+0117       iter = i;
+0118       <span class="keyword">break</span>
+0119    <span class="keyword">end</span>
+0120    
+0121    <span class="keyword">if</span> (stag == 1)
+0122       flag = 3;
+0123       <span class="keyword">break</span>
+0124    <span class="keyword">end</span>
+0125    
+0126    <span class="keyword">for</span> k=1:rhs,
+0127        R(:,k) = R(:,k) - Q(:,k)*alpha(k);
+0128    <span class="keyword">end</span>
+0129    
+0130 <span class="keyword">end</span>                                <span class="comment">% for i = 1 : maxit</span>
+0131</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

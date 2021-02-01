@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of bor2xz</title>
+  <meta name="keywords" content="bor2xz">
+  <meta name="description" content="BOR2XZ - Convert Bore hole information as from reading *.bor file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; bor2xz.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>bor2xz
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>BOR2XZ - Convert Bore hole information as from reading *.bor file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function bor2xz(Bor,filename,N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> BOR2XZ - Convert Bore hole information as from reading *.bor file
+          into *.xz file for constraining the dcfemlib model
+ bor2xz(Bor,filename[,N])
+ Bor..borehole structure with positions (Bor.pos) and layers(Bor.lay)
+ N.topo is used (if given) to add topography</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function bor2xz(Bor,filename,N)</a>
+0002 
+0003 <span class="comment">% BOR2XZ - Convert Bore hole information as from reading *.bor file</span>
+0004 <span class="comment">%          into *.xz file for constraining the dcfemlib model</span>
+0005 <span class="comment">% bor2xz(Bor,filename[,N])</span>
+0006 <span class="comment">% Bor..borehole structure with positions (Bor.pos) and layers(Bor.lay)</span>
+0007 <span class="comment">% N.topo is used (if given) to add topography</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;2, filename=<span class="string">'data.xz'</span>; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;3,
+0011     posz=zeros(size(Bor.pos));
+0012 <span class="keyword">else</span>
+0013     <span class="keyword">if</span> isfield(N,<span class="string">'topo'</span>),
+0014         posz=interp1(N.topo(:,1),N.topo(:,2),Bor.pos);
+0015     <span class="keyword">else</span>
+0016         posz=interp1(N.elec(:,1),N.elec(:,2),Bor.pos);
+0017     <span class="keyword">end</span>
+0018 <span class="keyword">end</span>
+0019 <span class="comment">% filename='wob-all.xz';</span>
+0020 <span class="comment">% fid=1;</span>
+0021 fak=0.5;
+0022 <span class="comment">% clf;plot(Bor.pos,posz);</span>
+0023 fid=fopen(filename,<span class="string">'w'</span>);
+0024 <span class="keyword">for</span> i=1:length(Bor.pos),
+0025     <span class="keyword">for</span> j=1:length(Bor.lay{i}),
+0026         <span class="keyword">if</span> i*j&gt;1, fprintf(fid,<span class="string">'\n'</span>); <span class="keyword">end</span> <span class="comment">% empty row for new line</span>
+0027         xx=Bor.pos(i)+[-1 1]*Bor.lay{i}(j)*fak;
+0028         zz=[1 1]*(posz(i)-Bor.lay{i}(j));
+0029 <span class="comment">%         line(xx,zz);</span>
+0030         fprintf(fid,<span class="string">'%g\t%g\n'</span>,[xx;zz]);
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">end</span>
+0033 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

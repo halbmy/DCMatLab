@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gaulag</title>
+  <meta name="keywords" content="gaulag">
+  <meta name="description" content="GAULAG - Gauss-Laguerre Integration Points">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; gaulag.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>gaulag
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GAULAG - Gauss-Laguerre Integration Points</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x, w] = gaulag(n) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GAULAG - Gauss-Laguerre Integration Points
+ [x,w] = gaulag(n)
+ Given alf = 0.0, the parameter alpha of the Laguerre polynomials, this routine
+ returns arrays x[1..n] and w[1..n] containing the abscissas and weights
+ of the n-point Gauss-Laguerre quadrature formula. The smallest abscissa
+ is returned in x[1], the largest in x[n].</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x, w] = gaulag(n)</a>
+0002 <span class="comment">% GAULAG - Gauss-Laguerre Integration Points</span>
+0003 <span class="comment">% [x,w] = gaulag(n)</span>
+0004 <span class="comment">% Given alf = 0.0, the parameter alpha of the Laguerre polynomials, this routine</span>
+0005 <span class="comment">% returns arrays x[1..n] and w[1..n] containing the abscissas and weights</span>
+0006 <span class="comment">% of the n-point Gauss-Laguerre quadrature formula. The smallest abscissa</span>
+0007 <span class="comment">% is returned in x[1], the largest in x[n].</span>
+0008 
+0009 <span class="comment">% For a description of the following routines see</span>
+0010 <span class="comment">% Numerical Recipes, Press et a</span>
+0011 
+0012 EPS = 3.0e-11;
+0013 MAXIT = 10;
+0014 
+0015 z = 0;
+0016 <span class="keyword">for</span> i=1:n        <span class="comment">%Loop over desired roots</span>
+0017     <span class="keyword">if</span> i == 1
+0018         z = 3.0/(1.0+2.4*n);
+0019     <span class="keyword">elseif</span> i == 2
+0020             z = z + 15.0/(1.0+2.5*n);
+0021     <span class="keyword">else</span>
+0022             ai = i-2;
+0023             z = z + (1.0+2.55*ai)/(1.9*ai)*(z-x(ai));
+0024    <span class="keyword">end</span>
+0025    <span class="keyword">for</span> its = 1:MAXIT
+0026       p1 = 1.0;
+0027       p2 = 0.0;
+0028       <span class="keyword">for</span> j = 1:n
+0029          p3 = p2;
+0030          p2 = p1;
+0031          p1 = ((2*j-1-z)*p2-(j-1)*p3)/j;
+0032       <span class="keyword">end</span>
+0033         pp = n*(p1-p2)/z;
+0034         z1 = z;
+0035         z  = z1-p1/pp;
+0036       <span class="keyword">if</span>(abs(z-z1) &lt;= EPS) <span class="keyword">break</span>;
+0037       <span class="keyword">end</span>
+0038    <span class="keyword">end</span>
+0039     x(i) = z;
+0040     w(i) = -1/(pp*n*p2);
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

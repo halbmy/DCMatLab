@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getpseudos</title>
+  <meta name="keywords" content="getpseudos">
+  <meta name="description" content="GETPSEUDOS - Extract profiles from 3D data set">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; getpseudos.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getpseudos
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GETPSEUDOS - Extract profiles from 3D data set</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=getpseudos(N,dirs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GETPSEUDOS - Extract profiles from 3D data set
+ N = getpseudos(N);
+ adds the following cells to the data structure N
+ zweid - the profile data structures
+ names - the names of the profiles (e.g. x=-2)
+ nr    - the corresponding numbers in the 3D data
+ getpseudos(N,1/2) gets only profiles in x/y direction
+ getpseudos(N,minnr) gets only profiles with at least minnr electrodes</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li><li><a href="showdata3d.html" class="code" title="function [cmin,cmax]=showdata3d(N,feld,mal)">showdata3d</a>	SHOWDATA3D show datum points of 3d data</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=getpseudos(N,dirs)</a>
+0002 
+0003 <span class="comment">% GETPSEUDOS - Extract profiles from 3D data set</span>
+0004 <span class="comment">% N = getpseudos(N);</span>
+0005 <span class="comment">% adds the following cells to the data structure N</span>
+0006 <span class="comment">% zweid - the profile data structures</span>
+0007 <span class="comment">% names - the names of the profiles (e.g. x=-2)</span>
+0008 <span class="comment">% nr    - the corresponding numbers in the 3D data</span>
+0009 <span class="comment">% getpseudos(N,1/2) gets only profiles in x/y direction</span>
+0010 <span class="comment">% getpseudos(N,minnr) gets only profiles with at least minnr electrodes</span>
+0011 
+0012 minnr=1;
+0013 <span class="keyword">if</span> nargin&lt;2, 
+0014     dirs=1:2; <span class="comment">% both x and y</span>
+0015 <span class="keyword">else</span>
+0016     <span class="keyword">if</span> dirs(1)&gt;2, minnr=dirs(1);dirs=1:2; <span class="keyword">end</span> <span class="comment">% minimum number</span>
+0017 <span class="keyword">end</span>
+0018 bm=(1:size(N.elec,1))'; <span class="comment">% backmap vector</span>
+0019 xy=<span class="string">'xy'</span>;
+0020 pro=0;
+0021 N.zweid={};N.nr={};N.names={};N.points={};
+0022 <span class="keyword">for</span> i=dirs,  <span class="comment">% x/y</span>
+0023     xx=unique(N.elec(:,i)); <span class="comment">% all x/y-lines</span>
+0024     <span class="keyword">for</span> nx=1:length(xx), <span class="comment">% all profiles</span>
+0025         aa=(N.elec(N.a,i)==xx(nx))&amp;(N.elec(N.m,i)==xx(nx)); <span class="comment">%% Ax=Mx=x</span>
+0026 <span class="comment">%         ab=ones(size(aa))*(-999);mn=ab+1;</span>
+0027         fnb=find((N.b&gt;0)&amp;(N.n&gt;0));
+0028         fb=find(N.b);fn=find(N.n);
+0029         aa(fb)=aa(fb)&amp;((N.elec(N.b(fb),i)==xx(nx))); <span class="comment">% Bx=x|B=0</span>
+0030         aa(fn)=aa(fn)&amp;((N.elec(N.n(fn),i)==xx(nx))); <span class="comment">% Nx=x|N=0</span>
+0031         aa(fnb)=aa(fnb)|(N.elec(N.a,i)==xx(nx)&amp;(N.elec(N.b(fnb),i)==N.elec(N.n(fnb),i))); <span class="comment">%Bx=Nx|B=N=0</span>
+0032 <span class="comment">%         aa(fi)=aa(fi)&amp;((N.elec(N.b(fi),i)==xx(nx))|(N.elec(N.b(fi),i)==N.elec(N.n(fi),i)));</span>
+0033 <span class="comment">%         aa(fi)=aa(fi)&amp;((N.elec(N.n(fi),i)==xx(nx))|(N.elec(N.b(fi),i)==N.elec(N.n(fi),i)));</span>
+0034 <span class="comment">%         ab(fi)=N.elec(N.a(fi),i)+N.elec(N.b(fi),i);</span>
+0035 <span class="comment">%         mn(fi)=N.elec(N.m(fi),i)+N.elec(N.n(fi),i);</span>
+0036         fx=find(aa);<span class="comment">%|(ab==mn));</span>
+0037         <span class="keyword">if</span> ~isempty(fx), <span class="comment">% found some on profile</span>
+0038             fel=find(N.elec(:,i)==xx(nx));
+0039             <span class="keyword">if</span> length(fel)&lt;minnr, <span class="keyword">break</span>; <span class="keyword">end</span>
+0040             pro=pro+1;
+0041 <span class="comment">%             nn.elec=massbandkorr(N.elec(fel,[3-i 3]));</span>
+0042 <span class="comment">% dont't know why I introduced the next line</span>
+0043 <span class="comment">%             nn.elec=[0;cumsum(sqrt(sum(diff(N.elec(fel,3-i:3)).^2,2)))]+N.elec(fel(1),3-i);</span>
+0044             nn.elec=N.elec(fel,3-i);
+0045             di=round(diff(sort(nn.elec))*20)/20;
+0046             del=round(median(di)*20)/20;
+0047             nnel=length(nn.elec);
+0048             <span class="keyword">if</span> length(unique(di))&gt;1, 
+0049                 nn.elec=(0:nnel-1)'*del+ceil(nn.elec(1,1)/del)*del; 
+0050             <span class="keyword">else</span>
+0051                 nn.elec=round(nn.elec/del)*del;<span class="comment">%ceil</span>
+0052             <span class="keyword">end</span>
+0053             nn.elec(:,2)=0;<span class="comment">%!!!</span>
+0054             bm(:)=0;
+0055             bm(fel)=(1:length(fel))';
+0056             nn.a=bm(N.a(fx(:)));
+0057             nn.m=bm(N.m(fx(:)));
+0058             nn.b=zeros(size(nn.a));
+0059             nn.n=zeros(size(nn.a));
+0060             du=N.b(fx);fi=find(du);
+0061             nn.b(fi)=bm(du(fi));
+0062             du=N.n(fx);fi=find(du);
+0063             nn.n(fi)=bm(du(fi));
+0064             nn.b(nn.b&gt;nnel)=0;
+0065             nn.n(nn.n&gt;nnel)=0;
+0066             el=ones(size(fx))*eps;
+0067             fi=find(N.b(fx));
+0068             el(fi)=N.elec(N.b(fx(fi)),i);
+0069             nn.b(el~=xx(nx))=0;
+0070             fi=find(N.n(fx));
+0071             el(fi)=N.elec(N.n(fx(fi)),i);
+0072             nn.n(el~=xx(nx))=0;            
+0073 <span class="comment">%             nn.b(N.elec(N.b(fx),i)~=xx(nx))=0; % buggy for N.b==0</span>
+0074 <span class="comment">%             nn.n(N.elec(N.n(fx),i)~=xx(nx))=0;</span>
+0075             nn.r=N.r(fx);nn.k=N.k(fx);
+0076             <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>)&amp;&amp;(length(N.err)&gt;=max(fx)), nn.err=N.err(fx); <span class="keyword">end</span>
+0077             <span class="keyword">if</span> isfield(N,<span class="string">'ip'</span>)&amp;&amp;(length(N.ip)&gt;=max(fx)), nn.ip=N.ip(fx); <span class="keyword">end</span>
+0078             <span class="keyword">if</span> isfield(N,<span class="string">'i'</span>)&amp;&amp;(length(N.i)&gt;=max(fx)), nn.i=N.i(fx); <span class="keyword">end</span>
+0079             <span class="keyword">if</span> isfield(N,<span class="string">'u'</span>)&amp;&amp;(length(N.u)&gt;=max(fx)), nn.u=N.u(fx); <span class="keyword">end</span>
+0080             name=[xy(i) <span class="string">' = '</span> num2str(xx(nx))];
+0081             N.zweid{pro}=nn;
+0082             N.nr{pro}=fx;
+0083             N.names{pro}=name;
+0084             poi(i)=xx(nx);poi(i+2)=xx(nx);
+0085             poi(3-i)=min(nn.elec(:,1));
+0086             poi(5-i)=max(nn.elec(:,1));
+0087             N.points{pro}=poi;
+0088 <span class="comment">%             showdata2d(nn);</span>
+0089 <span class="comment">%             text(1,1,name);</span>
+0090 <span class="comment">%             pause(1.0);</span>
+0091         <span class="keyword">end</span>
+0092     <span class="keyword">end</span>
+0093 <span class="keyword">end</span>
+0094 <span class="keyword">if</span> isempty(N.zweid),
+0095     N=rmfield(N,{<span class="string">'zweid'</span>,<span class="string">'names'</span>,<span class="string">'nr'</span>,<span class="string">'points'</span>});
+0096 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

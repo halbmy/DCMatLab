@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of delelectrode</title>
+  <meta name="keywords" content="delelectrode">
+  <meta name="description" content="DELELECTRODE - Delete measurements with specific electrode">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; delelectrode.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>delelectrode
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>DELELECTRODE - Delete measurements with specific electrode</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Data1,fim]=delelectrode(Data,fi) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> DELELECTRODE - Delete measurements with specific electrode
+ N = delelectrode(N,fi)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="deldeadelecs.html" class="code" title="function NN=deldeadelecs(N)">deldeadelecs</a>	DELDEADELECS - Delete dead electrodes</li><li><a href="delmeasurement.html" class="code" title="function N=delmeasurement(N,fi)">delmeasurement</a>	DELMEASUREMENT - Delete measurement from data struct</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Data1,fim]=delelectrode(Data,fi)</a>
+0002 
+0003 <span class="comment">% DELELECTRODE - Delete measurements with specific electrode</span>
+0004 <span class="comment">% N = delelectrode(N,fi)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, <span class="keyword">return</span>; <span class="keyword">end</span>
+0007 <span class="keyword">if</span> islogical(fi), fi=find(fi); <span class="keyword">end</span>
+0008 la=find(ismember(Data.a,fi));
+0009 lb=find(ismember(Data.b,fi));
+0010 lm=find(ismember(Data.m,fi));
+0011 ln=find(ismember(Data.n,fi));
+0012 fim=unique([la(:);lb(:);lm(:);ln(:)]);
+0013 Data1=<a href="deldeadelecs.html" class="code" title="function NN=deldeadelecs(N)">deldeadelecs</a>(<a href="delmeasurement.html" class="code" title="function N=delmeasurement(N,fi)">delmeasurement</a>(Data,fim));</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

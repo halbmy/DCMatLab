@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of finex2</title>
+  <meta name="keywords" content="finex2">
+  <meta name="description" content="FINEX - fine export of figures">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; finex2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>finex2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>FINEX - fine export of figures</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function finex(fig,name,fontsize) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FINEX - fine export of figures
+ finex(filename)
+ finex(figure,filename)
+ filename is without extension</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="exportpng.html" class="code" title="function exportpng(fig, filename, varargin)">exportpng</a>	EXPORTPNG - exports figure to png file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function finex(fig,name,fontsize)</a>
+0002 
+0003 <span class="comment">% FINEX - fine export of figures</span>
+0004 <span class="comment">% finex(filename)</span>
+0005 <span class="comment">% finex(figure,filename)</span>
+0006 <span class="comment">% filename is without extension</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;3, fontsize=0; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;2, <span class="keyword">if</span> ischar(fig), name=0; <span class="keyword">end</span>; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'No filename present'</span>); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> ischar(fig), 
+0012     fontsize=name;
+0013     name=fig; 
+0014 <span class="keyword">end</span>
+0015 <span class="keyword">if</span> ~ishandle(fig), fig=gcf; <span class="keyword">end</span> 
+0016 oldfs=get(gca,<span class="string">'FontSize'</span>);
+0017 <span class="keyword">if</span> strfind(name,<span class="string">'.eps'</span>),
+0018     efile=name;
+0019 <span class="keyword">else</span>
+0020     efile=[name <span class="string">'.eps'</span>];
+0021 <span class="keyword">end</span>
+0022 xt=get(gca,<span class="string">'XTick'</span>);xtl=get(gca,<span class="string">'XTickLabel'</span>);
+0023 yt=get(gca,<span class="string">'YTick'</span>);ytl=get(gca,<span class="string">'YTickLabel'</span>);
+0024 <span class="keyword">if</span> fontsize&gt;0,
+0025     ch=get(gcf,<span class="string">'Children'</span>);
+0026     <span class="keyword">for</span> i=1:length(ch),
+0027         <span class="keyword">if</span> isequal(get(ch(i),<span class="string">'Type'</span>),<span class="string">'axes'</span>),
+0028             set(ch(i),<span class="string">'FontSize'</span>,fontsize);
+0029         <span class="keyword">end</span>
+0030     <span class="keyword">end</span>
+0031     set(gca,<span class="string">'XTick'</span>,xt,<span class="string">'XTickLabel'</span>,xtl);
+0032     set(gca,<span class="string">'YTick'</span>,yt,<span class="string">'YTickLabel'</span>,ytl);
+0033     xl=get(gca,<span class="string">'XLabel'</span>);
+0034     set(xl,<span class="string">'FontSize'</span>,fontsize);
+0035     yl=get(gca,<span class="string">'YLabel'</span>);
+0036     set(yl,<span class="string">'FontSize'</span>,fontsize);
+0037     tit=get(gca,<span class="string">'Title'</span>);
+0038     <span class="keyword">if</span> ishandle(tit), set(tit,<span class="string">'FontSize'</span>,fontsize); <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 print(gcf,<span class="string">'-depsc2'</span>,efile);
+0041 dos([<span class="string">'epstopdf '</span> efile]);
+0042 <span class="comment">% print(gcf,'-dpng','-r150',strrep(efile,'.eps','.png'));</span>
+0043 <a href="exportpng.html" class="code" title="function exportpng(fig, filename, varargin)">exportpng</a>(strrep(efile,<span class="string">'.eps'</span>,<span class="string">'.png'</span>));
+0044 <span class="keyword">if</span> fontsize&gt;0,
+0045     set(xl,<span class="string">'FontSize'</span>,oldfs);
+0046     set(yl,<span class="string">'FontSize'</span>,oldfs);
+0047     <span class="keyword">for</span> i=1:length(ch),
+0048         <span class="keyword">if</span> isequal(get(ch(i),<span class="string">'Type'</span>),<span class="string">'axes'</span>),
+0049             set(ch(i),<span class="string">'FontSize'</span>,oldfs);
+0050         <span class="keyword">end</span>
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

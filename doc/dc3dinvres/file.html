@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>DC3DInvRes - File Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC3DInvRes - File Menu</h2>
+<hr>
+<h3><a name="read"></a>Open data file</h3>
+<p>There are three supported data formats, which will be detected automatically:</p>
+<ol>
+  <li> 
+    <pre>an electrode number based format (the # character is used for comments):
+     number_of_electrodes
+     x_1 y_1 z_1 # position of first electrode (z optional)
+     ...
+     x_n z_n # position of last electrode
+     number_of_data
+     a_1 b_1 m_1 n_1 rhoa_1 (error_1) # first datum point
+     ...
+     a_k b_k m_k n_k rhoa_k (error_k) # last datum point (errors optional)</pre>
+    where a_i, b_i ... are the numbers (not positions) of used electrodes in the 
+    list above. Infinite electrodes for b and/or n are defined by number 0. </li>
+  <li>
+    <pre>Absolute electrode positions (surface data only)
+     x_a y_a x_b y_b x_m y_m x_n y_n rhoa
+     ...</pre>
+  </li>
+  <li>
+    <pre>RES3DINV data format (see <a href="http://www.geoelectrical.com">res3dinv homepage</a> for datails)</pre>
+  </li>
+</ol>
+<p>Note that the electrode positions are arbitrary and independent on any parameterization 
+  or grid.</p>
+<p align="right"><a href="hotkeys.html">Hotkey</a> for Open data file: Shift+O</p>
+<h3><a name="pro"></a>Read pro file</h3>
+<p>Many 3d data sets are aquired in form of 2d profiles, either parallel and perpendicular 
+  or not. Then a file defining the profile locations can be read in, which looks 
+  as follows:</p>
+<p>filename1 x_start y_start x_end y_end<br>
+  filename2 ...</p>
+<p>The 2d-files are in the <a href="http://www.geoelectrical.com">res2dinv</a> 
+  or the above descibed format except that y positions of electrodes are left 
+  out.<br>
+  This form of data input is recommended if profiles are not parallel to x- or 
+  y-direction, so that they can be plottet in <a href="display.html#data">Display=&gt;Data</a> 
+  as profile data.</p>
+<p align="right"><a href="hotkeys.html">Hotkey</a> for Read pro file: Shift+P</p>
+<h3></h3>
+<h3><a name="add"></a>Add Data</h3>
+The data read from the file are added to the existing data. So it is easy to combine 
+different configurations on the same profile to get better results. 
+<p align="right"><a href="hotkeys.html">Hotkey</a> for Add data: Shift+A</p>
+<hr>
+<h3></h3>
+<h3><a name="save"></a>Save Workspace</h3>
+The complete workspace (e.g. data, model and sensitivities) are saved to a *.mat 
+file, defaulting the same root like the data file with extension MAT. When loading 
+again, the program all variables including options are recovered. For saving inversion 
+results it is recommended to Clear Sensitivity first to save disk space. 
+<p align="right"><a href="hotkeys.html">Hotkey</a> for Save Workspace: Shift+S</p>
+<h3></h3>
+<h3><a name="load"></a>Load Workspace</h3>
+<p>A former saved mat-file can be loaded to work on with the model.<br>
+  Attention: files named *-sens.mat or *-s.mat are saved sensitivities and contain 
+  no model!</p>
+<p align="right"><a href="hotkeys.html">Hotkey</a> for Load Workspace: Shift+L</p>
+<hr>
+<h3></h3>
+<h3><a name="exportfig"></a>Export Figures</h3>
+<p>All active windows are exported to graphics files. Filename(s) and path are 
+  determined by a Explorer menu.<br>
+  Possible file formats are png (indexed bitmap) or eps (vector graphics), which 
+  can be transformed to pdf easily using epstopdf.<br>
+  It is recommended to resize the Figure windows before exporting such that subfigures 
+  are not overlapping.</p>
+<p align="right"><a href="hotkeys.html">Hotkey</a> for Export Figures: Shift+E</p>
+<h3><a name="exportcbar"></a>Export Colorbar</h3>
+<p>The colorbar displayed in the main GUI can also be exported to graphics file.</p>
+<hr>
+<p align="right"></p>
+<h3><a name="exit"></a>Exit</h3>
+<p>Termination of program. All windows are closed.</p>
+<p align="right"><a href="hotkeys.html">Hotkey</a> for Exit Program: Shift+X</p>
+<hr>
+<p align="right">&nbsp; </p>
+</body>
+</html>

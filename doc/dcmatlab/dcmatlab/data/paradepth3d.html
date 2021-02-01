@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of paradepth3d</title>
+  <meta name="keywords" content="paradepth3d">
+  <meta name="description" content="PARDEPTH3D - Computes penetration depth by 1d sensitivity">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; paradepth3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>paradepth3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PARDEPTH3D - Computes penetration depth by 1d sensitivity</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function zpar=zparam(N,frac) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PARDEPTH3D - Computes penetration depth by 1d sensitivity
+ z_par = paradepth3d(N);
+ N=struct of arrays a,b,m,n(electrode numbers), r(rhoa), k(konf)
+             elec..Coordinates of Electrodes</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function zpar=zparam(N,frac)</a>
+0002 
+0003 <span class="comment">% PARDEPTH3D - Computes penetration depth by 1d sensitivity</span>
+0004 <span class="comment">% z_par = paradepth3d(N);</span>
+0005 <span class="comment">% N=struct of arrays a,b,m,n(electrode numbers), r(rhoa), k(konf)</span>
+0006 <span class="comment">%             elec..Coordinates of Electrodes</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;2, frac=0.95; <span class="keyword">end</span>
+0009 amq=[];bmq=amq;anq=amq;bnq=amq;
+0010 data=length(N.a);
+0011 fb=find(N.b);fn=find(N.n);fbn=find(N.b.*N.n);
+0012 amq=sum((N.elec(N.a,:)-N.elec(N.m,:)).^2,2);
+0013 anq=amq;bmq=amq;bnq=amq;
+0014 bmq(fb)=sum((N.elec(N.b(fb),:)-N.elec(N.m(fb),:)).^2,2);
+0015 anq(fn)=sum((N.elec(N.a(fn),:)-N.elec(N.n(fn),:)).^2,2);
+0016 bnq(fbn)=sum((N.elec(N.b(fbn),:)-N.elec(N.n(fbn),:)).^2,2);
+0017 <span class="comment">% wieso ist das auskommentiert?</span>
+0018 <span class="comment">% amq=0.25*amq;bmq=0.25*bmq;anq=0.25*anq;bnq=0.25*bnq;</span>
+0019 bnq(find(isnan(bnq)))=Inf;
+0020 am=sqrt(amq);an=sqrt(anq);bm=sqrt(bmq);bn=sqrt(bnq);
+0021 depth=0.1;
+0022 ss=0;
+0023 zi=[];
+0024 si=[];
+0025 sens=0;
+0026 scal=1./am;scal(fn)=scal(fn)-1./an(fn);
+0027 scal(fb)=scal(fb)-1./bm(fb);scal(fbn)=scal(fbn)+1./bn(fbn);
+0028 <span class="keyword">while</span> sens&lt;0.99,
+0029     <span class="comment">%zzq=repmat(4*depth.^2,data,1);</span>
+0030     zq=4*depth^2;
+0031     ss=1./sqrt(amq+zq);
+0032     ss(fn)=ss(fn)-1./sqrt(anq(fn)+zq);
+0033     ss(fb)=ss(fb)-1./sqrt(bmq(fb)+zq);
+0034     ss(fbn)=ss(fbn)+1./sqrt(bnq(fbn)+zq);
+0035     <span class="comment">%sens=sqrt(sum(((1-ss./scal).^2)/data));</span>
+0036     sens=sum(1-ss./scal)/data;
+0037     <span class="comment">%ss=am./sqrt(amq+zzq)-an./sqrt(anq+zzq)-bm./sqrt(bmq+zzq)+bn./sqrt(bnq+zzq);</span>
+0038     <span class="comment">%sens=sqrt(sum((ss).^2)/data);</span>
+0039     zi=[zi depth];
+0040     si=[si sens];
+0041     depth=depth*1.1;
+0042 <span class="keyword">end</span>
+0043 [mi,nb]=min(abs(si-frac));
+0044 zpar=zi(nb);
+0045 <span class="keyword">if</span> nargout==0, 
+0046     plot(zi,si,<span class="string">'bx-'</span>); 
+0047     line(xlim,frac*[1 1],<span class="string">'Color'</span>,<span class="string">'red'</span>);
+0048     line(zpar(end)*[1 1],ylim,<span class="string">'Color'</span>,<span class="string">'red'</span>);
+0049     title(sprintf(<span class="string">'%.1f%% sensitivity at %.2fm'</span>,frac*100,zpar(end)));
+0050 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

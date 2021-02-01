@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of show2dmrsimage</title>
+  <meta name="keywords" content="show2dmrsimage">
+  <meta name="description" content="SHOW2DMRSIMAGE - Show 2d MRS data as subplot curves">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; show2dmrsimage.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>show2dmrsimage
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SHOW2DMRSIMAGE - Show 2d MRS data as subplot curves</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function show2dmrsimage(data,meas,field) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SHOW2DMRSIMAGE - Show 2d MRS data as subplot curves
+ show2smrsimage(data,meas,field)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function show2dmrsimage(data,meas,field)</a>
+0002 
+0003 <span class="comment">% SHOW2DMRSIMAGE - Show 2d MRS data as subplot curves</span>
+0004 <span class="comment">% show2smrsimage(data,meas,field)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;3, 
+0007     field=abs(data.V_mes);
+0008 <span class="keyword">end</span>
+0009 cla;
+0010 Nqmax=max(diff(data.idx_q));
+0011 A=ones(Nqmax,data.N_cfg)*NaN;
+0012 <span class="keyword">for</span> i=1:data.N_cfg,
+0013    idx=data.idx_q(i):data.idx_q(i+1)-1;
+0014    [qq,sq]=sort(data.q_val(idx));
+0015    A(1:length(idx),i)=field(idx(sq));
+0016 <span class="keyword">end</span>
+0017 AL=1-isnan(A);
+0018 imagesc(A);
+0019 <span class="comment">% caxis([0 0.3]);</span>
+0020 colorbar;
+0021 alpha(AL);
+0022 <span class="comment">% colormap(flipud(jet));</span>
+0023 <span class="keyword">for</span> j=1:data.N_cfg, 
+0024     xtl{j}=[num2str(meas.ntx(j)) <span class="string">'-'</span> num2str(meas.nrx(j))]; 
+0025 <span class="keyword">end</span>
+0026 set(gca,<span class="string">'XTick'</span>,1:size(A,1),<span class="string">'XTickLabel'</span>,xtl);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

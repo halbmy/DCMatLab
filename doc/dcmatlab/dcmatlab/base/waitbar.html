@@ -1,0 +1,309 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of waitbar</title>
+  <meta name="keywords" content="waitbar">
+  <meta name="description" content="WAITBAR Display wait bar.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; waitbar.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>waitbar
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WAITBAR Display wait bar.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function fout = waitbar(x,whichbar, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">WAITBAR Display wait bar.
+   H = WAITBAR(X,'title', property, value, property, value, ...) 
+   creates and displays a waitbar of fractional length X.  The 
+   handle to the waitbar figure is returned in H.
+   X should be between 0 and 1.  Optional arguments property and 
+   value allow to set corresponding waitbar figure properties.
+   Property can also be an action keyword 'CreateCancelBtn', in 
+   which case a cancel button will be added to the figure, and 
+   the passed value string will be executed upon clicking on the 
+   cancel button or the close figure button.
+
+   WAITBAR(X) will set the length of the bar in the most recently
+   created waitbar window to the fractional length X.
+
+   WAITBAR(X,H) will set the length of the bar in waitbar H
+   to the fractional length X.
+
+   WAITBAR(X,H,'updated title') will update the title text in
+   the waitbar figure, in addition to setting the fractional
+   length to X.
+
+   WAITBAR is typically used inside a FOR loop that performs a 
+   lengthy computation.  A sample usage is shown below:
+
+       h = waitbar(0,'Please wait...');
+       for i=1:100,
+           % computation here %
+           waitbar(i/100,h)
+       end
+       close(h)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fout = waitbar(x,whichbar, varargin)</a>
+0002 <span class="comment">%WAITBAR Display wait bar.</span>
+0003 <span class="comment">%   H = WAITBAR(X,'title', property, value, property, value, ...)</span>
+0004 <span class="comment">%   creates and displays a waitbar of fractional length X.  The</span>
+0005 <span class="comment">%   handle to the waitbar figure is returned in H.</span>
+0006 <span class="comment">%   X should be between 0 and 1.  Optional arguments property and</span>
+0007 <span class="comment">%   value allow to set corresponding waitbar figure properties.</span>
+0008 <span class="comment">%   Property can also be an action keyword 'CreateCancelBtn', in</span>
+0009 <span class="comment">%   which case a cancel button will be added to the figure, and</span>
+0010 <span class="comment">%   the passed value string will be executed upon clicking on the</span>
+0011 <span class="comment">%   cancel button or the close figure button.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   WAITBAR(X) will set the length of the bar in the most recently</span>
+0014 <span class="comment">%   created waitbar window to the fractional length X.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   WAITBAR(X,H) will set the length of the bar in waitbar H</span>
+0017 <span class="comment">%   to the fractional length X.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%   WAITBAR(X,H,'updated title') will update the title text in</span>
+0020 <span class="comment">%   the waitbar figure, in addition to setting the fractional</span>
+0021 <span class="comment">%   length to X.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   WAITBAR is typically used inside a FOR loop that performs a</span>
+0024 <span class="comment">%   lengthy computation.  A sample usage is shown below:</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%       h = waitbar(0,'Please wait...');</span>
+0027 <span class="comment">%       for i=1:100,</span>
+0028 <span class="comment">%           % computation here %</span>
+0029 <span class="comment">%           waitbar(i/100,h)</span>
+0030 <span class="comment">%       end</span>
+0031 <span class="comment">%       close(h)</span>
+0032 
+0033 <span class="comment">%   Clay M. Thompson 11-9-92</span>
+0034 <span class="comment">%   Vlad Kolesnikov  06-7-99</span>
+0035 <span class="comment">%   Copyright 1984-2002 The MathWorks, Inc.</span>
+0036 <span class="comment">%   $Revision: 1.1 $  $Date: 2005/08/03 17:54:11 $</span>
+0037 
+0038 <span class="keyword">if</span> nargin&gt;=2
+0039     <span class="keyword">if</span> ischar(whichbar)
+0040         type=2; <span class="comment">%we are initializing</span>
+0041         name=whichbar;
+0042     <span class="keyword">elseif</span> isnumeric(whichbar)
+0043         type=1; <span class="comment">%we are updating, given a handle</span>
+0044         f=whichbar;
+0045     <span class="keyword">else</span>
+0046         error([<span class="string">'Input arguments of type '</span> class(whichbar) <span class="string">' not valid.'</span>])
+0047     <span class="keyword">end</span>
+0048 <span class="keyword">elseif</span> nargin==1
+0049     f = findobj(allchild(0),<span class="string">'flat'</span>,<span class="string">'Tag'</span>,<span class="string">'TMWWaitbar'</span>);
+0050     
+0051     <span class="keyword">if</span> isempty(f)
+0052         type=2;
+0053         name=<span class="string">'Waitbar'</span>;
+0054     <span class="keyword">else</span>
+0055         type=1;
+0056         f=f(1);
+0057     <span class="keyword">end</span>   
+0058 <span class="keyword">else</span>
+0059     error(<span class="string">'Input arguments not valid.'</span>);
+0060 <span class="keyword">end</span>
+0061 
+0062 x = max(0,min(100*x,100));
+0063 
+0064 <span class="keyword">switch</span> type
+0065  <span class="keyword">case</span> 1,  <span class="comment">% waitbar(x)    update</span>
+0066   p = findobj(f,<span class="string">'Type'</span>,<span class="string">'patch'</span>);
+0067   l = findobj(f,<span class="string">'Type'</span>,<span class="string">'line'</span>);
+0068   <span class="keyword">if</span> isempty(f) | isempty(p) | isempty(l), 
+0069       error(<span class="string">'Couldn''t find waitbar handles.'</span>); 
+0070   <span class="keyword">end</span>
+0071   xpatch = get(p,<span class="string">'XData'</span>);
+0072   xpatch = [0 x x 0];
+0073   set(p,<span class="string">'XData'</span>,xpatch)
+0074   xline = get(l,<span class="string">'XData'</span>);
+0075   set(l,<span class="string">'XData'</span>,xline);
+0076   
+0077   <span class="keyword">if</span> nargin&gt;2,
+0078       <span class="comment">% Update waitbar title:</span>
+0079       hAxes = findobj(f,<span class="string">'type'</span>,<span class="string">'axes'</span>);
+0080       hTitle = get(hAxes,<span class="string">'title'</span>);
+0081       set(hTitle,<span class="string">'string'</span>,varargin{1});
+0082   <span class="keyword">end</span>
+0083   
+0084  <span class="keyword">case</span> 2,  <span class="comment">% waitbar(x,name)  initialize</span>
+0085   vertMargin = 0;
+0086   <span class="keyword">if</span> nargin &gt; 2,
+0087       <span class="comment">% we have optional arguments: property-value pairs</span>
+0088       <span class="keyword">if</span> rem (nargin, 2 ) ~= 0
+0089           error( <span class="string">'Optional initialization arguments must be passed in pairs'</span> );
+0090       <span class="keyword">end</span>
+0091   <span class="keyword">end</span>
+0092   
+0093   oldRootUnits = get(0,<span class="string">'Units'</span>);
+0094 
+0095   set(0, <span class="string">'Units'</span>, <span class="string">'points'</span>);
+0096   screenSize = get(0,<span class="string">'ScreenSize'</span>);
+0097   
+0098   axFontSize=get(0,<span class="string">'FactoryAxesFontSize'</span>);
+0099   
+0100   pointsPerPixel = 72/get(0,<span class="string">'ScreenPixelsPerInch'</span>);
+0101   
+0102   width = 360 * pointsPerPixel;
+0103   height = 75 * pointsPerPixel;
+0104   pos = [screenSize(3)/2-width/2 screenSize(4)/2-height/2 width height];
+0105 
+0106   f = figure(<span class="keyword">...</span>
+0107       <span class="string">'Units'</span>, <span class="string">'points'</span>, <span class="keyword">...</span>
+0108       <span class="string">'BusyAction'</span>, <span class="string">'queue'</span>, <span class="keyword">...</span>
+0109       <span class="string">'Position'</span>, pos, <span class="keyword">...</span>
+0110       <span class="string">'Resize'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
+0111       <span class="string">'CreateFcn'</span>,<span class="string">''</span>, <span class="keyword">...</span>
+0112       <span class="string">'NumberTitle'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
+0113       <span class="string">'IntegerHandle'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
+0114       <span class="string">'MenuBar'</span>, <span class="string">'none'</span>, <span class="keyword">...</span>
+0115       <span class="string">'Tag'</span>,<span class="string">'TMWWaitbar'</span>,<span class="keyword">...</span>
+0116       <span class="string">'Interruptible'</span>, <span class="string">'off'</span>, <span class="keyword">...</span>
+0117       <span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0118   
+0119   <span class="comment">%%%%%%%%%%%%%%%%%%%%%</span>
+0120   <span class="comment">% set figure properties as passed to the fcn</span>
+0121   <span class="comment">% pay special attention to the 'cancel' request</span>
+0122   <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0123   <span class="keyword">if</span> nargin &gt; 2,
+0124       propList = varargin(1:2:end);
+0125       valueList = varargin(2:2:end);
+0126       cancelBtnCreated = 0;
+0127       <span class="keyword">for</span> ii = 1:length( propList )
+0128           <span class="keyword">try</span>
+0129               <span class="keyword">if</span> strcmp(lower(propList{ii}), <span class="string">'createcancelbtn'</span> ) &amp; ~cancelBtnCreated
+0130                   cancelBtnHeight = 23 * pointsPerPixel;
+0131                   cancelBtnWidth = 60 * pointsPerPixel;
+0132                   newPos = pos;
+0133                   vertMargin = vertMargin + cancelBtnHeight;
+0134                   newPos(4) = newPos(4)+vertMargin;
+0135                   callbackFcn = [valueList{ii}];
+0136                   set( f, <span class="string">'Position'</span>, newPos, <span class="string">'CloseRequestFcn'</span>, callbackFcn );
+0137                   cancelButt = uicontrol(<span class="string">'Parent'</span>,f, <span class="keyword">...</span>
+0138                                          <span class="string">'Units'</span>,<span class="string">'points'</span>, <span class="keyword">...</span>
+0139                                          <span class="string">'Callback'</span>,callbackFcn, <span class="keyword">...</span>
+0140                                          <span class="string">'ButtonDownFcn'</span>, callbackFcn, <span class="keyword">...</span>
+0141                                          <span class="string">'Enable'</span>,<span class="string">'on'</span>, <span class="keyword">...</span>
+0142                                          <span class="string">'Interruptible'</span>,<span class="string">'off'</span>, <span class="keyword">...</span>
+0143                                          <span class="string">'Position'</span>, [pos(3)-cancelBtnWidth*1.4, 7,  <span class="keyword">...</span>
+0144                     cancelBtnWidth, cancelBtnHeight], <span class="keyword">...</span>
+0145                                          <span class="string">'String'</span>,<span class="string">'Cancel'</span>, <span class="keyword">...</span>
+0146                                          <span class="string">'Tag'</span>,<span class="string">'TMWWaitbarCancelButton'</span>);
+0147                   cancelBtnCreated = 1;
+0148               <span class="keyword">else</span>
+0149                   <span class="comment">% simply set the prop/value pair of the figure</span>
+0150                   set( f, propList{ii}, valueList{ii});
+0151               <span class="keyword">end</span>
+0152           <span class="keyword">catch</span>
+0153               disp ( [<span class="string">'Warning: could not set property '''</span> propList{ii} <span class="string">''' with value '''</span> num2str(valueList{ii}) <span class="string">''''</span> ] );
+0154           <span class="keyword">end</span>
+0155       <span class="keyword">end</span>
+0156   <span class="keyword">end</span>  
+0157   
+0158   <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0159   
+0160   
+0161   colormap([]);
+0162   
+0163   axNorm=[.05 .3 .9 .2];
+0164   axPos=axNorm.*[pos(3:4),pos(3:4)] + [0 vertMargin 0 0];
+0165   
+0166   h = axes(<span class="string">'XLim'</span>,[0 100],<span class="keyword">...</span>
+0167            <span class="string">'YLim'</span>,[0 1],<span class="keyword">...</span>
+0168            <span class="string">'Box'</span>,<span class="string">'on'</span>, <span class="keyword">...</span>
+0169            <span class="string">'Units'</span>,<span class="string">'Points'</span>,<span class="keyword">...</span>
+0170            <span class="string">'FontSize'</span>, axFontSize,<span class="keyword">...</span>
+0171            <span class="string">'Position'</span>,axPos,<span class="keyword">...</span>
+0172            <span class="string">'XTickMode'</span>,<span class="string">'manual'</span>,<span class="keyword">...</span>
+0173            <span class="string">'YTickMode'</span>,<span class="string">'manual'</span>,<span class="keyword">...</span>
+0174            <span class="string">'XTick'</span>,[],<span class="keyword">...</span>
+0175            <span class="string">'YTick'</span>,[],<span class="keyword">...</span>
+0176            <span class="string">'XTickLabelMode'</span>,<span class="string">'manual'</span>,<span class="keyword">...</span>
+0177            <span class="string">'XTickLabel'</span>,[],<span class="keyword">...</span>
+0178            <span class="string">'YTickLabelMode'</span>,<span class="string">'manual'</span>,<span class="keyword">...</span>
+0179            <span class="string">'YTickLabel'</span>,[]);
+0180   
+0181   tHandle=title(name);
+0182   tHandle=get(h,<span class="string">'title'</span>);
+0183   oldTitleUnits=get(tHandle,<span class="string">'Units'</span>);
+0184   set(tHandle,<span class="keyword">...</span>
+0185       <span class="string">'Units'</span>,      <span class="string">'points'</span>,<span class="keyword">...</span>
+0186       <span class="string">'String'</span>,     name);
+0187   
+0188   tExtent=get(tHandle,<span class="string">'Extent'</span>);
+0189   set(tHandle,<span class="string">'Units'</span>,oldTitleUnits);
+0190   
+0191   titleHeight=tExtent(4)+axPos(2)+axPos(4)+5;
+0192   <span class="keyword">if</span> titleHeight&gt;pos(4)
+0193       pos(4)=titleHeight;
+0194       pos(2)=screenSize(4)/2-pos(4)/2;
+0195       figPosDirty=logical(1);
+0196   <span class="keyword">else</span>
+0197       figPosDirty=logical(0);
+0198   <span class="keyword">end</span>
+0199   
+0200   <span class="keyword">if</span> tExtent(3)&gt;pos(3)*1.10;
+0201       pos(3)=min(tExtent(3)*1.10,screenSize(3));
+0202       pos(1)=screenSize(3)/2-pos(3)/2;
+0203       
+0204       axPos([1,3])=axNorm([1,3])*pos(3);
+0205       set(h,<span class="string">'Position'</span>,axPos);
+0206       
+0207       figPosDirty=logical(1);
+0208   <span class="keyword">end</span>
+0209   
+0210   <span class="keyword">if</span> figPosDirty
+0211       set(f,<span class="string">'Position'</span>,pos);
+0212   <span class="keyword">end</span>
+0213 
+0214   xpatch = [0 x x 0];
+0215   ypatch = [0 0 1 1];
+0216    xline = [100 0 0 100 100];
+0217    yline = [0 0 1 1 0];
+0218   
+0219   p = patch(xpatch,ypatch,<span class="string">'r'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'r'</span>,<span class="string">'EraseMode'</span>,<span class="string">'none'</span>);
+0220   l = line(xline,yline,<span class="string">'EraseMode'</span>,<span class="string">'none'</span>);
+0221   set(l,<span class="string">'Color'</span>,get(gca,<span class="string">'XColor'</span>));
+0222   
+0223   
+0224   set(f,<span class="string">'HandleVisibility'</span>,<span class="string">'callback'</span>,<span class="string">'visible'</span>,<span class="string">'on'</span>);
+0225   
+0226   set(0, <span class="string">'Units'</span>, oldRootUnits);
+0227 <span class="keyword">end</span>  <span class="comment">% case</span>
+0228 set(f,<span class="string">'Name'</span>,[num2str(round(x)) <span class="string">'%'</span>]);
+0229 drawnow;
+0230 
+0231 <span class="keyword">if</span> nargout==1,
+0232     fout = f;
+0233 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

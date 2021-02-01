@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of turnmatrix</title>
+  <meta name="keywords" content="turnmatrix">
+  <meta name="description" content="TURNMATRIX - Return matrix for koordinate system">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; turnmatrix.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>turnmatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>TURNMATRIX - Return matrix for koordinate system</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function R = turnmatrix(phixy,phiyz,phixz,isdegree) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> TURNMATRIX - Return matrix for koordinate system
+ R = turnmatrix(phixy,phiyz,phixz[,isdegree])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function R = turnmatrix(phixy,phiyz,phixz,isdegree)</a>
+0002 
+0003 <span class="comment">% TURNMATRIX - Return matrix for koordinate system</span>
+0004 <span class="comment">% R = turnmatrix(phixy,phiyz,phixz[,isdegree])</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;4, isdegree=-1; <span class="keyword">end</span>
+0007 <span class="keyword">if</span> nargin&lt;3, phiyz=0; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;2, phiyz=0; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> isdegree==-1, isdegree=(max(abs([phixy phiyz phixz]))&gt;pi); <span class="keyword">end</span>
+0010 <span class="keyword">if</span> isdegree,
+0011    phixy=phixy*pi/180;
+0012    phixz=phixz*pi/180;
+0013    phiyz=phiyz*pi/180;
+0014 <span class="keyword">end</span>
+0015 
+0016 A=[cos(phixy) -sin(phixy) 0;sin(phixy) cos(phixy) 0;0 0 1];
+0017 B=[1 0 0;0 cos(phiyz) -sin(phiyz);0 sin(phiyz) cos(phiyz)];
+0018 C=[cos(phixz) 0 -sin(phixz);0 1 0;sin(phixz) 0 cos(phixz)];
+0019 R=A*B*C;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

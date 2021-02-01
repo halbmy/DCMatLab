@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readsyscalfile</title>
+  <meta name="keywords" content="readsyscalfile">
+  <meta name="description" content="READ IRIS Syscal Pro file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readsyscalfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readsyscalfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READ IRIS Syscal Pro file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N = readsyscalfile(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READ IRIS Syscal Pro file
+ Data = readsyscalfile(filename)
+ Author: Tobias Pfaff (Uni Heidelberg)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>	GETKONF - Get Configuration factor from electrode positions</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N = readsyscalfile(filename)</a>
+0002 
+0003 <span class="comment">% READ IRIS Syscal Pro file</span>
+0004 <span class="comment">% Data = readsyscalfile(filename)</span>
+0005 <span class="comment">% Author: Tobias Pfaff (Uni Heidelberg)</span>
+0006 
+0007 fin = fopen(filename,<span class="string">'r'</span>);
+0008 
+0009 <span class="comment">% check header</span>
+0010 id = fread(fin,20,<span class="string">'uchar'</span>)';
+0011 cid = [2 0 0 128 8 <span class="string">'SYSCAL Pro'</span> 0 <span class="string">' at '</span>];
+0012 <span class="keyword">if</span> (id~=cid); error (<span class="string">'not a valid syscal pro file'</span>); <span class="keyword">end</span>;
+0013 
+0014 <span class="comment">% enter main part</span>
+0015 fseek(fin,1029,<span class="string">'bof'</span>);
+0016 
+0017 elec=[]; abmn=[]; data=[];
+0018 <span class="keyword">while</span> (1)
+0019     <span class="comment">% read block</span>
+0020     [atype,cnt] = fread(fin,1,<span class="string">'uint16'</span>); <span class="comment">% array type : 0 W 4 WS 6 DD</span>
+0021     <span class="keyword">if</span> (cnt == 0) <span class="keyword">break</span>; <span class="keyword">end</span>;
+0022     aa=fread(fin,1,<span class="string">'uint16'</span>);
+0023 <span class="comment">%     if(fread(fin,1,'uint16') ~= 3);error('unknown parameter');end;</span>
+0024     <span class="keyword">if</span> ~ismember(aa,[2 3]), display(<span class="string">'unknown parameter'</span>);<span class="keyword">break</span>; <span class="keyword">end</span>
+0025     mtime = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% measurement time [ms]</span>
+0026     m_delay = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% delay before chargeability measurement</span>
+0027     bb=fread(fin,1,<span class="string">'uint32'</span>);
+0028     <span class="keyword">if</span>( bb ~= 1);error(<span class="string">'unknown parameter'</span>);<span class="keyword">end</span>;
+0029 
+0030     <span class="comment">% find electrode positions in table</span>
+0031     x_pos = fread(fin,4,<span class="string">'float32'</span>)'; <span class="comment">% c1 c2 p1 p2</span>
+0032     y_pos = fread(fin,4,<span class="string">'float32'</span>)'; <span class="comment">% c1 c2 p1 p2</span>
+0033     z_pos = fread(fin,4,<span class="string">'float32'</span>)'; <span class="comment">% c1 c2 p1 p2</span>
+0034     <span class="keyword">if</span> (any(y_pos))
+0035         <span class="keyword">break</span>;
+0036     <span class="keyword">end</span>
+0037     <span class="keyword">for</span> n=1:4
+0038         <span class="keyword">if</span> (isempty(elec) || ~any(elec(:,1)==x_pos(n) &amp; (elec(:,2)==y_pos(n))))
+0039             elec=[elec;x_pos(n) y_pos(n)];
+0040             e_num(n) = size(elec,1);
+0041         <span class="keyword">else</span>
+0042             e_num(n) = find(elec(:,1)==x_pos(n) &amp; (elec(:,2)==y_pos(n)));
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045     abmn = [abmn; e_num];
+0046 
+0047     sp = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% spontanious polarisation</span>
+0048     vp = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% voltage difference</span>
+0049     in = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% injected current</span>
+0050     rho= fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% resisitivity</span>
+0051     gm = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% global chargeability</span>
+0052     dev= fread(fin,1,<span class="string">'float32'</span>) * 0.01; <span class="comment">% std. deviation</span>
+0053     t_m = fread(fin,20,<span class="string">'float32'</span>); <span class="comment">% chareability time windows</span>
+0054     m_x = fread(fin,20,<span class="string">'float32'</span>); <span class="comment">% partial chargeability</span>
+0055     status = fread(fin,1,<span class="string">'uint16'</span>); <span class="comment">% status bits (80:multichannel(lower bits=channel #) 16:single channel)</span>
+0056     num = fread(fin,1,<span class="string">'uint16'</span>); <span class="comment">% number of measurement (starting with 0)</span>
+0057     name = fread(fin,20,<span class="string">'schar'</span>)'; name(name==0)=[];    
+0058     stacks = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% number of stacks measured</span>
+0059     rs_check = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% rs_check reception dipole</span>
+0060     vab = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% absolute injected voltage</span>
+0061     bat_tx = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% tx battery voltage</span>
+0062     bat_rx = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% rx battery voltage</span>
+0063     temp = fread(fin,1,<span class="string">'float32'</span>); <span class="comment">% temperature</span>
+0064     <span class="keyword">if</span> aa==3, dtime = fread(fin,2,<span class="string">'uint32'</span>); <span class="keyword">end</span> <span class="comment">% date &amp; time in some strange format</span>
+0065     <span class="comment">%gtime = (dtime(2)*(2^32/fact)+dtime(1)/fact - d0)/24/3600 - datenum(2004,0,0); % date in day-since-04 format</span>
+0066     data = [data; rho dev in vp gm];
+0067 <span class="keyword">end</span>;
+0068 fclose(fin);
+0069 
+0070 <span class="comment">% resort electrodes</span>
+0071 [selec,ie] = sortrows(elec);
+0072 sabmn = abmn;
+0073 <span class="keyword">for</span> n=1:length(ie)
+0074     sabmn(abmn(:)==ie(n)) = n;
+0075 <span class="keyword">end</span>
+0076 
+0077 N = struct(<span class="string">'a'</span>,sabmn(:,1),<span class="string">'b'</span>,sabmn(:,2),<span class="string">'m'</span>,sabmn(:,3),<span class="string">'n'</span>,sabmn(:,4), <span class="keyword">...</span>
+0078            <span class="string">'elec'</span>,selec,<span class="string">'r'</span>, data(:,1), <span class="string">'err'</span>, data(:,2), <span class="string">'i'</span>, data(:,3)/1000, <span class="keyword">...</span>
+0079            <span class="string">'u'</span>, data(:,4)/1000, <span class="string">'ip'</span>, data(:,5));
+0080 N.k=<a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>(N);
+0081 N.r=N.u ./ N.i .* N.k;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

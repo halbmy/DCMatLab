@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showpseudoflat</title>
+  <meta name="keywords" content="showpseudoflat">
+  <meta name="description" content="SHOWPSEUDOFLAT - Show flat pseudosection">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; showpseudoflat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>showpseudoflat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SHOWPSEUDOFLAT - Show flat pseudosection</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function showpseudoflat(N,feld,cmin,cmax,iscbar,islog) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SHOWPSEUDOFLAT - Show flat pseudosection
+ showpseudoflat(N,field,cmin,cmax,iscbar,islog)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>	READINV2DFILE - Read INV2D data file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ce=num2strcell(vec)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function showpseudoflat(N,feld,cmin,cmax,iscbar,islog)</a>
+0002 
+0003 <span class="comment">% SHOWPSEUDOFLAT - Show flat pseudosection</span>
+0004 <span class="comment">% showpseudoflat(N,field,cmin,cmax,iscbar,islog)</span>
+0005 
+0006 cla reset;
+0007 <span class="keyword">if</span> nargin&lt;2, feld=N.r; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;5, iscbar=1; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;6, islog=(min(feld)&gt;0); <span class="keyword">end</span>
+0010 <span class="keyword">if</span> ischar(N), N=<a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>(N); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;2, feld=N.r; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;3, cmin=min(feld); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;4, cmax=max(feld); <span class="keyword">end</span>
+0014 <span class="keyword">if</span> islog, feld=log10(feld);cmin=log10(cmin);cmax=log10(cmax); <span class="keyword">end</span>
+0015 nel=size(N.elec,1);
+0016 aa=N.a-1;bb=N.b-1;mm=N.m-1;nn=N.n-1;
+0017 fi=find(bb&lt;aa);bb(fi)=bb(fi)+nel;
+0018 fi=find(mm&lt;bb);mm(fi)=mm(fi)+nel;
+0019 fi=find(nn&lt;mm);nn(fi)=nn(fi)+nel;
+0020 sep=abs(mm-bb);
+0021 sep=min(sep,nel-2-sep);
+0022 mid=mod(bb+sep/2,nel)+1;
+0023 fi=find(mm-bb&gt;(nel-2)/2);
+0024 mid(fi)=mod(aa(fi)-sep(fi)/2,nel)+1;
+0025 cmap=colormap(jet);lcm=length(cmap)-1;
+0026 xx=[1 1 -1 -1 1]/2;yy=[1 -1 -1 1 1]/2;
+0027 <span class="keyword">for</span> i=1:length(feld),
+0028     <span class="keyword">if</span> isfinite(feld(i)),
+0029         cind=round(1+(feld(i)-cmin)/(cmax-cmin)*lcm);
+0030         <span class="keyword">if</span> cind&lt;1, cind=1; <span class="keyword">end</span>
+0031         <span class="keyword">if</span> cind&gt;lcm, cind=lcm; <span class="keyword">end</span>
+0032         pa=patch(mid(i)+xx,sep(i)+yy,cmap(cind,:),<span class="string">'EdgeColor'</span>,<span class="string">'black'</span>);<span class="comment">%cmap(cind,:));</span>
+0033         <span class="keyword">if</span> mid(i)&lt;5, pa=patch(mid(i)+nel+xx,sep(i)+yy,cmap(cind,:),<span class="string">'EdgeColor'</span>,<span class="string">'black'</span>); <span class="keyword">end</span>
+0034     <span class="keyword">end</span>
+0035 <span class="keyword">end</span>
+0036 line([1 1]*(nel+0.5),[min(sep)-0.5 max(sep)+0.5],<span class="string">'Color'</span>,<span class="string">'red'</span>);
+0037 axis equal tight
+0038 set(gca,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>,<span class="string">'XAxisLocation'</span>,<span class="string">'top'</span>);
+0039 xlabel(<span class="string">'Electrode position'</span>);
+0040 ylabel(<span class="string">'Separation factor'</span>);
+0041 caxis([cmin cmax]);
+0042 <span class="keyword">if</span> iscbar,
+0043     hc=colorbar(<span class="string">'horiz'</span>);
+0044     xt=get(hc,<span class="string">'XTick'</span>);xtl=<a href="#_sub1" class="code" title="subfunction ce=num2strcell(vec)">num2strcell</a>(xt);
+0045     <span class="keyword">if</span> islog,
+0046         <span class="keyword">if</span> max(feld(:))&gt;2, <span class="comment">% &gt;100</span>
+0047             xtl=<a href="#_sub1" class="code" title="subfunction ce=num2strcell(vec)">num2strcell</a>(round(10.^xt));
+0048         <span class="keyword">elseif</span> max(feld(:))&gt;1, <span class="comment">% &gt;10</span>
+0049             xtl=<a href="#_sub1" class="code" title="subfunction ce=num2strcell(vec)">num2strcell</a>(round(10.^xt*10)/10);
+0050         <span class="keyword">else</span>
+0051             xtl=<a href="#_sub1" class="code" title="subfunction ce=num2strcell(vec)">num2strcell</a>(round(10.^xt*100)/100);
+0052         <span class="keyword">end</span>
+0053         set(hc,<span class="string">'XTickMode'</span>,<span class="string">'manual'</span>,<span class="string">'XTickLabel'</span>,xtl);
+0054     <span class="keyword">end</span>
+0055 <span class="keyword">end</span>
+0056 
+0057 
+0058 <a name="_sub1" href="#_subfunctions" class="code">function ce=num2strcell(vec)</a>
+0059 
+0060 <span class="keyword">for</span> i=1:length(vec),
+0061     ce{i}=num2str(vec(i));
+0062 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

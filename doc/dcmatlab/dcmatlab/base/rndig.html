@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rndig</title>
+  <meta name="keywords" content="rndig">
+  <meta name="description" content="RNDIG - Round to n counting digits">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; rndig.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>rndig
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>RNDIG - Round to n counting digits</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function c=rndig(a,n) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> RNDIG - Round to n counting digits
+ rndig(matrix,n)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="writesurfergrid.html" class="code" title="function loadsurfergrid(fname,A,x,y);">writesurfergrid</a>	LOADSURFERGRID - Load surfer grid (*.grd) file</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function c=rndig(a,n)</a>
+0002 
+0003 <span class="comment">% RNDIG - Round to n counting digits</span>
+0004 <span class="comment">% rndig(matrix,n)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, n=2; <span class="keyword">end</span>
+0007 b=ones(size(a));
+0008 zn1=10^n;zn=zn1/10;
+0009 fi1=find((abs(a)&lt;zn)&amp;(a~=0)&amp;isfinite(a));
+0010 fi2=find((abs(a)&gt;zn1)&amp;(a~=0)&amp;isfinite(a));
+0011 <span class="keyword">while</span> any(fi1)|any(fi2),
+0012     b(fi1)=b(fi1)*10;
+0013     a(fi1)=a(fi1)*10;
+0014     b(fi2)=b(fi2)/10;
+0015     a(fi2)=a(fi2)/10;
+0016     fi1=find((abs(a)&lt;zn)&amp;(a~=0)&amp;isfinite(a));
+0017     fi2=find((abs(a)&gt;zn1)&amp;(a~=0)&amp;isfinite(a));
+0018 <span class="keyword">end</span>
+0019 c=round(a)./b;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

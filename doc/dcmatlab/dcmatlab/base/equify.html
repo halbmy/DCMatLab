@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of equify</title>
+  <meta name="keywords" content="equify">
+  <meta name="description" content="EQUIFY - restrict field to discrete values">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; equify.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>equify
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>EQUIFY - restrict field to discrete values</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function field=equify(field,level,n) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> EQUIFY - restrict field to discrete values
+ newfield = equify(field);
+ newfield = equify(field,level); % default=1
+ newfield = equify(field,level,number); % default=25</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function field=equify(field,level,n)</a>
+0002 
+0003 <span class="comment">% EQUIFY - restrict field to discrete values</span>
+0004 <span class="comment">% newfield = equify(field);</span>
+0005 <span class="comment">% newfield = equify(field,level); % default=1</span>
+0006 <span class="comment">% newfield = equify(field,level,number); % default=25</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;2, level=1; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;3, n=25; <span class="keyword">end</span>
+0010 anz=prod(size(field));
+0011 
+0012 lfield=log(field);
+0013 
+0014 <span class="keyword">if</span> level==1,
+0015     n=fix(anz/10);
+0016     level=0.01;
+0017     [N,C]=hist(lfield(:),n);
+0018     nada=N&gt;(max(N)*level);
+0019     nlev=fix(length(find(diff(nada)))/2);
+0020     <span class="keyword">while</span> nlev&lt;anz/50,
+0021         n=fix(n*1.1);
+0022         [N,C]=hist(lfield(:),n);
+0023         nada=N&gt;(max(N)*level);
+0024         nlev=fix(length(find(diff(nada)))/2);
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">else</span>
+0027     [N,C]=hist(lfield(:),n);
+0028     nada=N&gt;(max(N)*level);
+0029     fprintf(<span class="string">'%d levels found!'</span>,fix(length(find(diff(nada)))/2));
+0030 <span class="keyword">end</span>
+0031 
+0032 io=1;co=C(1)-(C(2)-C(1))/2;
+0033 <span class="keyword">while</span> 1,
+0034     in=min(find(nada==0));
+0035     <span class="keyword">if</span> isempty(in), <span class="keyword">break</span>; <span class="keyword">end</span>
+0036     eq=max(C(io:in));
+0037     nada(io:in-1)=-1;
+0038     io=min(find(nada==1));
+0039     <span class="keyword">if</span> isempty(io), <span class="keyword">return</span>; <span class="keyword">end</span>
+0040     nada(in:io-1)=-1;
+0041     cn=(C(io-1)+C(in))/2;
+0042     fprintf(<span class="string">'Level %.1f-%.1f\n = %.1f\n'</span>,exp(co),exp(cn),exp(eq));
+0043     field(find((lfield&gt;=co)&amp;(lfield&lt;=cn)))=exp(eq);
+0044     co=cn;
+0045 <span class="keyword">end</span>
+0046 in=length(N);
+0047 eq=max(C(io:in));
+0048 cn=C(end)+(C(end)-C(end-1))/2;
+0049 field(find((lfield&gt;=co)&amp;(lfield&lt;=cn)))=exp(eq);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

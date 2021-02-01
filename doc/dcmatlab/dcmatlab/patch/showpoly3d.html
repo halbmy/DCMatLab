@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showpoly3d</title>
+  <meta name="keywords" content="showpoly3d">
+  <meta name="description" content="SHOWPOLY3d - Show 3d poly file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; showpoly3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>showpoly3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SHOWPOLY3d - Show 3d poly file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function showpoly3d(Poly) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SHOWPOLY3d - Show 3d poly file
+ showpoly3d(Poly)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function showpoly3d(Poly)</a>
+0002 
+0003 <span class="comment">% SHOWPOLY3d - Show 3d poly file</span>
+0004 <span class="comment">% showpoly3d(Poly)</span>
+0005 
+0006 cla;
+0007 <span class="keyword">for</span> i=1:length(Poly.face),
+0008     ff=Poly.face{i};
+0009 <span class="comment">%     line(Poly.node(ff,1),Poly.node(ff,2),Poly.node(ff,3),'Color','red');</span>
+0010     patch(Poly.node(ff,1),Poly.node(ff,2),Poly.node(ff,3),[rand(1) 0.5 0.5],<span class="string">'EdgeColor'</span>,[1 0 0]);
+0011 <span class="keyword">end</span>
+0012 hold on
+0013 showxyz(Poly.node,<span class="string">'k.'</span>)
+0014 <span class="keyword">if</span> size(Poly.node,2)&gt;=4, showxyz(Poly.node(Poly.node(:,4)==-99,:),<span class="string">'b.'</span>); <span class="keyword">end</span>
+0015 <span class="keyword">if</span> isfield(Poly,<span class="string">'hole'</span>)&amp;&amp;~isempty(Poly.hole),
+0016     showxyz(Poly.hole,<span class="string">'go'</span>);
+0017 <span class="keyword">end</span>
+0018 <span class="keyword">if</span> isfield(Poly,<span class="string">'region'</span>)~isempty(Poly.region),
+0019     showxyz(Poly.region,<span class="string">'gx'</span>);
+0020 <span class="keyword">end</span>
+0021 hold off
+0022 xlabel(<span class="string">'x in m'</span>);ylabel(<span class="string">'y in m'</span>);zlabel(<span class="string">'z in m'</span>);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

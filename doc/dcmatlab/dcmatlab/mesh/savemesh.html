@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of savemesh</title>
+  <meta name="keywords" content="savemesh">
+  <meta name="description" content="SAVEMESH - Save Mesh to binary mesh (.bms) file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; savemesh.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>savemesh
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVEMESH - Save Mesh to binary mesh (.bms) file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function savemesh(Mesh,meshname) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVEMESH - Save Mesh to binary mesh (.bms) file
+ savemesh(Mesh,meshfile)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function savemesh(Mesh,meshname)</a>
+0002 
+0003 <span class="comment">% SAVEMESH - Save Mesh to binary mesh (.bms) file</span>
+0004 <span class="comment">% savemesh(Mesh,meshfile)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, meshname=<span class="string">'tmp\meshPara.bms'</span>; <span class="keyword">end</span>
+0007 <span class="keyword">if</span> ~strfind(meshname,<span class="string">'.bms'</span>), meshname=[meshname <span class="string">'.bms'</span>]; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'dim'</span>), Mesh.dim=size(Mesh.cell,2)-1; <span class="keyword">end</span> <span class="comment">% default tri/tet</span>
+0009 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'ncells'</span>), Mesh.ncells=size(Mesh.cell,1); <span class="keyword">end</span> <span class="comment">% default tri/tet</span>
+0010 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'nnodes'</span>), Mesh.nnodes=size(Mesh.node,2); <span class="keyword">end</span> <span class="comment">% default tri/tet</span>
+0011 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'nodemarker'</span>), Mesh.nodemarker=zeros(Mesh.nnodes,1); <span class="keyword">end</span>
+0012 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'cellnodes'</span>), Mesh.cellnodes=ones(Mesh.ncells,1)*size(Mesh.cell,2); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'cellattr'</span>), Mesh.cellattr=zeros(Mesh.ncells,1); <span class="keyword">end</span>
+0014 
+0015 zahl=<span class="string">'int32'</span>;wert=<span class="string">'double'</span>;
+0016 fid=fopen(meshname,<span class="string">'w'</span>);
+0017 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'Could not open file!'</span>); <span class="keyword">end</span>
+0018 <span class="keyword">try</span>,
+0019     fwrite(fid,Mesh.dim,zahl);
+0020     fwrite(fid,zeros(127,1),zahl);<span class="comment">%vertinfo</span>
+0021     fwrite(fid,Mesh.nnodes,zahl);
+0022     fwrite(fid,Mesh.node',wert);
+0023     fwrite(fid,Mesh.nodemarker,zahl);
+0024     fwrite(fid,zeros(127,1),zahl);<span class="comment">%cellinfo</span>
+0025     fwrite(fid,Mesh.ncells,zahl);
+0026     fwrite(fid,Mesh.cellnodes,zahl);
+0027     fwrite(fid,Mesh.cell'-1,zahl);
+0028     fwrite(fid,Mesh.cellattr,wert);
+0029     fwrite(fid,zeros(127,1),zahl);<span class="comment">%boundinfo</span>
+0030     <span class="keyword">if</span> isfield(Mesh,<span class="string">'nbounds'</span>)&amp;&amp;(Mesh.nbounds&gt;0),
+0031         fwrite(fid,Mesh.nbounds,zahl);
+0032         <span class="keyword">if</span> Mesh.nbounds&gt;0,
+0033             fwrite(fid,Mesh.boundnodes,zahl);
+0034             fwrite(fid,Mesh.bound'-1,zahl);
+0035             fwrite(fid,Mesh.boundmarker,zahl);
+0036             fwrite(fid,Mesh.boundleft-1,zahl);
+0037             fwrite(fid,Mesh.boundright-1,zahl);
+0038         <span class="keyword">end</span>
+0039     <span class="keyword">else</span>
+0040         fwrite(fid,0,zahl);
+0041     <span class="keyword">end</span>
+0042     fclose(fid);
+0043 <span class="keyword">catch</span>
+0044     display(lasterr);
+0045     fclose(fid);
+0046 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

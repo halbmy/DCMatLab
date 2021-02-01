@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readgemfile</title>
+  <meta name="keywords" content="readgemfile">
+  <meta name="description" content="READGEMFILE - read sensinv3d file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readgemfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readgemfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READGEMFILE - read sensinv3d file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=readgemfile(gemfile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READGEMFILE - read sensinv3d file
+ [fname,fpath]=uigetfile('*.gem');
+ gemfile=fullfile(fpath,fname);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=readgemfile(gemfile)</a>
+0002 
+0003 <span class="comment">% READGEMFILE - read sensinv3d file</span>
+0004 <span class="comment">% [fname,fpath]=uigetfile('*.gem');</span>
+0005 <span class="comment">% gemfile=fullfile(fpath,fname);</span>
+0006 
+0007 fid=fopen(gemfile,<span class="string">'r'</span>);
+0008 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'GEM-File does not exist!'</span>); <span class="keyword">end</span>
+0009 A=fscanf(fid,<span class="string">'%d %f %f %f'</span>,[4 Inf])';
+0010 fclose(fid);
+0011 N.elec=A(:,2:4);
+0012 senfile=strrep(gemfile,<span class="string">'.gem'</span>,<span class="string">'.sen'</span>);
+0013 fid=fopen(senfile,<span class="string">'r'</span>);
+0014 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'SEN-File does not exist!'</span>); <span class="keyword">end</span>
+0015 A=fscanf(fid,<span class="string">'%d %d %d %d %d'</span>,[5 Inf])'; <span class="comment">%Nummer El. beachten!</span>
+0016 fclose(fid);
+0017 N.a=abs(A(:,2));
+0018 N.b=abs(A(:,3));
+0019 N.m=abs(A(:,4));
+0020 N.n=abs(A(:,5));
+0021 uifile=strrep(gemfile,<span class="string">'.gem'</span>,<span class="string">'.ui'</span>);
+0022 fid=fopen(uifile,<span class="string">'r'</span>);
+0023 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'UI-File does not exist!'</span>); <span class="keyword">end</span>
+0024 A=fscanf(fid,<span class="string">'%f %f'</span>,[2 Inf])';
+0025 fclose(fid);
+0026 N.u=A(:,1)/1000;
+0027 N.i=A(:,2)/1000;
+0028 N.rho=N.u./N.i;
+0029 N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);
+0030 N.r=N.rho.*N.k;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

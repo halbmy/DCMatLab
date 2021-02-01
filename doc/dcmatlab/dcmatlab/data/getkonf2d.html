@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getkonf2d</title>
+  <meta name="keywords" content="getkonf2d">
+  <meta name="description" content="GETKONF - Get Configuration factor from electrode positions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; getkonf2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getkonf2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GETKONF - Get Configuration factor from electrode positions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function konf=getkonf2d(N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GETKONF - Get Configuration factor from electrode positions
+ N.k = getkonf(N)
+ N.....structure of * arrays a,b,m,n = electrode numbers(elec)
+                    * elec = Electrode positions ( x,z )
+ needed to set element k = konfiguration factor for N</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="create2ddata.html" class="code" title="function N=create2ddata(arr,nel,del,eel,seps,bigd)">create2ddata</a>	CREATE2DDATA - Create 2d surface data set</li><li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li><li><a href="readefx.html" class="code" title="function N = readefx(datfile)">readefx</a>	READEFX - Read geosys device EFX file</li><li><a href="readflwfile.html" class="code" title="function N = readflwfile(filename)">readflwfile</a>	READ FLW (geotom flow) file</li><li><a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>	READINV2DFILE - Read INV2D data file</li><li><a href="readresecsfile.html" class="code" title="function N=readresecsfile(filename)">readresecsfile</a>	READRESECSFILE - Read RESECS ascii export file (*.TXT)</li><li><a href="readsyscalfile.html" class="code" title="function N = readsyscalfile(filename)">readsyscalfile</a>	READ IRIS Syscal Pro file</li><li><a href="readtx0file.html" class="code" title="function [N,ff] = readtx0file(filename,trotz)">readtx0file</a>	READTX0FILE - Read TX0 file (Lippmann multielectrode device)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function konf=getkonf2d(N)</a>
+0002 
+0003 <span class="comment">% GETKONF - Get Configuration factor from electrode positions</span>
+0004 <span class="comment">% N.k = getkonf(N)</span>
+0005 <span class="comment">% N.....structure of * arrays a,b,m,n = electrode numbers(elec)</span>
+0006 <span class="comment">%                    * elec = Electrode positions ( x,z )</span>
+0007 <span class="comment">% needed to set element k = konfiguration factor for N</span>
+0008 
+0009 ael=ones(length(N.a),size(N.elec,2))*Inf;
+0010 mel=-ones(length(N.a),size(N.elec,2))*Inf;
+0011 fi=find(N.a);ael(fi,:)=N.elec(N.a(fi),:);
+0012 fi=find(N.m);mel(fi,:)=N.elec(N.m(fi),:);
+0013 ast=ael;ast(:,2)=-ast(:,2);
+0014 <span class="comment">% nn=find(N.a);</span>
+0015 <span class="comment">% if ~isempty(nn),</span>
+0016     konf=1./sqrt(sum((ael-mel).^2,2))+<span class="keyword">...</span>
+0017         1./sqrt(sum((ast-mel).^2,2));
+0018 <span class="comment">% end</span>
+0019 nn=find(N.n~=0);
+0020 <span class="keyword">if</span> ~isempty(nn),
+0021     nel=N.elec(N.n(nn),:);
+0022     konf(nn)=konf(nn)-1./sqrt(sum((ael(nn,:)-nel).^2,2))-<span class="keyword">...</span>
+0023         1./sqrt(sum((ast(nn,:)-nel).^2,2));
+0024 <span class="keyword">end</span>
+0025 nn=find(N.b~=0);
+0026 <span class="keyword">if</span> ~isempty(nn),
+0027     bel=N.elec(N.b(nn),:);
+0028     bst=bel;bst(:,2)=-bst(:,2);
+0029     konf(nn)=konf(nn)-1./sqrt(sum((bel-mel(nn,:)).^2,2))-<span class="keyword">...</span>
+0030     1./sqrt(sum((bst-mel(nn,:)).^2,2));
+0031 <span class="keyword">end</span>
+0032 nn=find(N.b.*N.n~=0);
+0033 <span class="keyword">if</span> ~isempty(nn),
+0034     bel=N.elec(N.b(nn),:);
+0035     bst=bel;bst(:,2)=-bst(:,2);
+0036     nel=N.elec(N.n(nn),:);
+0037     konf(nn)=konf(nn)+1./sqrt(sum((bel-nel).^2,2))+<span class="keyword">...</span>
+0038         1./sqrt(sum((bst-nel).^2,2));
+0039 <span class="keyword">end</span>
+0040 ep=1e-12;
+0041 konf=round(4*pi./konf/ep)*ep;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

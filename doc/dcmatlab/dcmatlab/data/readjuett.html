@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readjuett</title>
+  <meta name="keywords" content="readjuett">
+  <meta name="description" content="READJUETT - Read Juelich type travel time data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readjuett.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readjuett
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READJUETT - Read Juelich type travel time data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Shot1 = readjuett(filename,dx) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READJUETT - Read Juelich type travel time data
+ Shot = readjuett(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="reduceshot.html" class="code" title="function Shot1=reduceshot(Shot,dx)">reduceshot</a>	REDUCESHOT - Reduce shot/geophone numbers by assembling</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Shot1 = readjuett(filename,dx)</a>
+0002 <span class="comment">% READJUETT - Read Juelich type travel time data</span>
+0003 <span class="comment">% Shot = readjuett(filename)</span>
+0004 
+0005 <span class="comment">% filename='D:\Guenther.T\2d\juelich\05_10_12\ht100_13t_cuts.dat';</span>
+0006 <span class="comment">% filename='D:\Guenther.T\2d\juelich\05_10_12\8-24_13t_all.dat';</span>
+0007 
+0008 dx=5e-3;
+0009 <span class="keyword">if</span> nargin&lt;2, dx=0.0001; <span class="keyword">end</span>
+0010 A=textread(filename,<span class="string">''</span>);
+0011 Shot=[];
+0012 <span class="comment">% Shot.t=A(:,1)*1e-9;</span>
+0013 tr=A(:,3:5);
+0014 re=A(:,6:8);
+0015 tr=round(tr/dx)*dx;re=round(re/dx)*dx;
+0016 Shot.pos=unique([tr;re],<span class="string">'rows'</span>);fprintf(<span class="string">'%d positions found'</span>,size(Shot.pos,1));
+0017 wi=atan2(Shot.pos(:,2),Shot.pos(:,1));
+0018 [swi,ind]=sort(wi);
+0019 Shot.pos=Shot.pos(ind,:);
+0020 untr=unique(tr,<span class="string">'rows'</span>);
+0021 [tf,nre]=ismember(re,Shot.pos,<span class="string">'rows'</span>);
+0022 Shot.t=[];
+0023 <span class="keyword">for</span> i=1:size(untr,1),
+0024     [tf,Shot.ns{i}]=ismember(untr(i,:),Shot.pos,<span class="string">'rows'</span>);
+0025     fi=find(ismember(tr,untr(i,:),<span class="string">'rows'</span>));
+0026     Shot.tt{i}=A(fi,1);
+0027     Shot.t=[Shot.t;Shot.tt{i}*1e-9];
+0028     Shot.nx{i}=nre(fi);
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">for</span> i=3:-1:1, <span class="keyword">if</span> length(unique(Shot.pos(:,i)))==1, Shot.pos(:,i)=[]; <span class="keyword">end</span>; <span class="keyword">end</span>
+0031 Shot.sd=3e-10;
+0032 <span class="keyword">if</span> size(A,2)&gt;8, <span class="comment">%va present</span>
+0033     Shot.va=A(:,9)./Shot.t;
+0034 <span class="keyword">else</span>
+0035     Shot.dist=zeros(size(Shot.t));
+0036     l=0;
+0037     <span class="keyword">for</span> i=1:length(Shot.ns),
+0038         di=sqrt((Shot.pos(Shot.nx{i},1)-Shot.pos(Shot.ns{i},1)).^2+<span class="keyword">...</span>
+0039             (Shot.pos(Shot.nx{i},2)-Shot.pos(Shot.ns{i},2)).^2);
+0040         le=length(di);
+0041         Shot.dist(l+1:l+le)=di;
+0042         l=l+le;
+0043     <span class="keyword">end</span>
+0044     Shot.va=Shot.dist./Shot.t;
+0045 <span class="keyword">end</span>
+0046 Shot1=<a href="reduceshot.html" class="code" title="function Shot1=reduceshot(Shot,dx)">reduceshot</a>(Shot);
+0047 fprintf(<span class="string">'...reduced to %d\n'</span>,size(Shot1.pos,1));
+0048 <span class="keyword">return</span>
+0049 clf;plot(Shot.pos(:,1),Shot.pos(:,2),<span class="string">'x'</span>);axis equal;grid on;
+0050 hold on;ns=cell2mat(Shot.ns);plot(Shot.pos(ns,1),Shot.pos(ns,2),<span class="string">'ro'</span>);hold off
+0051 <span class="keyword">return</span>
+0052 <span class="keyword">for</span> i=1:length(Shot.ns), 
+0053     clf;plot(Shot.pos(:,1),Shot.pos(:,2),<span class="string">'.'</span>);axis equal;grid on;
+0054     <span class="keyword">for</span> j=1:length(Shot.nx{i}),
+0055         aa=[Shot.ns{i} Shot.nx{i}(j)];line(Shot.pos(aa,1),Shot.pos(aa,2));
+0056     <span class="keyword">end</span>; 
+0057     pause
+0058 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

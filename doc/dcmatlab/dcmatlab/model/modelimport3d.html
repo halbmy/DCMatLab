@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of modelimport3d</title>
+  <meta name="keywords" content="modelimport3d">
+  <meta name="description" content="MODELIMPORT3D - Import grid model from ASCII file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; modelimport3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>modelimport3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>MODELIMPORT3D - Import grid model from ASCII file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [M,x,y,z,Cov]=modelimport3d(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MODELIMPORT3D - Import grid model from ASCII file
+ [M,x,y,z] = modelimport3d(filename)
+ Model = modelimport3d(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function zeile=destrip(zeile)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [M,x,y,z,Cov]=modelimport3d(filename)</a>
+0002 
+0003 <span class="comment">% MODELIMPORT3D - Import grid model from ASCII file</span>
+0004 <span class="comment">% [M,x,y,z] = modelimport3d(filename)</span>
+0005 <span class="comment">% Model = modelimport3d(filename)</span>
+0006 
+0007 <span class="comment">% fid=fopen(filename,'r');</span>
+0008 <span class="comment">% zeile='';</span>
+0009 <span class="comment">% while length(zeile)==0, zeile=destrip(fgetl(fid)); end</span>
+0010 <span class="comment">% XYZR=fscanf(fid,'%f',[7,Inf])';</span>
+0011 <span class="comment">% XYZR(end+1,:)=sscanf(zeile,'%f',[7,1])';</span>
+0012 <span class="comment">% fclose(fid);</span>
+0013 XYZR=textread(filename,<span class="string">''</span>,<span class="string">'commentstyle'</span>,<span class="string">'shell'</span>,<span class="string">'headerlines'</span>,1);
+0014 x=unique(XYZR(:,1));x(end+1)=max(XYZR(:,2));
+0015 y=unique(XYZR(:,3));y(end+1)=max(XYZR(:,4));
+0016 z=unique(XYZR(:,5));z(end+1)=max(XYZR(:,6));
+0017 <span class="keyword">if</span> size(XYZR,2)&lt;8, XYZR(:,8)=0; <span class="keyword">end</span>
+0018 M=ones(length(x)-1,length(y)-1,length(z)-1);
+0019 Cov=zeros(size(M));
+0020 [tf,ii]=ismember(XYZR(:,1),x);
+0021 [tf,jj]=ismember(XYZR(:,3),y);
+0022 [tf,kk]=ismember(XYZR(:,5),z);
+0023 <span class="keyword">for</span> l=1:length(ii),
+0024     M(ii(l),jj(l),kk(l))=XYZR(l,7);
+0025     Cov(ii(l),jj(l),kk(l))=XYZR(l,8);
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">if</span> nargout==1,
+0028     du.M=M;
+0029     M=du;
+0030     M.x=x;
+0031     M.y=y;
+0032     M.z=z;
+0033     M.Bg=0;
+0034 <span class="keyword">end</span>
+0035 
+0036 <a name="_sub1" href="#_subfunctions" class="code">function zeile=destrip(zeile)</a>
+0037 <span class="comment">% strip string from comments (with # character)</span>
+0038 aa=strfind(zeile,<span class="string">'#'</span>);
+0039 <span class="keyword">if</span> ~isempty(aa), zeile=zeile(1:aa(1)-1); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

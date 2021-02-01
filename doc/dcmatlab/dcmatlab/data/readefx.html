@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readefx</title>
+  <meta name="keywords" content="readefx">
+  <meta name="description" content="READEFX - Read geosys device EFX file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readefx.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readefx
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READEFX - Read geosys device EFX file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N = readefx(datfile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READEFX - Read geosys device EFX file
+ N = readefx(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>	GETKONF - Get Configuration factor from electrode positions</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N = readefx(datfile)</a>
+0002 
+0003 <span class="comment">% READEFX - Read geosys device EFX file</span>
+0004 <span class="comment">% N = readefx(filename)</span>
+0005 
+0006 fid=fopen(datfile,<span class="string">'r'</span>);
+0007 zeile=fgetl(fid);
+0008 <span class="keyword">while</span> isempty(zeile)||(zeile(1)==39), <span class="comment">%' character</span>
+0009     zeile=fgetl(fid);
+0010 <span class="keyword">end</span>
+0011 N.a=[];N.b=[];N.m=[];N.n=[];N.i=[];N.u=[];N.r=[];N.ip=[];
+0012 ia=1;im=2;in=3;ib=4;ii=10;iu=11;ir=12;iip=13;
+0013 zeile=fgetl(fid); <span class="comment">% token row !!! has to be interpreted</span>
+0014 <span class="keyword">while</span> ischar(zeile),
+0015    z1=strrep(strrep(zeile,<span class="string">';;'</span>,<span class="string">';0;'</span>),<span class="string">';;'</span>,<span class="string">';'</span>);
+0016    aa=str2num(strrep(strrep(strrep(z1,<span class="string">','</span>,<span class="string">'.'</span>),<span class="string">':'</span>,<span class="string">''</span>),<span class="string">';'</span>,<span class="string">' '</span>));
+0017    <span class="keyword">if</span> ia, N.a(end+1)=aa(ia); <span class="keyword">end</span>
+0018    <span class="keyword">if</span> ib, N.b(end+1)=aa(ib); <span class="keyword">end</span>
+0019    <span class="keyword">if</span> im, N.m(end+1)=aa(im); <span class="keyword">end</span>
+0020    <span class="keyword">if</span> in, N.n(end+1)=aa(in); <span class="keyword">end</span>
+0021    <span class="keyword">if</span> ii, N.i(end+1)=aa(ii)/1000; <span class="keyword">end</span>
+0022    <span class="keyword">if</span> iu, N.u(end+1)=aa(iu)/1000; <span class="keyword">end</span>
+0023    <span class="keyword">if</span> ir, N.r(end+1)=aa(ir); <span class="keyword">end</span>
+0024    <span class="keyword">if</span> iip, N.ip(end+1)=aa(iip); <span class="keyword">end</span>
+0025    zeile=fgetl(fid);
+0026 <span class="keyword">end</span>
+0027 N.a=N.a(:);N.b=N.b(:);N.m=N.m(:);N.n=N.n(:);
+0028 N.i=N.i(:);N.u=N.u(:);N.r=N.r(:);N.ip=N.ip(:);
+0029 mm=max([N.a;N.b;N.m;N.n]);
+0030 fclose(fid);
+0031 N.elec=(0:mm-1)'*0.05;N.elec(:,2)=0;
+0032 N.k=<a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>(N);
+0033 <span class="comment">% rhoa=N.u./N.i.*N.k;</span>
+0034 <span class="comment">% plot(N.r,rhoa,'.')</span>
+0035 <span class="comment">% showdata2d(N,N.r,struct('clog',1))</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

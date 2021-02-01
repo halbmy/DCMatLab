@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of saveresecsfile</title>
+  <meta name="keywords" content="saveresecsfile">
+  <meta name="description" content="SAVERESECSFILE - Save aata in Resecs export format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; saveresecsfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>saveresecsfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVERESECSFILE - Save aata in Resecs export format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function saveresecsfile(filename,N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVERESECSFILE - Save aata in Resecs export format
+ saveresecsfile(filename,N)
+ N..data struct with elec,a,b,m,n,...</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function saveresecsfile(filename,N)</a>
+0002 
+0003 <span class="comment">% SAVERESECSFILE - Save aata in Resecs export format</span>
+0004 <span class="comment">% saveresecsfile(filename,N)</span>
+0005 <span class="comment">% N..data struct with elec,a,b,m,n,...</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Specify filename and Data Struct!'</span>); <span class="keyword">end</span>
+0008 <span class="keyword">if</span> size(N.elec,2)&lt;3, N.elec(1,3)=0; <span class="keyword">end</span>
+0009 ndata=length(N.a);
+0010 <span class="comment">% Nel=size(N.elec,1);</span>
+0011 A=zeros(ndata,12);
+0012 A(:,1:3)=N.elec(N.a,1:3);
+0013 A(:,4:6)=N.elec(N.b,1:3);
+0014 A(:,7:9)=N.elec(N.m,1:3);
+0015 A(:,10:12)=N.elec(N.n,1:3);
+0016 headr=<span class="string">'C1(x)\tC1(y)\tC1(z)\tC2(x)\tC2(y)\tC2(z)\tP1(x)\tP1(y)\tP1(z)\tP2(x)\tP2(y)\tP2(z)'</span>;
+0017 formstr=<span class="string">'%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g\t%g'</span>;
+0018 <span class="keyword">if</span> isfield(N,<span class="string">'u'</span>)&amp;&amp;(length(N.u)==length(N.a)),
+0019     A(:,end+1)=N.u(:)*1000;
+0020     headr=[headr <span class="string">'\tU'</span>];
+0021     formstr=[formstr <span class="string">'\t%g'</span>];
+0022 <span class="keyword">end</span>
+0023 <span class="keyword">if</span> isfield(N,<span class="string">'i'</span>)&amp;&amp;(length(N.i)==length(N.a)),
+0024     A(:,end+1)=N.i(:)*1000;
+0025     headr=[headr <span class="string">'\tI'</span>];
+0026     formstr=[formstr <span class="string">'\t%g'</span>];
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">if</span> isfield(N,<span class="string">'r'</span>)&amp;&amp;(length(N.r)==length(N.a)),
+0029     A(:,end+1)=N.r(:);
+0030     headr=[headr <span class="string">'\tRho'</span>];
+0031     formstr=[formstr <span class="string">'\t%g'</span>];
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>)&amp;&amp;(length(N.err)==length(N.a)),
+0034     A(:,end+1)=N.err(:)*100;
+0035     headr=[headr <span class="string">'\tD'</span>];
+0036     formstr=[formstr <span class="string">'\t%g'</span>];
+0037 <span class="keyword">end</span>
+0038 <span class="keyword">if</span> isfield(N,<span class="string">'ip'</span>)&amp;&amp;(length(N.ip)==length(N.a)),
+0039     A(:,end+1)=N.ip(:);
+0040     headr=[headr <span class="string">'\tM'</span>];
+0041     formstr=[formstr <span class="string">'\t%g'</span>];
+0042 <span class="keyword">end</span>
+0043 fid=fopen(filename,<span class="string">'w'</span>);
+0044 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'Could not write file!'</span>); <span class="keyword">end</span>
+0045 fprintf(fid,[headr <span class="string">'\r\n'</span>]);
+0046 fprintf(fid,[formstr <span class="string">'\r\n'</span>],A');
+0047 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

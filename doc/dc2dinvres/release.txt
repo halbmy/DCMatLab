@@ -1,0 +1,248 @@
+DC2DInvRes - DC 2D Inversion and Resolution
+--release notes--
+
+version 2.7b1 (22.06.05)
+* changed order of release/beta
+* minor beautifying
+* enabled reading of snd file consisting of several soundings in
+  lines of: filename position flag (0=Schlumberger,1=right half,2=left half) 
+* changed sensitivity plotting and fixed export
+version 2.6b2 (08.06.05)
+* fixed sensitivity bug (symmetry in subsurface electrodes)
+* cluster analysis for post-blockifying (Shift+B)
+* completely rearranged the internal system (hopefully invisible)
+* fixed bug in ohm-export Tape variant
+version 2.6b1 (25.05.05)
+* enabled ohm-File output (useful for topo webinv)
+version 2.6 (30.04.05)
+* reading of ABEM multi-purpose (.amp) files
+* rearranged examples directory (rename old dir)
+* robust data processing and blocky model option
+* fixed bug creating data (not existing field topo)
+* fixed bug in model apparency
+* fixed bug forgetting error estimation
+version 2.5b1 (07.11.04)
+* introduced license file check
+* enabled topography (at this stage only weak transformation)
+* fixed model opacity bug
+* changed model representation
+version 2.4b2 (31.10.04)
+* introduced error reweighting for robust data processing
+* removed some warning messages
+* introduced ip in data create and model edit
+* introduced enlargment and shift values for enlarged dipoles (Create Data)
+version 2.4b1 (18.10.04)
+* minor changes
+* enabled resistivity fixing 
+* enabled ip data in res2dinv export file
+* inserted compare IP data
+version 2.4 (31.8.04)
+* changed data representation (space-less patches for "full" data)
+* minor GUI beautifying
+* fixed bug for small electrode distance data files
+version 2.3b2 (18.05.04)
+* created test version
+* introduced blockify model
+version 2.3
+* changed name to DC2DInvRes
+* changed behavior of resolution buttons
+version 2.2b1 (29.04.04)
+* changed model edit (now easier with with raggedbox)
+* minor bug fixes
+version 2.2 (23.04.04)
+* enabled computation of model cell resolutions without svd
+* improved CGLSPAR convergence and its waitbar
+* fixed bugs and visibility
+version 2.1b (20.04.04)
+* improved accuracy of forward calculation
+* enabled read-in of raw data files
+version 2.1 (30.03.04)
+* fixed export problems
+* changed menu slightly
+* introduced "line search" and "global regularization" inverse options
+* fixed data representation error
+* introduced reading in of errors in res2dinv files
+version 2.0b4 (18.03.04)
+* introduced misfit into Edit Data (for robust processing)
+* minor bug fixes
+version 2.0b3 (23.02.04)
+* minor bug fixes
+* introduced three boundary condition variants in GUI
+  (Dirichlet, Neumann, modified Neumann)
+* changed smoothness constraints 2nd order
+version 2.0b2 (12.01.04)
+* install program setup-inv2d.exe
+* new documentation available
+* fixed a lot of bugs (esp. newly introduces)
+version 2.0b1 (07.01.04)
+* (re-)introduced truncated least squares
+* enabled choosing for TSVD and TLS
+* added new figure file (buggy in 2.0b)
+* enabled fewer measurements than prposed in inv2d-file
+version 2.0b (05.01.04)
+* changed menu structure (File,Data,Model,...)
+* using measured current for error estimate
+* taking current/voltage as mA/mV if values>10 occur
+* bug in add data removed
+* standard z layers slightly changed
+version 1.6b5(15.12.03)
+* included ip/chargeability inversion and display (if present)
+* fixed bug in smoothness constraints (2nd order)
+* included current and voltage in data files
+* estimation of geometrical errors (varying electrode positions)
+version 1.6b4(20.11.03)
+* displaying circulating data right
+* read/write data including current and voltage (if present)
+* displaying number AND positions in data dialog
+* included import function for 4channel-files
+* 2 digits for compare model
+* corrected resolution computation (also for SIRT)
+version 1.6b3(27.10.03)
+* introduced model compare function
+* rounding electrodes for res2dinv import
+version 1.6b2(15.10.03)
+* removed some bugs with subsurface electrodes
+version 1.6b(13.10.2003)
+* increased flexibility for surface2hole and crosshole data
+* improved forward calculation (esp. for subsurface electrodes)
+* Edit Data also for k-factor possible
+
+version 1.5b5(09.10.2003)
+* beautifying (icons, window names, ...)
+* fixed minor bugs
+* expanded help menu (help, online help and web inversion)
+version 1.5b4(06.10.2003)
+* fixed range constraint hang-up
+* fixed "matrix exeeds dimension error" in exportfigure
+* printing model also prints compare window (if open)
+* also encapsulated postscript(*.eps) possible for printing
+* fixed error while saving sensitivity file
+version 1.5b3(18.09.2003)
+* changed behaviour of inversion options (manual,L-curve,fixed regu)
+* introduced (test-wise) trusted region line search for one step inversion
+version 1.5b2(17.09.2003)
+* fixed bug in Edit data (electrodes are removed, if not used)
+* changed data representation (pole-dipole, wenner, fontsize=8)
+version 1.5b(11.09.2003)
+* explicit definition of reference (or a-priori) model
+* added "go back to old model" for one steps
+* added help buttons for all option dialoges
+* added option combine+delete in parameter reduction
+* added option for lower resistivity bound (logarithmic parameters)
+* fixed problem with non-logarithmic parameter inversion
+
+%%%%%%%%%%%%%%%%%%%%%%%
+version 1.4b3(09.09.03)
+* taking parameterization from sensitivity file (if present)
+* changed datum point representation
+* errors in data file possible as percent
+* new forward option prolonging background/boundary
+* new option zmax for logspaces layer creation
+* included resistivity level in create data set (important for error estimate!)
+* fixed bug in forward calculation (zrefine>1, layered background)
+version 1.4b2(04.09.03)
+* changed sign of data misfit (data-response is more intuitive)
+* changed (again) definition of chi^2
+version 1.4b1(03.09.03)
+* changed interpretation (and display) of chi^2
+* changed (write data) formats (2 digits for all, nicifying spaces)
+* Added help menu button to display online help
+* beautifying and display bugs
+
+version 1.4 (15.08.03)
+*changed little, checked much
+version 1.3b7 (07.08.03)
+* changed ascii import/export
+  (either midpoint or corner points)
+* disabled alpha mapping if few resistivities present(modelling)
+version 1.3b6 (31.7.03)
+* fixed minor bugs
+* If "Compare Data" window stays open it gets updated
+* Changed menu (edit data now under main menu File)
+* Changed Hotkey (O for Open data file, R reserved for (display)response
+* included error estimate in Create Data Set
+Version 1.3b5 (29.7.03)
+* hourglass mouse pointer when busy
+* area clicking of model with control(start) and shift(end)
+Version 1.3b4 (21.7.03)
+* Option Edit Data (under model) inserted
+* maximum auto number of layers set to 12
+Version 1.3b3
+* (Graphics Options) Apply-bug fixed
+* Bug for deleting data fixed
+Version 1.3b2
+* enhanced 2nd order smoothness constraints
+* Creation and display of borehole-surface and cross-borehole
+Version 1.3b
+* Better display of mixed data sets
+* Restructured menu
+* Data set creation GUI
+* Hotkeys only with Shift+Character
+* Model importing
+* Filter factors and transform function
+
+%%%%%%%%%%%(3.2.03)
+Version 1.2
+* Completely arbitrary datasets
+* Import of Loke/Barker files
+* Graphical Edit and Save/Import of datasets
+* Error estimation 
+* Model Creation based on dataset 
+* Interactive model edit
+* Estimation of 1D starting model
+* Fast and accurate forward calculation with FD
+* Fast sensitivity calculation
+* Many options for inversion
+  (smoothness, parameter reduction, ...)
+* Automatic choosing of regularization parameter
+* Display of sensitivities, DOI-index, ...
+* SVD resolution analysis
+  (data efficiency, model resolution, ...)
+
+Version 1.2b (20.01.03)
+* Adding Error Estimate GUI (percent plus umin/I*k)
+* Options for parameter limitation(combine, delete, nothing)
+* Options for Weighting matrix (1, Cov, Smoothness)
+* Output of CHI^2 in addition to RMS
+* Transport to matlab 6.5 complete
+
+%%%%%%%%%%%%%%%%%%%%%%
+Version 1.1 (20.12.02)
+* Resolution matrices basing on regularization
+* Broyden update for layered (starting) model
+* Graphics Export as PNG file instead of JPG
+* borehole electrodes
+* negative separations possible
+* forward calculation faster and more accurate
+* interactive modelling
+* reduction of parameter possible
+* fast sensitivity integration by mex function
+
+%%%%%%%%%%%%%%%%%%
+Version 1.1b (20.08.02)
+* Name of file in GUI title
+* x/m within XTickLabel
+* number instead configuration factor
+* general export function
+* optional filled contour lines
+* Model export as ASCII
+* waitbars for all time consuming operations
+* overwrite protection for all export data
+* interactive deleting of measured data
+* included general electrode positioning readin(type 11)
+* save/load workspace
+* save/load options
+* saving sensitivities with x and z and checking when loading
+* comments in datafile
+* commas instead of blanks in data files possible
+* slider for displaying sensitivities and model cell resolution
+
+Version 1.0 (10.04.02)
+* basic 2d dc inversion
+
+TODO in the future
+* IP inversion
+* Topography
+* explicit definition as "reference model"
+
+

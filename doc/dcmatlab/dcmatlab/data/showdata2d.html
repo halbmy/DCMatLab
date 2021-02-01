@@ -1,0 +1,360 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showdata2d</title>
+  <meta name="keywords" content="showdata2d">
+  <meta name="description" content="SHOWDATA2D show datum points">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; showdata2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>showdata2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SHOWDATA2D show datum points</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [mids,seps,ii,kk]=showdata2d(NN,feld,MAL) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SHOWDATA2D show datum points
+ showdata2d(N,[,field[,DRAWOPTS])
+ N..Structure of electrode numbers(a,b,m,n), 
+ k-factors(k), measurements(r) and
+ elec .. electrode positions
+ field..data to plot, otherwise N.r</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="findmess.html" class="code" title="function fi=findmess(N,el1,el2)">findmess</a>	</li><li><a href="midkonf2d.html" class="code" title="function [mids,seps,ii,kk,midpoint,dm]=midkonf2d(N)">midkonf2d</a>	MIDKONF2D - midpoint and konfiguration of data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="patch2ddata.html" class="code" title="">patch2ddata</a>	</li><li><a href="plotprofiles.html" class="code" title="function [cmin,cmax,iscb]=plotprofiles(N,field,mal)">plotprofiles</a>	PLOTPROFILES - Plot profiles of a 3D data set</li><li><a href="showdata.html" class="code" title="function showdata(Data)">showdata</a>	SHOWDATA - Show data of any kind or dimension</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function fi=findmess(N,el1,el2)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [mids,seps,ii,kk]=showdata2d(NN,feld,MAL)</a>
+0002 
+0003 <span class="comment">% SHOWDATA2D show datum points</span>
+0004 <span class="comment">% showdata2d(N,[,field[,DRAWOPTS])</span>
+0005 <span class="comment">% N..Structure of electrode numbers(a,b,m,n),</span>
+0006 <span class="comment">% k-factors(k), measurements(r) and</span>
+0007 <span class="comment">% elec .. electrode positions</span>
+0008 <span class="comment">% field..data to plot, otherwise N.r</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'Data structure as input argument required!'</span>); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;2, feld=NN.r; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> isempty(feld), feld=NN.r; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> islogical(feld), feld=double(feld)+1; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&lt;3,
+0015   MAL=struct(<span class="string">'cauto'</span>,1,<span class="string">'cmap'</span>,0);      
+0016 <span class="keyword">end</span>
+0017 clog=1;
+0018 <span class="keyword">if</span> ~isfield(MAL,<span class="string">'cauto'</span>)&amp;isfield(MAL,<span class="string">'cmin'</span>)&amp;isfield(MAL,<span class="string">'cmax'</span>), MAL.cauto=0; <span class="keyword">end</span>
+0019 <span class="keyword">if</span> isfield(MAL,<span class="string">'clog'</span>), MAL.log=MAL.clog; <span class="keyword">end</span>
+0020 <span class="keyword">if</span> isfield(MAL,<span class="string">'xdir'</span>), xdir=MAL.xdir; <span class="keyword">else</span> xdir=0; <span class="keyword">end</span>
+0021 <span class="keyword">if</span> isfield(MAL,<span class="string">'cmax'</span>), cmax=MAL.cmax; <span class="keyword">else</span> cmax=1; <span class="keyword">end</span>
+0022 <span class="keyword">if</span> isfield(MAL,<span class="string">'cmin'</span>), cmin=MAL.cmin; <span class="keyword">else</span> cmin=0; <span class="keyword">end</span>
+0023 <span class="keyword">if</span> isfield(MAL,<span class="string">'log'</span>), clog=MAL.log; <span class="keyword">end</span>
+0024 <span class="keyword">if</span> min(feld(:))&lt;0, clog=0; <span class="keyword">end</span>
+0025 <span class="keyword">if</span> isfield(MAL,<span class="string">'cmap'</span>), 
+0026     cmap=MAL.cmap; 
+0027 <span class="keyword">else</span> 
+0028     cmap=((min(feld)&lt;0)&amp;(clog==0))*2; 
+0029 <span class="keyword">end</span>
+0030 <span class="keyword">if</span> isfield(MAL,<span class="string">'cauto'</span>), cauto=MAL.cauto; <span class="keyword">else</span> cauto=1; <span class="keyword">end</span>
+0031 <span class="keyword">if</span> isfield(MAL,<span class="string">'cbar'</span>), cbar=MAL.cbar; <span class="keyword">else</span> cbar=1; <span class="keyword">end</span>
+0032 <span class="keyword">if</span> length(unique(NN.elec(:,2)))==1, NN.elec(:,2)=0; <span class="keyword">end</span>
+0033 <span class="keyword">if</span> 0&amp;&amp;length(find(NN.elec(:,2)&gt;0))&gt;size(NN.elec,1)/2, <span class="comment">%topo in elec</span>
+0034     <span class="comment">% check for tape correction</span>
+0035     NN.elec(:,2)=0;
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">if</span> find(NN.elec(:,2)~=0), <span class="comment">% borehole electrodes</span>
+0038     sel=find(NN.elec(:,2)==0);
+0039     <span class="keyword">if</span> isempty(sel), <span class="comment">% ist mir unklar</span>
+0040 <span class="comment">%         N=[];N.a=[];</span>
+0041         N=NN;
+0042         N.elec(:,2)=0; 
+0043     <span class="keyword">else</span>
+0044         fi=<a href="findmess.html" class="code" title="function fi=findmess(N,el1,el2)">findmess</a>(NN,sel,sel);
+0045         N.elec=NN.elec;
+0046         N.a=NN.a(fi);N.b=NN.b(fi);
+0047         N.m=NN.m(fi);N.n=NN.n(fi);
+0048         N.k=NN.k(fi);N.r=NN.r(fi);
+0049         field=feld;
+0050         feld=field(fi);
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">else</span> <span class="comment">% surface measurement</span>
+0053     N=NN;
+0054 <span class="keyword">end</span>
+0055 mids=[];seps=[];
+0056 <span class="keyword">if</span> length(N.a)&gt;0,
+0057 <span class="comment">%     if isfield(N,'eind'),</span>
+0058 <span class="comment">%         for l=1:length(N.eind),</span>
+0059 <span class="comment">%             si=size(N.eind{l},1);</span>
+0060 <span class="comment">%             data(1:si,l)=log10(N.eind{l}(:,2));</span>
+0061 <span class="comment">%         end</span>
+0062 <span class="comment">%         imagesc(data);hc=colorbar;</span>
+0063 <span class="comment">%         return;</span>
+0064 <span class="comment">%     end</span>
+0065     [mids,seps,ii,kk]=<a href="midkonf2d.html" class="code" title="function [mids,seps,ii,kk,midpoint,dm]=midkonf2d(N)">midkonf2d</a>(N);
+0066 <span class="comment">%     datums=ones(length(seps),length(mids))*0;%NaN;</span>
+0067     di=diff(unique(N.elec(:,1)));
+0068     del=median(di);
+0069 <span class="comment">%     ddel=median(diff(unique(mids)));</span>
+0070 <span class="comment">%     if (ddel&lt;del)&amp;(ddel&gt;=1), del=ddel; end</span>
+0071 <span class="comment">%     dd=del-floor(del);</span>
+0072 <span class="comment">%     if (floor(dd*20)~=dd*20)|(length(unique(di))&gt;size(N.elec,1)/5), del=1; end</span>
+0073     cla reset;
+0074     set(gca,<span class="string">'XLim'</span>,[min(mids)-del max(mids)+del]);
+0075     set(gca,<span class="string">'YLim'</span>,[0.5 length(seps)+0.5]);
+0076     set(gca,<span class="string">'YTickMode'</span>,<span class="string">'auto'</span>,<span class="string">'XTickMode'</span>,<span class="string">'auto'</span>)
+0077     <span class="keyword">if</span> cauto,
+0078         cmin=min(feld(isfinite(feld)));cmax=max(feld(isfinite(feld)));        
+0079     <span class="keyword">end</span>
+0080     <span class="keyword">if</span> cmin&lt;0, mm=max(abs([cmin cmax]));
+0081         cmin=-mm;cmax=mm; <span class="keyword">end</span>
+0082     <span class="keyword">if</span> clog,
+0083         feld=log10(feld);
+0084         cmin=log10(cmin);
+0085         cmax=log10(cmax);
+0086     <span class="keyword">end</span>
+0087     <span class="keyword">if</span> cmin&gt;=cmax, cmin=cmax-0.01*abs(cmax)-1e-5; <span class="keyword">end</span>
+0088     caxis([cmin cmax]);
+0089     <span class="keyword">switch</span> cmap
+0090         <span class="keyword">case</span> 2, colormap(b2r);
+0091         <span class="keyword">case</span> 3, colormap(hot);
+0092         <span class="keyword">case</span> 4, colormap(gray);
+0093         <span class="keyword">case</span> 5, colormap(jet);
+0094         <span class="keyword">case</span> 6, colormap(cool);
+0095         <span class="keyword">otherwise</span>, colormap(jet);
+0096     <span class="keyword">end</span>
+0097     cmap=colormap;lcm=length(cmap);
+0098     <span class="keyword">for</span> l = 1:length(feld),
+0099         <span class="keyword">if</span> kk(l)*ii(l)&gt;0, 
+0100             xp=mids(ii(l))+[1 -1 -1 1]*del/2;
+0101             zp=kk(l)+[1 1 -0.95 -0.95]/2;
+0102             <span class="keyword">if</span> isfinite(feld(l)),
+0103                 cind=1+round((feld(l)-cmin)/(cmax-cmin)*lcm);
+0104                 <span class="keyword">if</span> cind&gt;lcm, cind=lcm; <span class="keyword">end</span>
+0105                 <span class="keyword">if</span> cind&lt;1, cind=1; <span class="keyword">end</span>
+0106                 patch(xp,zp,cmap(cind,:),<span class="string">'EdgeColor'</span>,cmap(cind,:),<span class="string">'UserData'</span>,l);
+0107             <span class="keyword">end</span>
+0108         <span class="keyword">end</span>
+0109     <span class="keyword">end</span>
+0110     <span class="keyword">if</span> clog, feld=10.^feld; <span class="keyword">end</span>
+0111     <span class="keyword">if</span> isfield(MAL,<span class="string">'equal'</span>)&amp;&amp;(MAL.equal&gt;0), axis(<span class="string">'equal'</span>,<span class="string">'tight'</span>); <span class="keyword">end</span>
+0112     <span class="comment">%alpha(1-isnan(datums));</span>
+0113 <span class="comment">%     cax=caxis;cax(1)=cax(1)-(cax(2)-cax(1))/62;caxis(cax);</span>
+0114 <span class="comment">%     cmap=colormap;cmap(1,:)=1;colormap(cmap);</span>
+0115     set(gca,<span class="string">'XAxisLocation'</span>,<span class="string">'top'</span>,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>,<span class="string">'XLim'</span>,<span class="keyword">...</span>
+0116         [min(N.elec(:,1)) max(N.elec(:,1))]);
+0117 <span class="comment">%     yl=get(gca,'YLim');set(gca,'YTick',yl(1):yl(end)); % Test to see all</span>
+0118     <span class="keyword">if</span> xdir, set(gca,<span class="string">'XDir'</span>,<span class="string">'reverse'</span>); <span class="keyword">end</span>
+0119     <span class="keyword">if</span> cbar,
+0120         hc=colorbar(<span class="string">'horiz'</span>);dar=get(hc,<span class="string">'DataAspectRatio'</span>);
+0121         set(hc,<span class="string">'DataAspectRatio'</span>,dar.*[1 64 1]);
+0122 <span class="comment">%         old system of alpha-shading</span>
+0123 <span class="comment">%         xl=get(hc,'XLim');xl(1)=xl(1)+diff(xl)/64;set(hc,'XLim',xl);</span>
+0124         xt=get(hc,<span class="string">'XTick'</span>);
+0125         xtl=num2strcell(rndig(xt));
+0126         <span class="keyword">if</span> (min(feld(:))&gt;0)&amp;&amp;(clog),
+0127             xtl=num2strcell(round(10.^xt));
+0128             fi=find(xt&lt;1);
+0129             <span class="keyword">for</span> i=1:length(fi), xtl{fi(i)}=num2str(0.01*round(100*10.^xt(fi(i)))); <span class="keyword">end</span>
+0130         <span class="keyword">end</span>
+0131         <span class="keyword">if</span> isfield(MAL,<span class="string">'canot'</span>)&amp;&amp;ischar(MAL.canot),
+0132             xtl{end-1}=MAL.canot;
+0133         <span class="keyword">end</span>
+0134         set(hc,<span class="string">'XTickMode'</span>,<span class="string">'manual'</span>,<span class="string">'XTickLabel'</span>,xtl);
+0135     <span class="keyword">end</span>
+0136     <span class="comment">% if min(feld(:))&gt;0,</span>
+0137     <span class="comment">%     set(get(hc,'XLabel'),'String','\rho_a in \Omega m');</span>
+0138     <span class="comment">% else</span>
+0139     <span class="comment">%     set(get(hc,'XLabel'),'String','\Delta\rho_a in %');</span>
+0140     <span class="comment">% end</span>
+0141     ytl=<span class="string">''</span>;
+0142     <span class="comment">%    0 1 2 3 4 * 100</span>
+0143     vor=<span class="string">'pppddpweslddddgr'</span>;
+0144     yt=get(gca,<span class="string">'YTick'</span>);
+0145     <span class="keyword">if</span> find(yt-round(yt)), <span class="comment">%0.5 etc</span>
+0146         yt=round(min(yt)):floor(max(yt));
+0147         set(gca,<span class="string">'YTick'</span>,yt);
+0148     <span class="keyword">end</span>
+0149     <span class="keyword">for</span> i=1:length(yt),
+0150         yy=seps(yt(i));
+0151         <span class="keyword">switch</span> yy,
+0152             <span class="keyword">case</span> 9999, <span class="comment">% circulated dipole</span>
+0153                 ytli=<span class="string">'cc'</span>;
+0154             <span class="keyword">case</span> 30001, <span class="comment">% wenner=schlumberger sep.1</span>
+0155                 ytli=<span class="string">'ws1'</span>;
+0156             <span class="keyword">otherwise</span>
+0157                 st=fix(yy/10000)*2+1;
+0158                 <span class="keyword">if</span> st&lt;length(vor)-1, ytli=vor(st:st+1); <span class="keyword">else</span> ytli=<span class="string">'gr'</span>; <span class="keyword">end</span>
+0159                 aa=mod(yy,10000);
+0160                 bb=fix(aa/100+1);
+0161                 <span class="keyword">if</span> bb&gt;1, ytli=[ytli num2str(bb) <span class="string">'-'</span>]; <span class="keyword">end</span>
+0162                 <span class="keyword">if</span> st==15, ytli(end)=<span class="string">'+'</span>; <span class="keyword">end</span>
+0163 <span class="comment">%                 if st==17, cc=mod(100-aa,100); else</span>
+0164                     cc=mod(aa,100); 
+0165 <span class="comment">%                 end</span>
+0166                 ytli=[ytli num2str(cc)];
+0167         <span class="keyword">end</span>
+0168         ytl(i,1:length(ytli))=ytli;
+0169     <span class="keyword">end</span>
+0170     set(gca,<span class="string">'YTickMode'</span>,<span class="string">'manual'</span>,<span class="string">'YTickLabel'</span>,ytl);
+0171 <span class="comment">%     xl=get(gca,'XTickLabel');</span>
+0172 <span class="comment">%     xl(end-1,1:3)='x/m';</span>
+0173     xt=get(gca,<span class="string">'XTick'</span>);
+0174     xl={};<span class="keyword">for</span> iii=1:length(xt), xl{iii}=num2str(rndig(xt(iii))); <span class="keyword">end</span>
+0175     xl{end-1}=<span class="string">'x/m'</span>;
+0176     set(gca,<span class="string">'XTickMode'</span>,<span class="string">'manual'</span>,<span class="string">'XTickLabel'</span>,xl);
+0177 <span class="comment">%     set(get(gca,'XLabel')</span>
+0178     hold on
+0179     plot(N.elec(:,1),ones(size(N.elec,1),1)*0.5,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,1);
+0180     hold off
+0181     set(gca,<span class="string">'FontSize'</span>,8);
+0182 <span class="keyword">end</span> <span class="comment">% surface data</span>
+0183 set(gca,<span class="string">'TickLength'</span>,get(gca,<span class="string">'TickLength'</span>)/5);
+0184 N=NN;
+0185 el0=find(N.elec(:,2)==0);
+0186 nn.elec=N.elec(el0,:);
+0187 <span class="comment">% fsurf=findmess(N,el0,el0);</span>
+0188 <span class="comment">% number of boreholes</span>
+0189 nbh=unique(N.elec(N.elec(:,2)&gt;0,1));
+0190 <span class="keyword">for</span> nb=1:length(nbh),
+0191   el=find((N.elec(:,1)==nbh(nb)).*N.elec(:,2));
+0192   <span class="comment">% surface-hole measurements</span>
+0193   fsh=<a href="findmess.html" class="code" title="function fi=findmess(N,el1,el2)">findmess</a>(N,el,el0);
+0194   <span class="keyword">if</span> ~isempty(fsh),
+0195       x=unique(N.elec(el0,1));
+0196       z=unique(N.elec(el,2));
+0197       data=ones(length(z),length(x))*NaN;
+0198       <span class="keyword">for</span> i=1:length(fsh),
+0199         [tf,xloc]=ismember(N.elec(N.a(fsh(i)),1),x);
+0200         [tf,zloc]=ismember(N.elec(N.m(fsh(i)),2),z);
+0201         <span class="keyword">if</span> isnumeric(xloc)&amp;&amp;isnumeric(zloc)&amp;&amp;(xloc&gt;0)&amp;&amp;(zloc&gt;0), 
+0202             iii=fsh(i);
+0203             <span class="keyword">if</span> (iii&gt;0)&amp;&amp;(iii&lt;=length(feld)), data(zloc,xloc)=feld(iii); <span class="keyword">end</span>
+0204         <span class="keyword">end</span>
+0205       <span class="keyword">end</span>
+0206       <span class="keyword">if</span> any(data),
+0207           set(figure(nb+10),<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="string">'Name'</span>,[<span class="string">'Borehole '</span> num2str(nb)]);
+0208           clf;
+0209           iconify(nb+10);
+0210           <span class="keyword">if</span> clog,
+0211               imagesc(x,z,log10(data));
+0212           <span class="keyword">else</span>
+0213               imagesc(x,z,data);
+0214           <span class="keyword">end</span>
+0215           <span class="keyword">if</span> cauto==0,
+0216               <span class="keyword">if</span> clog,
+0217                   caxis(log10([cmin cmax]));
+0218               <span class="keyword">else</span>
+0219                   caxis([cmin cmax]);
+0220               <span class="keyword">end</span>
+0221           <span class="keyword">end</span>
+0222           alpha(1-isnan(data));
+0223           axis equal tight
+0224           hc=colorbar(<span class="string">'horiz'</span>);
+0225           <span class="keyword">if</span> clog,
+0226               <span class="keyword">if</span> (max(data(:))&lt;10)||((cauto==0)&amp;&amp;(cmax&lt;10)),
+0227                   xt=num2str(0.01*round(100*10.^str2num(get(hc,<span class="string">'XTickLabel'</span>))));
+0228               <span class="keyword">else</span>
+0229                   xt=num2str(round(10.^str2num(get(hc,<span class="string">'XTickLabel'</span>))));
+0230               <span class="keyword">end</span>
+0231               set(hc,<span class="string">'XTickLabel'</span>,xt);
+0232           <span class="keyword">end</span>
+0233           title([<span class="string">'Surface hole for borehole x='</span> num2str(nbh(nb))]);
+0234           <span class="comment">%       xlabel('x in m');</span>
+0235           <span class="comment">%       ylabel('z in m');</span>
+0236           xl=get(gca,<span class="string">'XTickLabel'</span>);
+0237           xl(end-1,1:5)=<span class="string">'x [m]'</span>;
+0238           set(gca,<span class="string">'XTickLabel'</span>,xl);
+0239           xl=get(gca,<span class="string">'YTickLabel'</span>);
+0240           xl(end-1,1:5)=<span class="string">'z [m]'</span>;
+0241           set(gca,<span class="string">'YTickLabel'</span>,xl);
+0242           hold on;plot(N.elec(el,1),N.elec(el,2),<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,4); hold off
+0243       <span class="keyword">end</span>
+0244   <span class="keyword">end</span>
+0245 <span class="keyword">end</span>
+0246 <span class="keyword">if</span> length(nbh)&gt;1, <span class="comment">% crosshole measurements</span>
+0247   el1=find((N.elec(:,1)==nbh(1)));<span class="comment">%.*N.elec(:,2));</span>
+0248   el2=find((N.elec(:,1)==nbh(2)));<span class="comment">%.*N.elec(:,2));</span>
+0249   fsh=<a href="findmess.html" class="code" title="function fi=findmess(N,el1,el2)">findmess</a>(N,el1,el2);
+0250   z1=unique(N.elec(el1,2));
+0251   z2=unique(N.elec(el2,2));
+0252   data=ones(length(z1),length(z2))*NaN;
+0253   <span class="keyword">for</span> i=1:length(fsh),
+0254       [tf,loc1]=ismember(N.elec(N.a(fsh(i)),2),z1);
+0255       [tf,loc2]=ismember(N.elec(N.m(fsh(i)),2),z2);
+0256       data(loc2,loc1)=field(fsh(i));
+0257   <span class="keyword">end</span>
+0258   <span class="keyword">if</span> find(~isnan(data)),
+0259 <span class="comment">%       figure(nb+2);</span>
+0260       set(figure(10),<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="string">'Name'</span>,<span class="string">'Cross-borehole '</span>,<span class="string">'MenuBar'</span>,<span class="string">'none'</span>);
+0261       iconify(10);
+0262       clf;
+0263       <span class="keyword">if</span> clog,
+0264           data(data&lt;=0)=NaN;
+0265           imagesc(z1,z2,log10(data));
+0266       <span class="keyword">else</span>
+0267           imagesc(z1,z2,data);
+0268       <span class="keyword">end</span>
+0269       <span class="keyword">if</span> cauto==0,
+0270           <span class="keyword">if</span> clog,
+0271               caxis(log10([cmin cmax]));
+0272           <span class="keyword">else</span>
+0273               caxis([cmin cmax]);
+0274           <span class="keyword">end</span>
+0275       <span class="keyword">end</span>
+0276       alpha(1-isnan(data));
+0277       axis equal tight
+0278       hc=colorbar;
+0279       <span class="keyword">if</span> clog,
+0280           <span class="keyword">if</span> max(data(:))&gt;10,
+0281               xt=num2str(round(10.^str2num(get(hc,<span class="string">'YTickLabel'</span>))));
+0282           <span class="keyword">else</span>
+0283               xt=num2str(0.01*round(100*10.^str2num(get(hc,<span class="string">'YTickLabel'</span>))));
+0284           <span class="keyword">end</span>
+0285           set(hc,<span class="string">'YTickLabel'</span>,xt);
+0286       <span class="keyword">end</span>
+0287       xlabel(<span class="string">'z1 in m'</span>);
+0288       ylabel(<span class="string">'z2 in m'</span>);
+0289       title(<span class="string">'Cross-borehole 1-2'</span>);
+0290   <span class="keyword">end</span>
+0291 <span class="keyword">end</span>
+0292 <span class="keyword">if</span> clog, cmin=10.^cmin;cmax=10.^cmax; <span class="keyword">end</span>
+0293 <span class="keyword">if</span> nargout&lt;1, mids=[cmin cmax]; <span class="keyword">end</span>
+0294 
+0295 <a name="_sub1" href="#_subfunctions" class="code">function fi=findmess(N,el1,el2)</a>
+0296 el1=[el1(:);0];
+0297 el2=[el2(:);0];
+0298 a1=ismember(N.a,el1);
+0299 fi=find(N.b);a1(fi)=a1(fi)&amp;ismember(N.b(fi),el1);
+0300 a2=ismember(N.a,el2);
+0301 fi=find(N.b);a2(fi)=a2(fi)&amp;ismember(N.b(fi),el2);
+0302 m1=ismember(N.m,el1);
+0303 fi=find(N.n);m1(fi)=m1(fi)&amp;ismember(N.n(fi),el1);
+0304 m2=ismember(N.m,el2);
+0305 fi=find(N.n);m2(fi)=m2(fi)&amp;ismember(N.n(fi),el2);
+0306 fi=find(((a1+a2).*(m1+m2)&gt;0)+((a1+m1).*(a2+m2)&gt;0)==2);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

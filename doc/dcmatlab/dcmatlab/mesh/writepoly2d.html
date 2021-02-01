@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writepoly2d</title>
+  <meta name="keywords" content="writepoly2d">
+  <meta name="description" content="WRITEPOLY2d - Create poly file from Poly struct">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; writepoly2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>writepoly2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WRITEPOLY2d - Create poly file from Poly struct</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function writepoly2d(filename,Poly) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WRITEPOLY2d - Create poly file from Poly struct
+ writepoly2d(filename,Poly)
+ Poly.node .. nodes with x y and node marker
+     (-99 electrode, -999/-1000 reference current/potential, 0 else)
+ Poly.edge .. edges with node1, node2 and edge marker
+     (-1 Neumann, -2 Dirichlet, &gt;1 user line, 0 else = Neumann)
+ Poly.region .. region marker with x, y, marker and maxsize)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="createparamesh2d.html" class="code" title="function [Mesh,Poly]=createparamesh2d(pos,basename,quality,pdep,pbou,bou,dep,dd)">createparamesh2d</a>	CREATEPARAMESH - Create para mesh (outer space=1,para=2) from positions</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function writepoly2d(filename,Poly)</a>
+0002 
+0003 <span class="comment">% WRITEPOLY2d - Create poly file from Poly struct</span>
+0004 <span class="comment">% writepoly2d(filename,Poly)</span>
+0005 <span class="comment">% Poly.node .. nodes with x y and node marker</span>
+0006 <span class="comment">%     (-99 electrode, -999/-1000 reference current/potential, 0 else)</span>
+0007 <span class="comment">% Poly.edge .. edges with node1, node2 and edge marker</span>
+0008 <span class="comment">%     (-1 Neumann, -2 Dirichlet, &gt;1 user line, 0 else = Neumann)</span>
+0009 <span class="comment">% Poly.region .. region marker with x, y, marker and maxsize)</span>
+0010 
+0011 np=size(Poly.node,1);
+0012 nn=zeros(np,4);
+0013 nn(:,1)=(1:np)'-1;
+0014 nn(:,2:size(Poly.node,2)+1)=Poly.node;
+0015 ne=size(Poly.edge,1);
+0016 ee=zeros(ne,4);
+0017 ee(:,1)=(1:ne)'-1;
+0018 ee(:,2:size(Poly.edge,2)+1)=Poly.edge-1;
+0019 ee(:,end)=ee(:,end)+1;
+0020 fid=fopen(filename,<span class="string">'w'</span>);
+0021 fprintf(fid,<span class="string">'%d %d %d %d\n'</span>,np,2,0,1);
+0022 fprintf(fid,<span class="string">'%d\t%.3f\t%.3f\t%d\n'</span>,nn');
+0023 fprintf(fid,<span class="string">'%d %d\n'</span>,ne,1);
+0024 fprintf(fid,<span class="string">'%d\t%d\t%d\t%d\n'</span>,ee');
+0025 <span class="keyword">if</span> isfield(Poly,<span class="string">'region'</span>),
+0026     fprintf(fid,<span class="string">'0\n%d\n'</span>,size(Poly.region,1));
+0027     <span class="keyword">if</span> size(Poly.region,2)&gt;3,
+0028         <span class="keyword">for</span> i=1:size(Poly.region),
+0029             fprintf(fid,<span class="string">'%d %g %g %g %g\n'</span>,i-1,Poly.region(i,:));
+0030         <span class="keyword">end</span>        
+0031     <span class="keyword">else</span>
+0032         <span class="keyword">for</span> i=1:size(Poly.region),
+0033             fprintf(fid,<span class="string">'%d %g %g %g %g\n'</span>,i-1,Poly.region(i,:),0);
+0034         <span class="keyword">end</span>
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">else</span>    
+0037     fprintf(fid,<span class="string">'%d\n%d\n'</span>,0,0);
+0038 <span class="keyword">end</span>
+0039 fclose(fid);
+0040 <span class="comment">% clf;</span>
+0041 <span class="comment">% plot(nn(:,2),nn(:,3),'*');</span>
+0042 <span class="comment">% for i=1:size(ee,1),</span>
+0043 <span class="comment">%     line(nn(ee(i,2:3)+1,2),nn(ee(i,2:3)+1,3));</span>
+0044 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readmcffile</title>
+  <meta name="keywords" content="readmcffile">
+  <meta name="description" content="mcffile='d:\Guenther.T\3d\jan\d16reip.mcf';">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readmcffile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readmcffile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>mcffile='d:\Guenther.T\3d\jan\d16reip.mcf';</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=readmcffile(mcffile,txtfile,nx,ny,dx,dy,x0,y0,ismeand) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> mcffile='d:\Guenther.T\3d\jan\d16reip.mcf';
+ mcffile='d:\Guenther.T\3d\jan\d16aeq.mcf';
+ nx=16;ny=16;dx=0.1;dy=0.1;x0=6.74;y0=6.8;</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=readmcffile(mcffile,txtfile,nx,ny,dx,dy,x0,y0,ismeand)</a>
+0002 
+0003 <span class="comment">% mcffile='d:\Guenther.T\3d\jan\d16reip.mcf';</span>
+0004 <span class="comment">% mcffile='d:\Guenther.T\3d\jan\d16aeq.mcf';</span>
+0005 <span class="comment">% nx=16;ny=16;dx=0.1;dy=0.1;x0=6.74;y0=6.8;</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;3, nx=16; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;4, ny=16; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;5, dx=0.1; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;6, dy=dx; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;7, x0=6.74; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;8, y0=6.8; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;9, ismeand=0; <span class="keyword">end</span>
+0014 
+0015 <span class="keyword">if</span> ~exist(mcffile,<span class="string">'file'</span>), display(<span class="string">'Could not find mcf file!'</span>);<span class="keyword">return</span>; <span class="keyword">end</span>
+0016 <span class="comment">% txtfile=strrep(mcffile,'.mcf','.txt');</span>
+0017 <span class="keyword">if</span> ~exist(txtfile,<span class="string">'file'</span>), 
+0018 <span class="comment">%     txtfile=strrep(txtfile,'.txt','ASCII\.txt');%check in ASCII dir</span>
+0019     display(<span class="string">'Could not find txt file!'</span>);<span class="keyword">return</span>; 
+0020 <span class="keyword">end</span>
+0021 N=[];
+0022 x=x0+(0:nx-1)'*dx;
+0023 y=y0+(0:ny-1)'*dy;
+0024 N.elec=zeros(nx*ny,3);
+0025 <span class="keyword">for</span> i=1:length(x),
+0026     idx=(i-1)*ny+(1:ny)';
+0027     N.elec(idx,1)=x(i);
+0028     N.elec(idx,2)=y;
+0029 <span class="keyword">end</span>
+0030 N.a=zeros(20000,1);N.b=N.a;N.m=N.a;N.n=N.a;
+0031 fid=fopen(mcffile,<span class="string">'r'</span>);
+0032 zeile=fgetl(fid);
+0033 <span class="keyword">while</span> zeile(1)==<span class="string">'A'</span>, zeile=fgetl(fid); <span class="keyword">end</span>
+0034 l=0;
+0035 <span class="keyword">while</span> isstr(zeile),
+0036     <span class="keyword">if</span> zeile(1)==<span class="string">'M'</span>,
+0037         aa=str2num(zeile(3:end));
+0038         nch=fix((length(aa)-2)/2);
+0039         <span class="keyword">for</span> i=1:nch,
+0040             l=l+1;
+0041             N.a(l)=aa(1)+1;
+0042             N.b(l)=aa(2)+1;
+0043             N.m(l)=aa(nch*2+1)+1;
+0044             N.n(l)=aa(nch*2+2)+1;
+0045         <span class="keyword">end</span>
+0046     <span class="keyword">end</span>
+0047     zeile=fgetl(fid);
+0048 <span class="keyword">end</span>
+0049 N.a=N.a(1:l);N.b=N.b(1:l);N.m=N.m(1:l);N.n=N.n(1:l);
+0050 fclose(fid);
+0051 fid=fopen(txtfile,<span class="string">'r'</span>);
+0052 zeile=fgetl(fid);
+0053 iu=0;ii=0;id=0;ip=0;i=0;ival=0;
+0054 <span class="keyword">while</span> ~isempty(zeile),
+0055     i=i+1;
+0056     [tok,zeile]=strtok(zeile);
+0057     <span class="keyword">if</span> strcmp(tok,<span class="string">'D'</span>), id=i-1;ival=ival+1; <span class="keyword">end</span>
+0058     <span class="keyword">if</span> strcmp(tok,<span class="string">'P'</span>), ip=i-1;ival=ival+1; <span class="keyword">end</span>
+0059     <span class="keyword">if</span> strcmp(tok,<span class="string">'U'</span>), iu=i-1;ival=ival+1; <span class="keyword">end</span>
+0060     <span class="keyword">if</span> strcmp(tok,<span class="string">'I'</span>), ii=i-1;ival=ival+1; <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062 formstr=<span class="string">'%*s'</span>;
+0063 <span class="keyword">for</span> lauf=1:i-1, formstr=[formstr <span class="string">'%f'</span>]; <span class="keyword">end</span>
+0064 A=mytextscan(fid,formstr);
+0065 fclose(fid);
+0066 <span class="keyword">if</span> iu, N.u=A{iu}/1000; <span class="keyword">end</span>
+0067 <span class="keyword">if</span> ii, N.i=A{ii}/1000; <span class="keyword">end</span>
+0068 <span class="keyword">if</span> id, N.err=A{id}/100; <span class="keyword">end</span>
+0069 <span class="keyword">if</span> ip, N.ip=A{ip}; <span class="keyword">end</span>
+0070 lu=length(N.u);
+0071 <span class="keyword">if</span> lu&lt;length(N.a), 
+0072     N.a(lu+1:end)=[];
+0073     N.b(lu+1:end)=[];
+0074     N.m(lu+1:end)=[];
+0075     N.n(lu+1:end)=[];
+0076 <span class="keyword">end</span>
+0077 N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);
+0078 <span class="keyword">if</span> length(N.u)==length(N.k),
+0079     N.r=N.u./N.i.*N.k;
+0080 <span class="keyword">else</span>
+0081     display(<span class="string">'lengths mismatch!'</span>);
+0082 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

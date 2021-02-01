@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sort2dshot</title>
+  <meta name="keywords" content="sort2dshot">
+  <meta name="description" content="SORT2DSHOT - sort 2d electrode points clock-wise">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; sort2dshot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>sort2dshot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SORT2DSHOT - sort 2d electrode points clock-wise</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function NN=sort2dshot(N,islinear) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SORT2DSHOT - sort 2d electrode points clock-wise
+ Nnew = sort2dshot(Nold) sorts by angle to midpoint
+ sort2dshot(N,1) sorts by x</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function NN=sort2dshot(N,islinear)</a>
+0002 
+0003 <span class="comment">% SORT2DSHOT - sort 2d electrode points clock-wise</span>
+0004 <span class="comment">% Nnew = sort2dshot(Nold) sorts by angle to midpoint</span>
+0005 <span class="comment">% sort2dshot(N,1) sorts by x</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;2, islinear=0; <span class="keyword">end</span>
+0008 
+0009 <span class="keyword">if</span> islinear,
+0010     wi=N.pos(:,1);
+0011 <span class="keyword">else</span>
+0012     mi=mean(N.pos);mi(end)=mi(end)+0.001;
+0013     wi=atan2(N.pos(:,2)-mi(2),N.pos(:,1)-mi(1));
+0014 <span class="keyword">end</span>
+0015 [swi,ii,jj]=unique(wi);
+0016 <span class="comment">% jj=zeros(size(ii));jj(ii)=1:length(jj);</span>
+0017 NN=N;
+0018 NN.pos=N.pos(ii,:);
+0019 <span class="keyword">for</span> i=1:length(N.ns),
+0020     NN.ns{i}=jj(N.ns{i});
+0021     NN.nx{i}=jj(N.nx{i});
+0022 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

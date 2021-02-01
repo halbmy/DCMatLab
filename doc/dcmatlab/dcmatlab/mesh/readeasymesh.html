@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readeasymesh</title>
+  <meta name="keywords" content="readeasymesh">
+  <meta name="description" content="READEASYMESH - Reads name from easymesh output (.n/.e)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; readeasymesh.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readeasymesh
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READEASYMESH - Reads name from easymesh output (.n/.e)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Mesh = readeasymesh(base) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READEASYMESH - Reads name from easymesh output (.n/.e)
+ Mesh = readeasymesh(basename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Mesh = readeasymesh(base)</a>
+0002 
+0003 <span class="comment">% READEASYMESH - Reads name from easymesh output (.n/.e)</span>
+0004 <span class="comment">% Mesh = readeasymesh(basename)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'Specify mesh basename'</span>); <span class="keyword">end</span>
+0007 Mesh=[];Mesh.dim=2;
+0008 fid=fopen([base <span class="string">'.n'</span>],<span class="string">'r'</span>);
+0009 <span class="keyword">if</span> fid&lt;0, error([<span class="string">'File '</span> base <span class="string">'.n does not exist'</span>]); <span class="keyword">end</span>
+0010 Mesh.nnodes=fscanf(fid,<span class="string">'%d\n'</span>,1);
+0011 Mesh.node=zeros(Mesh.nnodes,Mesh.dim);
+0012 Mesh.nodemarker=zeros(Mesh.nnodes,1);
+0013 <span class="keyword">for</span> i=1:Mesh.nnodes,
+0014    zeile=strrep(fgetl(fid),<span class="string">':'</span>,<span class="string">''</span>);
+0015    aa=str2num(zeile);
+0016    Mesh.node(i,1:2)=aa(2:3);
+0017    Mesh.nodemarker(i)=aa(4);
+0018 <span class="keyword">end</span>
+0019 fclose(fid);
+0020 fid=fopen([base <span class="string">'.e'</span>],<span class="string">'r'</span>);
+0021 <span class="keyword">if</span> fid&lt;0, error([<span class="string">'File '</span> base <span class="string">'.e does not exist'</span>]); <span class="keyword">end</span>
+0022 Mesh.ncells=fscanf(fid,<span class="string">'%d\n'</span>,1);
+0023 Mesh.cell=zeros(Mesh.ncells,Mesh.dim+1);
+0024 Mesh.cellmarker=zeros(Mesh.ncells,1);
+0025 <span class="keyword">for</span> i=1:Mesh.ncells,
+0026    zeile=strrep(fgetl(fid),<span class="string">':'</span>,<span class="string">''</span>);
+0027    aa=str2num(zeile);
+0028    Mesh.cell(i,1:3)=aa(2:4);
+0029    Mesh.cellmarker(i)=aa(12);
+0030 <span class="keyword">end</span>
+0031 fclose(fid);
+0032 Mesh.cell=Mesh.cell+1;
+0033 fid=fopen([base <span class="string">'.s'</span>],<span class="string">'r'</span>);
+0034 <span class="keyword">if</span> fid&lt;0, error([<span class="string">'File '</span> base <span class="string">'.s does not exist'</span>]); <span class="keyword">end</span>
+0035 Mesh.nbounds=fscanf(fid,<span class="string">'%d\n'</span>,1);
+0036 Mesh.bounds=zeros(Mesh.nbounds,Mesh.dim);
+0037 Mesh.boundleft=zeros(Mesh.nbounds,1);
+0038 Mesh.boundright=Mesh.boundleft;
+0039 Mesh.boundmarker=Mesh.boundleft;
+0040 <span class="keyword">for</span> i=1:Mesh.nbounds,
+0041    zeile=strrep(fgetl(fid),<span class="string">':'</span>,<span class="string">''</span>);
+0042    aa=str2num(zeile);
+0043    Mesh.bound(i,1:2)=aa(2:3);
+0044    Mesh.boundleft(i)=aa(4);
+0045    Mesh.boundright(i)=aa(5);
+0046    Mesh.boundmarker(i)=aa(6);   
+0047 <span class="keyword">end</span>
+0048 fclose(fid);
+0049 Mesh.bound=Mesh.bound+1;
+0050 Mesh.boundleft=Mesh.boundleft+1;
+0051 Mesh.boundright=Mesh.boundright+1;
+0052 fprintf(<span class="string">'%dD Mesh loaded (%d nodes, %d cells)\n'</span>,Mesh.dim,Mesh.nnodes,Mesh.ncells);
+0053 
+0054 <span class="comment">% clf;patch('Vertices',Mesh.node,'Faces',Mesh.cell,'FaceColor',[1 1 1],'EdgeColor',[0 0 0]);</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

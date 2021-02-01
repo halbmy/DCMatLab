@@ -1,0 +1,86 @@
+<html>
+<head>
+<title>DC2DInvRes - Display menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<h2>DC2DInvRes - Show Menu</h2>
+<h3><a name="model"></a>Model</h3>
+The model display shows the resistivity of the model section. There are a lot 
+of options for that descibed in the <a href="options.html#graph">options menue</a>. 
+By clicking on model cells the cell boundaries and the resistivities are displayed. 
+This mode can also be used for <a href="interact.html#model">interactive modelling</a> 
+by typing a resistivity value into the edit window and clicking on model cells 
+or drawing ragged boxes. 
+<p align="center"><img src="pic/model.png" width="715" height="346"></p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+M</p>
+<h3><a name="cov"></a>Coverage</h3>
+The Coverage is defined by the sum of the (absolute values of) 
+  sensitivities over all measurements and can be displayed like a model section.<br>
+<p align="center">  <img src="pic/cov.png" width="715" height="346"> </p>
+<p>In analogy to ray path tomography it's something like total raypath and gives 
+  information on how well the model cells are &quot;covered&quot; by the data 
+  set. It is used for alpha mapping the model section to avoid over-interpretation 
+  of anomalies in bad covered regions such as near the model boundaries.</p>
+<p></p>
+<h3><a name="sens"></a>Sensitivities</h3>
+<p>Furthermore, it is possible to display the sensitivity for every single datum 
+  point. A positive sensitivity(red) leads to an increased apparent resistivity 
+  when the cell resistivity is rised, negative sensitivity(blue) lower the apparent 
+  resistivity. The measurement is insensible to regions of zero sensitivity(white).<br>
+  Regarding this we have a first concept of detectability and resolveability of 
+  underground structures.</p>
+<p align="center"><img src="pic/sens.png" width="715" height="346"></p>
+<p>By moving the slider (or typing datum number) we can switching to all data 
+  points. </p>
+<h3><a name="data"></a>Display data points</h3>
+To display the complete data set it is useful to plot every datum point with a 
+single block. The following section shows a dipole-dipole dataset (21 electrodes, 
+a=2m) dipole length as a function of midpoint&nbsp;(x) and separation (dipole 
+distance by dipole length). 
+<p align="center"><img src="pic/data.png" width="677" height="439"></p>
+<p>By clicking on a single datum point a dialog shows its electrode positions 
+  and the measured resistivity. The user is able to delete this datum point clicking 
+  on &quot;yes&quot;.</p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+D</p>
+<h3><a name="error"></a>Error</h3>
+<p>In the same manner as for plotting the data one can display the (measured or 
+  estimated) standard deviations of each datum point.</p>
+<h3><a name="forward"></a>Forward Response</h3>
+<p>The forward response of the current model ist diplayed in the same way like 
+  the data.</p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+R</p>
+<h3><a name="misfit"></a>Data Misfit</h3>
+Watching the data misfit (difference between datum point and forward response 
+in percent) it is possible to see how the data are fitted by the model. Ideally, 
+the data are fitted giving a misfit of gaussian errors showing no significant 
+function of space. 
+<p align="center"><img src="pic/misfit.png" width="677" height="439"></p>
+<h3><a name="miserr"></a>Misfit per Error</h3>
+To estimate, how well the data are fitted, the misfit is divided by the standard 
+deviation and plotted.<br>
+Ideally, the misfit per error is (again) randomly distributed and near +/- 1 at 
+the end of inversion process. 
+<h3><a name="compare"></a>Compare data</h3>
+To have an overview on fitting the data it is useful to see data, forward response 
+and misfit in one window. Data points and forward response are plotted using the 
+same colorbar. The plots are placed in a seperate window, which keeps updated 
+if the model (and thus its response) is changing. It is recommended to create 
+the window at the beginning of the inversion. 
+<p align="center"><img src="pic/compare.png" width="568" height="504"></p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+C</p>
+<h3><a name="voltage"></a>Voltage</h3>
+<p>If present, the measured (or in the error GUI estimated) voltage (absolute) 
+  is displayed in data type (logarithmic colorbar).</p>
+<h3><a name="current"></a>Current</h3>
+<p>If currents are present in the data, they are displayed in mA with log-scaled 
+  colors.</p>
+<h3><a name="ipdata"></a>IP Data</h3>
+<p>If the data file contains IP data, they can be displayed and used for inversion 
+  of chargeabiliy.</p>
+<h3><a name="charge"></a>Chargeability</h3>
+<p>Once a chargeability model has been derived by the IP data, it can be displayed. 
+</p>
+</body>
+</html>

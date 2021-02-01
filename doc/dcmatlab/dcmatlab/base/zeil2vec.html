@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of zeil2vec</title>
+  <meta name="keywords" content="zeil2vec">
+  <meta name="description" content="ZEIL2VEC - reads line from string as follows">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; zeil2vec.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>zeil2vec
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ZEIL2VEC - reads line from string as follows</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [id,vec]=zeil2vec(zeile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ZEIL2VEC - reads line from string as follows
+ identifier=number1/number2/...
+ [identifier,vector_of_numbers]=zeil2vec(string)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [id,vec]=zeil2vec(zeile)</a>
+0002 
+0003 <span class="comment">% ZEIL2VEC - reads line from string as follows</span>
+0004 <span class="comment">% identifier=number1/number2/...</span>
+0005 <span class="comment">% [identifier,vector_of_numbers]=zeil2vec(string)</span>
+0006 
+0007 id=zeile;vec=0;
+0008 ig=strfind(zeile,<span class="string">'='</span>);
+0009 <span class="keyword">if</span> isempty(ig), <span class="keyword">return</span>; <span class="keyword">end</span>
+0010 id=zeile(1:ig-1);
+0011 zeile=zeile(ig+1:end);
+0012 vec=[];
+0013 <span class="keyword">while</span> strfind(zeile,<span class="string">'/'</span>),
+0014     pos=strfind(zeile,<span class="string">'/'</span>);
+0015     aa=str2num(strrep(zeile(1:pos(1)-1),<span class="string">','</span>,<span class="string">'.'</span>));
+0016     <span class="keyword">if</span> isempty(aa), vec(end+1)=0; <span class="keyword">else</span> vec(end+1)=aa; <span class="keyword">end</span>
+0017     <span class="keyword">if</span> pos&gt;=length(zeile), <span class="keyword">return</span>; <span class="keyword">end</span>
+0018     zeile=zeile(pos(1)+1:end);
+0019 <span class="keyword">end</span>
+0020 <span class="keyword">if</span> ~isempty(zeile), 
+0021     aa=str2num(strrep(zeile,<span class="string">','</span>,<span class="string">'.'</span>)); 
+0022     <span class="keyword">if</span> ~isempty(aa), vec(end+1)=aa; <span class="keyword">end</span>
+0023 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

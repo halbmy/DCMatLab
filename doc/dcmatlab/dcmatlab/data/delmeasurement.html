@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of delmeasurement</title>
+  <meta name="keywords" content="delmeasurement">
+  <meta name="description" content="DELMEASUREMENT - Delete measurement from data struct">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; delmeasurement.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>delmeasurement
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>DELMEASUREMENT - Delete measurement from data struct</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=delmeasurement(N,fi) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> DELMEASUREMENT - Delete measurement from data struct
+ N = delmeasurement(N,fi)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="delelectrode.html" class="code" title="function [Data1,fim]=delelectrode(Data,fi)">delelectrode</a>	DELELECTRODE - Delete measurements with specific electrode</li><li><a href="readres2dinvfile.html" class="code" title="function N = readres2dinvfile(datafile)">readres2dinvfile</a>	READRES2DINVFILE - Read 2D Loke&Barker File</li><li><a href="readresecsfile.html" class="code" title="function N=readresecsfile(filename)">readresecsfile</a>	READRESECSFILE - Read RESECS ascii export file (*.TXT)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=delmeasurement(N,fi)</a>
+0002 
+0003 <span class="comment">% DELMEASUREMENT - Delete measurement from data struct</span>
+0004 <span class="comment">% N = delmeasurement(N,fi)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, <span class="keyword">return</span>; <span class="keyword">end</span>
+0007 <span class="keyword">if</span> min(fi)&lt;=0, fi=find(fi); <span class="keyword">end</span>
+0008 fie=fieldnames(N);
+0009 <span class="keyword">if</span> isfield(N,<span class="string">'a'</span>), ndata=length(N.a); 
+0010 <span class="keyword">elseif</span> isfield(N,<span class="string">'s'</span>), ndata=length(N.s); 
+0011 <span class="keyword">else</span> fprintf(<span class="string">'Cannot detect valid data'</span>);<span class="keyword">return</span>; <span class="keyword">end</span>
+0012 <span class="keyword">for</span> i=1:length(fie),
+0013    ff=getfield(N,fie{i}); 
+0014    <span class="keyword">if</span> (min(size(ff))==1)&amp;&amp;(length(ff)==ndata),
+0015       ff(fi)=[];
+0016       N=setfield(N,fie{i},ff);
+0017    <span class="keyword">end</span>
+0018 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

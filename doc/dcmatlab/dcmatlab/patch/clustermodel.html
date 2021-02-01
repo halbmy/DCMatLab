@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of clustermodel</title>
+  <meta name="keywords" content="clustermodel">
+  <meta name="description" content="CLUSTERMODEL - Cluster model on unstructured mesh">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; clustermodel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>clustermodel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CLUSTERMODEL - Cluster model on unstructured mesh</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [catt,AA]=clustermodel(Mesh,att,numclust) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CLUSTERMODEL - Cluster model on unstructured mesh
+ clustered_model=clustermodel(Mesh,model)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [catt,AA]=clustermodel(Mesh,att,numclust)</a>
+0002 
+0003 <span class="comment">% CLUSTERMODEL - Cluster model on unstructured mesh</span>
+0004 <span class="comment">% clustered_model=clustermodel(Mesh,model)</span>
+0005 
+0006 A=zeros(Mesh.ncells,Mesh.dim);
+0007 <span class="keyword">for</span> i=1:Mesh.ncells,
+0008     A(i,:)=mean(Mesh.node(Mesh.cell(i,:),:));
+0009 <span class="keyword">end</span>
+0010 <span class="keyword">for</span> i=1:size(att,2),
+0011     <span class="keyword">if</span> min(att(:,i)&gt;0),
+0012         A(:,end+1)=log10(att(:,i));
+0013     <span class="keyword">else</span>
+0014         A(:,end+1)=att(:,i);
+0015     <span class="keyword">end</span>
+0016 <span class="keyword">end</span>
+0017 <span class="keyword">for</span> i=1:size(A,2), <span class="comment">% normalization to 0..1</span>
+0018     mi=min(A(:,i));ma=max(A(:,i));
+0019     A(:,i)=(A(:,i)-mi)/(ma-mi);
+0020 <span class="keyword">end</span>
+0021 A(:,3:end)=A(:,3:end)*2; <span class="comment">% parameters more important than position</span>
+0022 distA = pdist(A,<span class="string">'euclidean'</span>);
+0023 <span class="comment">% distA = pdist(A,'chebychev');</span>
+0024 <span class="comment">% linkA = linkage(distA,'complete');</span>
+0025 linkA = linkage(distA,<span class="string">'average'</span>);
+0026 [mx,my] = size(linkA);
+0027 <span class="keyword">if</span> nargin&lt;3,
+0028     plot(flipud(linkA(mx-20:mx,3)),<span class="string">'o-'</span>);
+0029     grid on
+0030     snum=inputdlg(<span class="string">'Number of clusters?'</span>);
+0031     numclust=str2num(snum{1});
+0032 <span class="keyword">end</span>
+0033 catt=zeros(length(att),1);
+0034 <span class="keyword">for</span> ii=1:length(numclust),
+0035     ic=numclust(ii);
+0036     CM = cluster(linkA,ic);<span class="comment">%numclust);</span>
+0037     <span class="keyword">if</span> size(att,2)&gt;1, <span class="comment">% more than 1 given</span>
+0038         catt(:,ii)=CM;aa=[];
+0039         <span class="keyword">for</span> i=1:ic,<span class="comment">%numclust,</span>
+0040             fi=find(CM==i);
+0041             <span class="keyword">for</span> j=1:size(att,2), aa(i,j)=median(att(fi,j)); <span class="keyword">end</span>
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">else</span>
+0044         catt(:,ii)=att;
+0045         <span class="keyword">for</span> i=1:ic,<span class="comment">%numclust,</span>
+0046             fi=find(CM==i);
+0047             AA(i)=median(att(fi));
+0048             catt(fi)=AA(i);
+0049         <span class="keyword">end</span>
+0050     <span class="keyword">end</span>
+0051     <span class="keyword">if</span> length(numclust)&gt;1, AA{ii}=aa; <span class="keyword">else</span> AA=aa; <span class="keyword">end</span> 
+0052 <span class="keyword">end</span>
+0053 <span class="comment">% clf;patch2dmesh(Mesh,log10(catt));</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

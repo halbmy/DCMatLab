@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of tetpatch</title>
+  <meta name="keywords" content="tetpatch">
+  <meta name="description" content="function tetpatch(meshname,paraname,isoval,sx,sy,sz)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; tetpatch.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>tetpatch
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function tetpatch(meshname,paraname,isoval,sx,sy,sz)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function tetpatch(meshname,paraname,isoval,sx,sy,sz)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="tetvis.html" class="code" title="function clog=tetvis(x,y,z,v,dd,val,sx,sy,sz)">tetvis</a>	TETVIS - 3D Tetraeder visualization</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%function tetpatch(meshname,paraname,isoval,sx,sy,sz)</span>
+0002 
+0003 meshname=<span class="string">'mesh/bbtest'</span>;
+0004 <span class="comment">% load attribute vector</span>
+0005 <span class="comment">% vecname='0121a/smatrix.1000';isoval=0.01;</span>
+0006 <span class="comment">% vecname='0122/model_iter.1.vector';isoval=800;%isoval(2)=-130;</span>
+0007 <span class="comment">% vecname='0121/model_iter.1.vector';isoval=[300 -130];</span>
+0008 <span class="comment">% vecname='0202/model_iter.1.vector.1526.lambda20';isoval=[330 -130];</span>
+0009 <span class="comment">% vecname='0202/model_iter.1.vector.2842.lambda.30';isoval=[400 -100];</span>
+0010 <span class="comment">%vecname='0120/model_iter.1.vector';isoval=[400 -110];</span>
+0011 <span class="comment">% vecname='0226/model_iter.1.vectorbg50l100';isoval=[300 -75];</span>
+0012 <span class="comment">% vecname='0301/model_iter.1.vector300';isoval=[270 -70];</span>
+0013 <span class="comment">% vecname='0303/model_iter.1.vector';isoval=[300 -75];</span>
+0014 <span class="comment">% vecname='0303/model_iter.2.vector';isoval=[380 -70];</span>
+0015 <span class="comment">% vecname='0304/model_iter.1.vector';isoval=[300 -75];</span>
+0016 <span class="comment">% vecname='0308/model2842Iter1.c3.l200.r300';isoval=[350 -85];</span>
+0017 vecname=<span class="string">'0423/model_iter.5.vector'</span>;isoval=[350 -60];
+0018 att=load(vecname,<span class="string">'-ascii'</span>);
+0019 <span class="comment">% isoval=loghist(att,50,5)*[0 -1;1 0], return</span>
+0020 fprintf(<span class="string">'\nLoaded %d values, min=%g max=%g\n'</span>,length(att),min(att),max(att));
+0021 sx=8;sy=8;sz=4; <span class="comment">% slice positions</span>
+0022 drawfaces=0;drawslices=0;
+0023 <span class="comment">% load elements and nodes</span>
+0024 ca=exist([meshname <span class="string">'.e'</span>]); <span class="comment">% carsten-format (ohne 1. Zeile und Spalte)</span>
+0025 <span class="keyword">if</span> ca,
+0026     fid=fopen([meshname <span class="string">'.e'</span>],<span class="string">'r'</span>);
+0027     ELE=fscanf(fid,<span class="string">'%d'</span>,[5 Inf])'+1;
+0028     fclose(fid);
+0029     fid=fopen([meshname <span class="string">'.n'</span>],<span class="string">'r'</span>);
+0030     NODE=fscanf(fid,<span class="string">'%f'</span>,[4 Inf])';
+0031     NODE(:,3)=abs(NODE(:,3));
+0032     fclose(fid);
+0033 <span class="keyword">else</span>
+0034     fid=fopen([meshname <span class="string">'.ele'</span>],<span class="string">'r'</span>);
+0035     si=fscanf(fid,<span class="string">'%d'</span>,[3 1]);
+0036     ELE=fscanf(fid,<span class="string">'%d'</span>,[6 si(1)])'+1;ELE(:,1)=[];
+0037     fclose(fid);
+0038     fid=fopen([meshname <span class="string">'.node'</span>],<span class="string">'r'</span>);
+0039     si=fscanf(fid,<span class="string">'%d'</span>,[4 1]);
+0040     NODE=fscanf(fid,<span class="string">'%f'</span>,[5 si(1)])';
+0041     NODE(:,1)=[];NODE(:,3)=abs(NODE(:,3));
+0042     fclose(fid);
+0043 <span class="keyword">end</span>
+0044 tetdef=[1 2 3;1 2 4;1 3 4;2 3 4];
+0045 [x,y,z]=en2mid(ELE,NODE);
+0046 <span class="keyword">if</span> drawslices, <span class="comment">% Schnitte</span>
+0047     clog=<a href="tetvis.html" class="code" title="function clog=tetvis(x,y,z,v,dd,val,sx,sy,sz)">tetvis</a>(x,y,z,att,[1 1 0.5],[],sx,sy,sz);
+0048 <span class="keyword">else</span> <span class="comment">% testing reasons</span>
+0049     clf;plot3(0,0,0);set(gca,<span class="string">'ZDir'</span>,<span class="string">'reverse'</span>);
+0050     clog=(min(att)&gt;0);
+0051     caxis(log10([100 500]));
+0052 <span class="comment">% caxis(0.1*[-1 1]);</span>
+0053 <span class="keyword">end</span>
+0054 <span class="comment">% xx=NODE(:,1);yy=NODE(:,2);zz=NODE(:,3);</span>
+0055 xx=x;yy=y;zz=z;
+0056 xlim([min(xx) max(xx)]);
+0057 ylim([min(yy) max(yy)]);
+0058 zlim([min(zz) max(zz)]);
+0059 cmap=colormap;cach=caxis;
+0060 <span class="comment">%if clog, cach=10.^cach; end</span>
+0061 <span class="keyword">if</span> drawfaces, <span class="comment">%draw faces</span>
+0062     <span class="keyword">if</span> ca,
+0063         fid=fopen([meshname <span class="string">'.f'</span>],<span class="string">'r'</span>);
+0064         FACE=fscanf(fid,<span class="string">'%f'</span>,[6 Inf])';
+0065         fclose(fid);
+0066         FACE(:,4:5)=[];
+0067     <span class="keyword">else</span>
+0068         fid=fopen([meshname <span class="string">'.face'</span>],<span class="string">'r'</span>);
+0069         si=fscanf(fid,<span class="string">'%d'</span>,[2 1]);
+0070         FACE=fscanf(fid,<span class="string">'%f'</span>,[5 si(1)])';
+0071         fclose(fid);
+0072         FACE(:,1)=[];
+0073     <span class="keyword">end</span>
+0074     fi=find(FACE(:,4)==-1); 
+0075     <span class="comment">%==-1 for neumann, ==-2 for dirichlet, &lt;0 for both</span>
+0076     FACE=FACE(fi,1:3)+1;
+0077     rf=[1 2 3 1];
+0078     hold on
+0079     <span class="keyword">for</span> e=1:size(FACE,1),
+0080         pts=NODE(FACE(e,:),1:3);
+0081         plot3(pts(rf,1),pts(rf,2),pts(rf,3),<span class="string">'k'</span>);
+0082     <span class="keyword">end</span>
+0083     hold off
+0084 <span class="keyword">end</span>
+0085 <span class="keyword">for</span> l=1:length(isoval),
+0086     gtlt=<span class="string">'less'</span>;
+0087     <span class="keyword">if</span> isoval(l)&gt;0,
+0088         ind=find(att&gt;isoval(l));gtlt=<span class="string">'greater'</span>;
+0089     <span class="keyword">else</span>
+0090         ind=find(att&lt;-isoval(l));
+0091     <span class="keyword">end</span>
+0092     fprintf(<span class="string">'Found %d values %s than %g\n'</span>,length(ind),gtlt,abs(isoval(l)));
+0093     <span class="keyword">for</span> i=1:length(ind),
+0094         pts=NODE(ELE(ind(i),1:4),1:3);
+0095         col=[1 0 0];val=att(ind(i));<span class="keyword">if</span> clog, val=log10(val); <span class="keyword">end</span>
+0096         cind=1+round((val-cach(1))/(cach(2)-cach(1))*(length(cmap)-1));
+0097         <span class="keyword">if</span> cind&gt;length(cmap), cind=length(cmap); <span class="keyword">end</span>
+0098         <span class="keyword">if</span> cind&lt;1, cind=1; <span class="keyword">end</span>
+0099         col=cmap(cind,:);
+0100         <span class="keyword">for</span> j=1:4,
+0101             td=tetdef(j,:);
+0102             patch(pts(td,1),pts(td,2),pts(td,3),col);
+0103         <span class="keyword">end</span>
+0104     <span class="keyword">end</span>
+0105 <span class="keyword">end</span>
+0106 xy=<span class="string">'Y'</span>;cbdir=<span class="string">'vert'</span>;
+0107 cbdir=<span class="string">'horiz'</span>;
+0108 <span class="keyword">if</span> isequal(cbdir,<span class="string">'horiz'</span>), xy=<span class="string">'X'</span>; <span class="keyword">end</span> 
+0109 cb=colorbar(cbdir);
+0110 <span class="keyword">if</span> clog,
+0111    yt=10.^(get(cb,[xy <span class="string">'Tick'</span>]));
+0112    yt=round(yt);
+0113    ytl=num2str(yt(:));
+0114 <span class="comment">%    ytl(end-1,1:</span>
+0115     set(cb,[xy <span class="string">'TickLabel'</span>],ytl);
+0116 <span class="keyword">end</span>
+0117 daspect([1 1 1/2]);
+0118 zlim([0 6]);
+0119 xlabel(<span class="string">'x in m'</span>);
+0120 ylabel(<span class="string">'y in m'</span>);
+0121 zlabel(<span class="string">'z in m'</span>);
+0122 view(185,6);
+0123 finex(vecname)</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

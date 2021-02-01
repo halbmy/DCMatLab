@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readtsurf</title>
+  <meta name="keywords" content="readtsurf">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; readtsurf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readtsurf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 filename=<span class="string">'bsp_0b.ts'</span>;
+0002 fid=fopen(filename,<span class="string">'r'</span>);
+0003 zeile=fgetl(fid);
+0004 <span class="keyword">while</span> isstr(zeile)&amp;&amp;(~strcmp(zeile(1:6),<span class="string">'HEADER'</span>)),
+0005     zeile=fgetl(fid);
+0006 <span class="keyword">end</span>
+0007 <span class="comment">% do something with header</span>
+0008 <span class="keyword">while</span> isstr(zeile)&amp;&amp;(~strcmp(zeile(1),<span class="string">'}'</span>)),
+0009     zeile=fgetl(fid);
+0010 <span class="keyword">end</span>
+0011 zeile=fgetl(fid);
+0012 <span class="comment">% read other information about properties</span>
+0013 <span class="keyword">while</span> isstr(zeile)&amp;&amp;((length(zeile)&lt;5)||(~strcmp(zeile(1:5),<span class="string">'TFACE'</span>))),
+0014     zeile=fgetl(fid);
+0015 <span class="keyword">end</span>
+0016 zeile=fgetl(fid);
+0017 Mesh=[];Mesh.cell=[];
+0018 <span class="keyword">while</span> isstr(zeile)&amp;&amp;(~strcmp(zeile,<span class="string">'END'</span>)),
+0019     <span class="keyword">if</span> length(zeile&gt;3)&amp;&amp;strcmp(zeile(1:4),<span class="string">'VRTX'</span>),
+0020         aa=str2num(zeile(5:end));
+0021         Mesh.node(aa(1),1:length(aa)-1)=aa(2:end);
+0022     <span class="keyword">end</span>
+0023     <span class="keyword">if</span> length(zeile&gt;4)&amp;&amp;strcmp(zeile(1:5),<span class="string">'PVRTX'</span>),
+0024         aa=str2num(zeile(6:end));
+0025         Mesh.node(aa(1),1:3)=aa(2:4);
+0026         <span class="keyword">if</span> length(aa)&gt;4, Mesh.patt(aa(1))=aa(5); <span class="keyword">end</span>
+0027         <span class="keyword">if</span> length(aa)&gt;5, Mesh.patt2(aa(1))=aa(6); <span class="keyword">end</span>
+0028     <span class="keyword">end</span>
+0029     <span class="keyword">if</span> length(zeile&gt;3)&amp;&amp;strcmp(zeile(1:4),<span class="string">'TRGL'</span>),
+0030         aa=str2num(zeile(5:end));
+0031         Mesh.cell(end+1,1:length(aa))=aa(1:end);
+0032     <span class="keyword">end</span>
+0033     zeile=fgetl(fid);
+0034 <span class="keyword">end</span>
+0035 fclose(fid);
+0036 clf;patch(<span class="string">'Vertices'</span>,Mesh.node,<span class="string">'Faces'</span>,Mesh.cell,<span class="string">'FaceColor'</span>,[1 1 1],<span class="string">'EdgeColor'</span>,[0 0 0]);
+0037 <span class="comment">% axis equal tight</span>
+0038 Mesh.ncells=size(Mesh.cell,1);
+0039 Mesh.nnodes=size(Mesh.node,1);
+0040 Mesh.patt(Mesh.patt==-99999)=0;
+0041 <span class="keyword">if</span> isfield(Mesh,<span class="string">'patt'</span>)&amp;&amp;(length(Mesh.patt)==Mesh.nnodes),
+0042     Mesh.att=zeros(Mesh.ncells,1);
+0043     <span class="keyword">for</span> i=1:Mesh.cell, Mesh.att(i)=mean(Mesh.patt(i,:)); <span class="keyword">end</span>
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

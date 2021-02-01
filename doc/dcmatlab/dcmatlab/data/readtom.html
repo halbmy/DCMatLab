@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readtom</title>
+  <meta name="keywords" content="readtom">
+  <meta name="description" content="READTOM - Read TOM travel time file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readtom.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readtom
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READTOM - Read TOM travel time file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Shot = readtom(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READTOM - Read TOM travel time file
+ Shot = readtom(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Shot = readtom(filename)</a>
+0002 
+0003 <span class="comment">% READTOM - Read TOM travel time file</span>
+0004 <span class="comment">% Shot = readtom(filename)</span>
+0005 
+0006 Shot=[];
+0007 <span class="comment">% SGT=sortrows(load(filename),[3 6]);%x of shot and receiver</span>
+0008 fid=fopen(filename,<span class="string">'r'</span>);
+0009 SGT=fscanf(fid,<span class="string">'%f'</span>,[8 Inf])';
+0010 fclose(fid);
+0011 Shot.pos=unique([SGT(:,[3 5]);SGT(:,[6 8])],<span class="string">'rows'</span>);
+0012 Shot.t=SGT(:,1);
+0013 ishot=0;ges=0;
+0014 <span class="keyword">while</span> ~isempty(SGT),
+0015     la=min(find(SGT(:,3)~=SGT(1,3)))-1;
+0016     dt=0;
+0017     <span class="keyword">if</span> isempty(la), la=size(SGT,1); <span class="keyword">end</span>
+0018     ishot=ishot+1;
+0019     Shot.loc(ishot)=SGT(1,3);Shot.locz(ishot)=SGT(1,5);
+0020     Shot.x{ishot}=SGT(1:la,6);Shot.z{ishot}=SGT(1:la,8);
+0021     self=find(Shot.x{ishot}==Shot.loc(ishot));
+0022     <span class="keyword">if</span> ~isempty(self),
+0023         dt=min(SGT(self,1));
+0024         Shot.x{ishot}(self)=[];Shot.z{ishot}(self)=[];
+0025         Shot.t(ges+self)=[];SGT(self,:)=[];la=la-length(self);
+0026         Shot.t(ges+1:ges+la)=Shot.t(ges+1:ges+la)-dt;
+0027     <span class="keyword">end</span>
+0028     [aa,Shot.ns{ishot}]=ismember(Shot.loc(ishot),Shot.pos(:,1)); <span class="comment">%rows</span>
+0029     [aa,Shot.nx{ishot}]=ismember(Shot.x{ishot},Shot.pos(:,1)); <span class="comment">%rows</span>
+0030     Shot.tt{ishot}=SGT(1:la,1)-dt;
+0031     SGT(1:la,:)=[];ges=ges+la;
+0032 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

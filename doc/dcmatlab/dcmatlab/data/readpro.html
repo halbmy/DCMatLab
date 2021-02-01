@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readpro</title>
+  <meta name="keywords" content="readpro">
+  <meta name="description" content="READPRO - Read 3D PRO-File of 2D-Profiles">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readpro.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readpro
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READPRO - Read 3D PRO-File of 2D-Profiles</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=readpro(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READPRO - Read 3D PRO-File of 2D-Profiles
+ [N,elec]=readpro(filename)
+ elec..Electrode position ( x,y,z )
+ N.....structure of arrays: a,b,m,n = electrode numbers(elec)
+             r = measurements    k = konfiguration factor
+ PRO-File: profile1.dat x1 y1 x2 y2
+           profile2.dat x1 y1 x2 y2</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="check2dfile.html" class="code" title="function erg=check2dfile(fname)">check2dfile</a>	CHECK2DFILE - Check 2d data file for file type</li><li><a href="read2drawfile.html" class="code" title="function N = read2drawfile(datafile,fmt)">read2drawfile</a>	READ2DRAWFILE - read 2d raw file</li><li><a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>	READINV2DFILE - Read INV2D data file</li><li><a href="readres2dinvfile.html" class="code" title="function N = readres2dinvfile(datafile)">readres2dinvfile</a>	READRES2DINVFILE - Read 2D Loke&Barker File</li><li><a href="sort2delecs.html" class="code" title="function NN=sort2delecs(N,islinear)">sort2delecs</a>	SORT2DELECS - sort 2d electrode points clock-wise</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read3dfile.html" class="code" title="function N=read3dfile(datfile)">read3dfile</a>	READ3DFILE - Read 3d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=readpro(filename)</a>
+0002 
+0003 <span class="comment">% READPRO - Read 3D PRO-File of 2D-Profiles</span>
+0004 <span class="comment">% [N,elec]=readpro(filename)</span>
+0005 <span class="comment">% elec..Electrode position ( x,y,z )</span>
+0006 <span class="comment">% N.....structure of arrays: a,b,m,n = electrode numbers(elec)</span>
+0007 <span class="comment">%             r = measurements    k = konfiguration factor</span>
+0008 <span class="comment">% PRO-File: profile1.dat x1 y1 x2 y2</span>
+0009 <span class="comment">%           profile2.dat x1 y1 x2 y2</span>
+0010 
+0011 input=fopen(filename,<span class="string">'r'</span>);
+0012 N.a=[];N.b=[];N.m=[];N.n=[];N.r=[];N.k=[];N.elec=[];
+0013 N.err=[];N.ip=[];N.i=[];N.u=[];N.rho=[];
+0014 <span class="keyword">if</span> input&lt;0,
+0015     message(sprintf(<span class="string">'Could not open profile file: %s'</span>,filename));<span class="keyword">return</span>;
+0016 <span class="keyword">end</span>
+0017 message([<span class="string">'Opening pro-file '</span> filename <span class="string">'...'</span>]);
+0018 olddir=pwd;
+0019 newdir=fileparts(filename);
+0020 sfmt=<span class="string">''</span>;
+0021 <span class="comment">% if ~isempty(newdir), cd(newdir); end</span>
+0022 <span class="keyword">try</span>,
+0023     profil=0;
+0024     <span class="keyword">while</span> 1,<span class="comment">%count&gt;0,</span>
+0025         zeile=<span class="string">''</span>;
+0026         <span class="keyword">while</span> isempty(zeile), zeile=destrip(fgetl(input));  <span class="keyword">end</span>
+0027         <span class="keyword">if</span> ~ischar(zeile), <span class="keyword">break</span>; <span class="keyword">end</span>
+0028         [dateiname,count]=sscanf(zeile,<span class="string">'%s'</span>,1);
+0029         profil=profil+1;
+0030         datei=[newdir filesep dateiname]; <span class="comment">%neu</span>
+0031         <span class="keyword">if</span> ~exist(datei,<span class="string">'file'</span>),
+0032             errordlg(datei,<span class="string">'File not found!'</span>);<span class="keyword">break</span>;
+0033         <span class="keyword">end</span>
+0034         <span class="keyword">switch</span> <a href="check2dfile.html" class="code" title="function erg=check2dfile(fname)">check2dfile</a>(datei),
+0035             <span class="keyword">case</span> 1,
+0036                 NN=<a href="readres2dinvfile.html" class="code" title="function N = readres2dinvfile(datafile)">readres2dinvfile</a>(datei);
+0037             <span class="keyword">case</span> 2,
+0038                 NN=<a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>(datei);
+0039             <span class="keyword">case</span> 3,
+0040                 <span class="keyword">if</span> isempty(sfmt),
+0041                     sfmt=inputdlg(<span class="string">'Please specify the number of headerlines and the row numbers for A,B,M,N and the apparent resistivity (space separated)!'</span>,<span class="keyword">...</span>
+0042                         <span class="string">'Raw file format'</span>,1,{<span class="string">'1  1  3  5  7  12'</span>}); 
+0043                 <span class="keyword">end</span>
+0044                 NN=<a href="read2drawfile.html" class="code" title="function N = read2drawfile(datafile,fmt)">read2drawfile</a>(datei,sfmt);
+0045             <span class="keyword">otherwise</span>
+0046                 errordlg(datei,<span class="string">'Filetype unknown!'</span>);<span class="keyword">break</span>;
+0047         <span class="keyword">end</span>
+0048         nr=length(NN.r);
+0049         zeile(1:length(dateiname))=<span class="string">''</span>;
+0050         points=sscanf(zeile,<span class="string">'%f %f'</span>);        
+0051         xp=points(1:2:end);
+0052         yp=points(2:2:end);
+0053         <span class="keyword">if</span> nr&gt;0,
+0054             message(sprintf(<span class="string">'reading %s, (%.1f-%.1f)-(%.1f-%.1f)'</span>,datei,xp(1),yp(1),xp(end),yp(end)));
+0055         <span class="keyword">else</span>
+0056             message(sprintf(<span class="string">'2D-File %s not found!'</span>,datei));
+0057         <span class="keyword">end</span>
+0058         ln=size(N.elec,1);
+0059         <span class="comment">% for later plotting</span>
+0060         <span class="comment">%    [NN.mids,NN.seps,NN.ii,NN.kk]=midkonf2d(NN);</span>
+0061         <span class="comment">% !!! problematisch wegen evtl. Löschung (ii und kk noch löschen)</span>
+0062         <span class="keyword">if</span> length(xp)&gt;length(yp), xp(end)=[]; <span class="keyword">end</span>
+0063         xmbm=cumsum([0;sqrt(diff(xp).^2+diff(yp).^2)]);
+0064         elec=[interp1(xmbm,xp,NN.elec(:,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>) interp1(xmbm,yp,NN.elec(:,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>)];
+0065         <span class="keyword">if</span> size(NN.elec,2)&gt;1, elec=[elec NN.elec(:,2)]; <span class="keyword">end</span>
+0066         <span class="keyword">if</span> isfield(NN,<span class="string">'topo'</span>),
+0067             elec(:,3)=interp1(NN.topo(:,1),NN.topo(:,2),NN.elec(:,1),<span class="string">'linear'</span>);
+0068             fi=find(isnan(elec(:,3)));
+0069             <span class="keyword">if</span> ~isempty(fi),
+0070                 last=max(find(~isnan(elec(:,3))));
+0071                 elec(fi,3)=elec(last,3);
+0072             <span class="keyword">end</span>
+0073         <span class="keyword">end</span>
+0074         <span class="comment">% TODO hier muss eigentlich eine abchecke hin!</span>
+0075         N.elec=[N.elec;elec];
+0076         <span class="keyword">if</span> length(unique(NN.elec(:,2)))/size(NN.elec,1)&gt;0.3, <span class="comment">% topo</span>
+0077             NN=<a href="sort2delecs.html" class="code" title="function NN=sort2delecs(N,islinear)">sort2delecs</a>(NN,1);
+0078             di=rndig(sqrt(sum(diff(NN.elec).^2,2)),3);
+0079             <span class="keyword">if</span> unique(di)/size(NN.elec,1)&lt;0.1,
+0080                NN.elec(:,1)=[0;cumsum(di)];
+0081                NN.elec(:,2)=0;
+0082             <span class="keyword">end</span>
+0083         <span class="keyword">end</span>
+0084         N.zweid{profil}=NN;
+0085         N.nr{profil}=(1:length(NN.a))+length(N.a);
+0086         N.names{profil}=dateiname;
+0087         N.points{profil}=points;
+0088 <span class="comment">%         N.points{profil}=[x1 y1 x2 y2];</span>
+0089         <span class="comment">%N.pro{profil}=(1:length(NN.a))+length(N.a);</span>
+0090         N.a=[N.a;NN.a+ln];N.m=[N.m;NN.m+ln];
+0091         N.b=[N.b;(NN.b&gt;0).*(NN.b+ln)];
+0092         N.n=[N.n;(NN.n&gt;0).*(NN.n+ln)];
+0093         <span class="keyword">if</span> isfield(NN,<span class="string">'r'</span>), N.r=[N.r;NN.r]; <span class="keyword">end</span>
+0094         <span class="keyword">if</span> isfield(NN,<span class="string">'rho'</span>), N.rho=[N.rho;NN.rho]; <span class="keyword">end</span>
+0095         <span class="keyword">if</span> isfield(NN,<span class="string">'k'</span>), N.k=[N.k;NN.k]; <span class="keyword">end</span>
+0096         <span class="keyword">if</span> isfield(NN,<span class="string">'err'</span>), N.err=[N.err(:);NN.err]; <span class="keyword">end</span>
+0097         <span class="keyword">if</span> isfield(NN,<span class="string">'ip'</span>), N.ip=[N.ip(:);NN.ip]; <span class="keyword">end</span>
+0098         <span class="keyword">if</span> isfield(NN,<span class="string">'i'</span>), N.i=[N.i(:);NN.i]; <span class="keyword">end</span>
+0099         <span class="keyword">if</span> isfield(NN,<span class="string">'u'</span>), N.u=[N.u(:);NN.u]; <span class="keyword">end</span>
+0100 <span class="comment">%         [dateiname,count]=fscanf(input,'%s',1);</span>
+0101     <span class="keyword">end</span> <span class="comment">% while loop</span>
+0102     fclose(input);
+0103     <span class="comment">%     cd(olddir);</span>
+0104 <span class="keyword">catch</span>
+0105     <span class="comment">%     cd(olddir);</span>
+0106     fclose(input);
+0107     display(lasterr);
+0108     <span class="keyword">return</span>;
+0109 <span class="keyword">end</span>
+0110 [N.elec,I,J]=unique(round(N.elec*1000)/1000,<span class="string">'rows'</span>);
+0111 N.a=J(N.a);N.m=J(N.m);
+0112 fb=find(N.b);N.b(fb)=J(N.b(fb));
+0113 fn=find(N.n);N.n(fn)=J(N.n(fn));
+0114 message(sprintf(<span class="string">'Summary of %d measurements and %d Electrodes'</span>,length(N.r),size(N.elec,1)));
+0115 <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>)&amp;&amp;(~isempty(N.err)),
+0116     <span class="keyword">if</span> length(N.err)==length(N.r),
+0117         message(sprintf(<span class="string">'Found errors in 2d files, min=%.1f%% max=%.1f%%'</span>,min(N.err)*100,max(N.err)*100));
+0118     <span class="keyword">else</span>
+0119         message(<span class="string">'Found uncomplete errors!'</span>);
+0120     <span class="keyword">end</span>
+0121 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gauleg</title>
+  <meta name="keywords" content="gauleg">
+  <meta name="description" content="GAULEG - Gauss-Legendre-Koefficients and Weights">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; gauleg.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>gauleg
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GAULEG - Gauss-Legendre-Koefficients and Weights</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x, w] = gauleg(x1, x2, n) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GAULEG - Gauss-Legendre-Koefficients and Weights
+ [x,w] = gauleg(x1,x2,n)
+ Given the lower and upper limits of integration x1 and x2 and given n,
+ this routine returns arrays x(1..n) and w(1..n) of length n,
+ containing the abscissas and weights of the Gauss-Legendre
+ n-point quadrature formula.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x, w] = gauleg(x1, x2, n)</a>
+0002 <span class="comment">% GAULEG - Gauss-Legendre-Koefficients and Weights</span>
+0003 <span class="comment">% [x,w] = gauleg(x1,x2,n)</span>
+0004 <span class="comment">% Given the lower and upper limits of integration x1 and x2 and given n,</span>
+0005 <span class="comment">% this routine returns arrays x(1..n) and w(1..n) of length n,</span>
+0006 <span class="comment">% containing the abscissas and weights of the Gauss-Legendre</span>
+0007 <span class="comment">% n-point quadrature formula.</span>
+0008    
+0009 <span class="comment">% For a description of the following routines see</span>
+0010 <span class="comment">% Numerical Recipes, Press et al.</span>
+0011 
+0012 EPS = 3.0e-6;
+0013     
+0014 m=(n+1)/2;
+0015 xm=0.5*(x2+x1);
+0016 xl=0.5*(x2-x1);
+0017 <span class="keyword">for</span> i=1:m
+0018    z=cos(3.141592653*(i-0.25)/(n+0.5));   
+0019 <span class="comment">% Starting with the above approximation to the ith root, we enter</span>
+0020 <span class="comment">% the main loop of refinements by Newton's method</span>
+0021     z1 = z + 2*EPS;
+0022     <span class="keyword">while</span> abs(z-z1) &gt; EPS
+0023       p1 = 1.0; 
+0024       p2 = 0.0;
+0025       <span class="keyword">for</span> j=1:n
+0026          p3 = p2; 
+0027          p2 = p1;
+0028          p1 = ((2.0*j-1.0)*z*p2-(j-1.0)*p3)/j;
+0029       <span class="keyword">end</span>      
+0030 <span class="comment">% p1 is now the desired Legendre polynomial. We next compute pp,</span>
+0031 <span class="comment">% its derivative, by a standard relation involving also p2, the</span>
+0032 <span class="comment">% polynomial of one lower order</span>
+0033         pp = n*(z*p1-p2)/(z*z-1.0);
+0034         z1 = z;
+0035       z = z1-p1/pp; <span class="comment">% Newtons method</span>
+0036    <span class="keyword">end</span>
+0037 <span class="comment">% Scale the root to the desired interval, and put in its</span>
+0038 <span class="comment">% symmetric counterpart</span>
+0039     x(i) = xm-xl*z;
+0040     x(n+1-i) = xm+xl*z;
+0041 <span class="comment">% Compute the weight and ist symmetric counterpart</span>
+0042     w(i) = 2.0*xl/((1.0-z*z)*pp*pp);
+0043     w(n+1-i) = w(i);
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

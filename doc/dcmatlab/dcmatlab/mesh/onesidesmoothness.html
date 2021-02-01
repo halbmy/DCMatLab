@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of onesidesmoothness</title>
+  <meta name="keywords" content="onesidesmoothness">
+  <meta name="description" content="ONESIDESMOOTHNESS - Unstructured mesh smoothness operator (unsymmetric)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; onesidesmoothness.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>onesidesmoothness
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ONESIDESMOOTHNESS - Unstructured mesh smoothness operator (unsymmetric)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function C=onesidesmoothness(Mesh,po,usew) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ONESIDESMOOTHNESS - Unstructured mesh smoothness operator (unsymmetric)
+ C=onesidesmoothness(Mesh)
+ C=onesidesmoothness(Mesh,zpower) % vertical smoothness using zpower
+ C=onesidesmoothness(Mesh,zpower,1) % use zweight instead of zpower</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C=onesidesmoothness(Mesh,po,usew)</a>
+0002 
+0003 <span class="comment">% ONESIDESMOOTHNESS - Unstructured mesh smoothness operator (unsymmetric)</span>
+0004 <span class="comment">% C=onesidesmoothness(Mesh)</span>
+0005 <span class="comment">% C=onesidesmoothness(Mesh,zpower) % vertical smoothness using zpower</span>
+0006 <span class="comment">% C=onesidesmoothness(Mesh,zpower,1) % use zweight instead of zpower</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;3, usew=0; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;2, po=0; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> Mesh.dim==2,
+0011     blr=[Mesh.boundleft(:) Mesh.boundright(:)];
+0012     bn=Mesh.bound;
+0013     [i,j]=find(blr==0);
+0014     blr(i,:)=[];bn(i,:)=[];
+0015     nblr=size(blr,1);
+0016     C=spalloc(nblr,Mesh.ncells,nblr*2);
+0017     <span class="keyword">for</span> i=1:nblr,
+0018         <span class="keyword">if</span> usew&gt;0, 
+0019             nv=diff(Mesh.node(bn(i,:),:));
+0020             nv=nv/norm(nv);
+0021 <span class="comment">%             val=po^(abs(nv(1))/usew);</span>
+0022             val=(1+po-abs(nv(1)))^usew;
+0023         <span class="keyword">else</span>
+0024             <span class="comment">%     ve=diff(Mesh.node(Mesh.bound(blr(i,:),:),:));</span>
+0025             ve=diff(Mesh.node(bn(i,:),:));
+0026             val=(1-abs(ve(1))/norm(ve))^po; 
+0027         <span class="keyword">end</span>
+0028         C(i,blr(i,:))=[-1 1]*val;    
+0029     <span class="keyword">end</span>
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">if</span> Mesh.dim==3,
+0032     C=spalloc(Mesh.ncells*4,Mesh.ncells,Mesh.ncells*8);
+0033     <span class="keyword">for</span> i=1:Mesh.ncells,        
+0034         [i1,j1]=find(Mesh.cell==Mesh.cell(i,1));
+0035         [i2,j2]=find(Mesh.cell==Mesh.cell(i,2));
+0036         [i3,j3]=find(Mesh.cell==Mesh.cell(i,3));
+0037         [i4,j4]=find(Mesh.cell==Mesh.cell(i,4));        
+0038         ii=intersect(intersect(i1,i2),i3);
+0039         <span class="keyword">if</span> length(ii)&gt;1, C((i-1)*4+1,ii)=[-1 1]; <span class="keyword">end</span>
+0040         ii=intersect(intersect(i1,i2),i4);
+0041         <span class="keyword">if</span> length(ii)&gt;1, C((i-1)*4+2,ii)=[-1 1]; <span class="keyword">end</span>
+0042         ii=intersect(intersect(i1,i3),i4);
+0043         <span class="keyword">if</span> length(ii)&gt;1, C((i-1)*4+3,ii)=[-1 1]; <span class="keyword">end</span>
+0044         ii=intersect(intersect(i2,i3),i4);
+0045         <span class="keyword">if</span> length(ii)&gt;1, C((i-1)*4+4,ii)=[-1 1]; <span class="keyword">end</span>        
+0046     <span class="keyword">end</span>
+0047     C(sum(abs(C),2)==0,:)=[];
+0048 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

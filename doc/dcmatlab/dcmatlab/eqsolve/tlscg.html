@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of tlscg</title>
+  <meta name="keywords" content="tlscg">
+  <meta name="description" content="CGLSCDP - truncated least squares normal equations solver">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; tlscg.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>tlscg
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CGLSCDP - truncated least squares normal equations solver</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function x = tlscg(A,b,jmax,D,P,x0) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CGLSCDP - truncated least squares normal equations solver
+ x = tlscg(A,y,jmax,D,P,x0)
+ solves implicitly jmax dg steps of the normal equation
+ ( (DSP)'*DSP ) (P\x) = (DSP)'*D*y
+ x0 - starting vector</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function x = tlscg(A,b,jmax,D,P,x0)</a>
+0002 
+0003 <span class="comment">% CGLSCDP - truncated least squares normal equations solver</span>
+0004 <span class="comment">% x = tlscg(A,y,jmax,D,P,x0)</span>
+0005 <span class="comment">% solves implicitly jmax dg steps of the normal equation</span>
+0006 <span class="comment">% ( (DSP)'*DSP ) (P\x) = (DSP)'*D*y</span>
+0007 <span class="comment">% x0 - starting vector</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;3, error(<span class="string">'Too less input arguments!'</span>); <span class="keyword">end</span>
+0010 [m,n] = size(A); 
+0011 <span class="keyword">if</span> nargin&lt;3, jmax=20; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;4, D=1; <span class="keyword">end</span> <span class="comment">%ones(m,1); end</span>
+0013 <span class="keyword">if</span> nargin&lt;5, P=1; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> (nargin&lt;6)||(isequal(x0,0)), x0=zeros(n,1); <span class="keyword">end</span>
+0015 
+0016 <span class="keyword">if</span> min(size(D))==1, D=spdiags(D(:),0,length(D)); <span class="keyword">end</span>
+0017 <span class="comment">% Prepare for CG iteration.</span>
+0018 nn=size(P,2);
+0019 PI=P';
+0020 su=sum(P,1);
+0021 we=ones(size(su));
+0022 fi=find(su);we(fi)=1./su(fi);
+0023 PI=spdiags(we(:),0,length(we),length(we))*PI;
+0024 x = PI*x0;
+0025 z = D*(b - A*(P*x)); <span class="comment">% residuum of unregularized equation</span>
+0026 p = (z'*D*A*P)';
+0027 acc=1e-7;
+0028 abbr = p'*p*acc; <span class="comment">% goal for norm(r)^2</span>
+0029 r = p;
+0030 normr2 = r'*r;
+0031 <span class="comment">% Iterate.</span>
+0032 j=0;
+0033 wb=waitbar(0,<span class="string">'TLSCG'</span>);
+0034 fort=0;oldf=0;
+0035 t0=clock;
+0036 <span class="keyword">while</span>(j&lt;jmax)
+0037   j=j+1;  
+0038   q = D*(A*(P*p));
+0039   normr2old=normr2;
+0040   alpha = normr2/(q'*q);
+0041   x  = x + alpha*p;
+0042   z  = z - alpha*q;
+0043   r = (z'*D*A*P)';
+0044   normr2 = r'*r;
+0045   beta = normr2/normr2old;
+0046   p = r + beta*p;
+0047   fort=j/jmax;
+0048   <span class="keyword">if</span> fort&gt;oldf+0.05,
+0049     waitbar(fort,wb);
+0050     oldf=fort;
+0051   <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 close(wb);
+0054 x=P*x;
+0055 message(sprintf(<span class="string">'Iterated %d steps of the normal equations in %.1fs'</span>,<span class="keyword">...</span>
+0056     jmax,etime(clock,t0)));</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of inter2dpoint</title>
+  <meta name="keywords" content="inter2dpoint">
+  <meta name="description" content="INTER2DPOINT - Interpolate 2d to points by delaunay linear interpolation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; inter2dpoint.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>inter2dpoint
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>INTER2DPOINT - Interpolate 2d to points by delaunay linear interpolation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function poz = inter2dpoint(to,po) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> INTER2DPOINT - Interpolate 2d to points by delaunay linear interpolation
+ z = inter2dpoint(xyz,xy)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function poz = inter2dpoint(to,po)</a>
+0002 
+0003 <span class="comment">% INTER2DPOINT - Interpolate 2d to points by delaunay linear interpolation</span>
+0004 <span class="comment">% z = inter2dpoint(xyz,xy)</span>
+0005 
+0006 tri=delaunay(to(:,1),to(:,2));
+0007 t=tsearch(to(:,1),to(:,2),tri,po(:,1),po(:,2));
+0008 poz=zeros(size(po,1),1);
+0009 <span class="keyword">for</span> i=1:size(po,1),
+0010     x=to(tri(t(i),:),1);y=to(tri(t(i),:),2);z=to(tri(t(i),:),3);
+0011     x21=x(2)-x(1);y21=y(2)-y(1);x31=x(3)-x(1);y31=y(3)-y(1);
+0012     jdet=x21*y31-x31*y21;
+0013     xp1=po(i,1)-x(1);yp1=po(i,2)-y(1);
+0014     r = ( xp1 * y31 - x31 * yp1 ) / jdet;
+0015     s = ( x21 * yp1 - xp1 * y21 ) / jdet;
+0016     poz(i)=(1-r-s)*z(1)+r*z(2)+s*z(3);    
+0017 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

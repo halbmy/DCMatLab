@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writedcpfile</title>
+  <meta name="keywords" content="writedcpfile">
+  <meta name="description" content="WRITEDCPFILE - write data structure to DCP file for em1dinv use">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; writedcpfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>writedcpfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WRITEDCPFILE - write data structure to DCP file for em1dinv use</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function writedcpfile(N,filename,comment) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WRITEDCPFILE - write data structure to DCP file for em1dinv use
+                uses source type 24 (arbitrary xyz electrode locations)
+ writedcpfile(Data,filename[comment])
+ Data consists of fields: elec (electrode positions</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function writedcpfile(N,filename,comment)</a>
+0002 
+0003 <span class="comment">% WRITEDCPFILE - write data structure to DCP file for em1dinv use</span>
+0004 <span class="comment">%                uses source type 24 (arbitrary xyz electrode locations)</span>
+0005 <span class="comment">% writedcpfile(Data,filename[comment])</span>
+0006 <span class="comment">% Data consists of fields: elec (electrode positions</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'Specify file name and data structure'</span>); <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;2, filename=<span class="string">'sond.dcp'</span>; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;3, comment=<span class="string">'Sounding'</span>; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> isstruct(N), <span class="comment">% normal data structure</span>
+0012     A=zeros(length(N.a),14);
+0013     A(:,1)=N.elec(N.a,1); <span class="comment">% x coordinate</span>
+0014     A(:,4)=N.elec(N.m,1);
+0015     A(:,7)=N.elec(N.n,1);
+0016     A(:,10)=N.elec(N.b,1);
+0017     <span class="keyword">if</span> size(N.elec,2)&gt;1, <span class="comment">% depth</span>
+0018         A(:,3)=N.elec(N.a,end);
+0019         A(:,6)=N.elec(N.m,end);
+0020         A(:,9)=N.elec(N.n,end);
+0021         A(:,12)=N.elec(N.b,end);
+0022     <span class="keyword">end</span>
+0023     <span class="keyword">if</span> size(N.elec,2)==3, <span class="comment">% also y given</span>
+0024         A(:,2)=N.elec(N.a,2);
+0025         A(:,5)=N.elec(N.m,2);
+0026         A(:,8)=N.elec(N.n,2);
+0027         A(:,11)=N.elec(N.b,2);
+0028     <span class="keyword">end</span>
+0029     A(:,13)=N.r;
+0030     A(:,14)=0.05;
+0031 <span class="keyword">else</span> <span class="comment">% ab2/mn2/data array</span>
+0032     <span class="keyword">if</span> size(N,2)==3, <span class="comment">%only ab2/mn2/data-&gt;type 22</span>
+0033         fid=fopen(filename,<span class="string">'w'</span>);
+0034         fprintf(fid,<span class="string">'%s\r\n'</span>,comment);
+0035         fprintf(fid,<span class="string">'%d\r\n'</span>,22);
+0036         fprintf(fid,<span class="string">'%d\t%d\t%d\t%d\r\n'</span>,1,1,1,1);
+0037         <span class="keyword">for</span> i=1:size(N,1),
+0038            fprintf(fid,<span class="string">'%.1f\t%.1f\t%.1f\t%.1f\t%.1f\t%.2f\n'</span>,<span class="keyword">...</span>
+0039                -N(i,1),-N(i,2),N(i,2),N(i,1),N(i,3),0.01);
+0040         <span class="keyword">end</span>
+0041         fclose(fid);
+0042         <span class="keyword">return</span>;
+0043     <span class="keyword">else</span> <span class="comment">% all positions</span>
+0044         
+0045     <span class="keyword">end</span>
+0046 <span class="keyword">end</span>
+0047 fid=fopen(filename,<span class="string">'w'</span>);
+0048 fprintf(fid,<span class="string">'%s\r\n'</span>,comment);
+0049 fprintf(fid,<span class="string">'%d\r\n'</span>,24);
+0050 fprintf(fid,<span class="string">'%d\t%d\t%d\t%d\r\n'</span>,1,1,1,1);
+0051 formstr=<span class="string">'%.2f'</span>;
+0052 <span class="keyword">for</span> i=2:size(A,2), formstr=[formstr <span class="string">'\t%.2f'</span>]; <span class="keyword">end</span>
+0053 formstr=[formstr <span class="string">'\r\n'</span>];
+0054 fprintf(fid,formstr,A');
+0055 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

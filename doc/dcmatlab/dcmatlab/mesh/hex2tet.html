@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hex2tet</title>
+  <meta name="keywords" content="hex2tet">
+  <meta name="description" content="HEX2TET - Convert 3d grid model to">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; hex2tet.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>hex2tet
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>HEX2TET - Convert 3d grid model to</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Mesh = hex2tet(Mod) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> HEX2TET - Convert 3d grid model to 
+ Mesh = hex2tet(Mod)
+ Mod - 3d grid model containing x,y,z and M
+ Mesh - 3d tetraedral model containing node,cell and cellattr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Mesh = hex2tet(Mod)</a>
+0002 
+0003 <span class="comment">% HEX2TET - Convert 3d grid model to</span>
+0004 <span class="comment">% Mesh = hex2tet(Mod)</span>
+0005 <span class="comment">% Mod - 3d grid model containing x,y,z and M</span>
+0006 <span class="comment">% Mesh - 3d tetraedral model containing node,cell and cellattr</span>
+0007 
+0008 Mesh=[];Mesh.dim=3;
+0009 [X,Y,Z]=ndgrid(Mod.x,Mod.y,Mod.z);
+0010 Mesh.node=[X(:) Y(:) Z(:)];
+0011 Mesh.cell=[];
+0012 nx=length(Mod.x);ny=length(Mod.y);nz=length(Mod.z);
+0013 nxy=nx*ny;
+0014 <span class="comment">% uninode=[1 2 7 3;1 3 7 4;1 7 8 4;6 7 1 2;6 5 1 7;5 8 1 7];</span>
+0015 uninode=[1 2 4 5;2 3 4 7;2 4 5 7;6 5 7 2;5 8 7 4];
+0016 <span class="comment">% uninode=uninode(:,[1 2 4 3]);</span>
+0017 nt=size(uninode,1);
+0018 aa=repmat(Mod.M(:)',nt,1);
+0019 Mesh.cellattr=aa(:);
+0020 Mesh.cell=zeros(numel(Mod.M)*size(uninode,1),4);
+0021 <span class="keyword">for</span> k=1:nz-1,
+0022     <span class="keyword">for</span> j=1:ny-1,
+0023         <span class="keyword">for</span> i=1:nx-1,
+0024             cellxy=[i i+1 i+nx+1 i+nx ]+ny*(j-1);
+0025             cellp=[nxy*(k-1)+cellxy nxy*k+cellxy];
+0026             nc=i-1+(nx-1)*(j-1)+(nx-1)*(ny-1)*(k-1);
+0027             Mesh.cell(nc*nt+(1:nt),:)=cellp(uninode);
+0028         <span class="keyword">end</span>
+0029     <span class="keyword">end</span>
+0030 <span class="keyword">end</span>
+0031 Mesh.nnodes=size(Mesh.node,1);
+0032 Mesh.ncells=size(Mesh.cell,1);
+0033 Mesh.nbounds=0;
+0034 Mesh.nodemarker=zeros(Mesh.nnodes,1);
+0035 Mesh.cellnodes=ones(Mesh.ncells,1)*4;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

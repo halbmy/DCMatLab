@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of vtkexport3d</title>
+  <meta name="keywords" content="vtkexport3d">
+  <meta name="description" content="VTKEXPORT3d - Export 3d model to VTK file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; vtkexport3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>vtkexport3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>VTKEXPORT3d - Export 3d model to VTK file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function vtkexport3d(outfile,Mod,x,y,z,name,islog) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> VTKEXPORT3d - Export 3d model to VTK file
+   visualization toolkit - rectilinear grid
+ vtkexport3d(modfile,Model[,name]) - grid or para model
+ vtkexport3d(modfile,M,x,y,z,[name])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mesch3dmodel.html" class="code" title="function [M,x,y,z]=mesch3dmodel(Model)">mesch3dmodel</a>	MESCHE - Regular mesh from Model structure</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function vtkexport3d(outfile,Mod,x,y,z,name,islog)</a>
+0002 
+0003 <span class="comment">% VTKEXPORT3d - Export 3d model to VTK file</span>
+0004 <span class="comment">%   visualization toolkit - rectilinear grid</span>
+0005 <span class="comment">% vtkexport3d(modfile,Model[,name]) - grid or para model</span>
+0006 <span class="comment">% vtkexport3d(modfile,M,x,y,z,[name])</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;7, islog=0; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;6, name=<span class="string">'Resistivity'</span>; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Filename and Model array must be specified!'</span>); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> isstruct(Mod), <span class="comment">% model structure</span>
+0012     <span class="keyword">if</span> nargin&gt;3, islog=y; <span class="keyword">end</span>
+0013     <span class="keyword">if</span> nargin&gt;2, name=x; <span class="keyword">end</span>
+0014     <span class="keyword">if</span> isfield(Mod,<span class="string">'M'</span>),
+0015        <span class="keyword">if</span> iscell(Mod.M), <span class="comment">% Para Model</span>
+0016            [M,x,y,z]=<a href="mesch3dmodel.html" class="code" title="function [M,x,y,z]=mesch3dmodel(Model)">mesch3dmodel</a>(Mod);
+0017        <span class="keyword">else</span> <span class="comment">% grid model</span>
+0018            M=Mod.M;x=Mod.x;y=Mod.y;z=Mod.z;
+0019        <span class="keyword">end</span>
+0020     <span class="keyword">else</span>
+0021         error(<span class="string">'Model corrupt!'</span>);
+0022     <span class="keyword">end</span>    
+0023 <span class="keyword">else</span> <span class="comment">% real grid model</span>
+0024     M=Mod;
+0025     <span class="keyword">if</span> nargin&lt;5, z=0:size(M,3); <span class="keyword">end</span>
+0026     <span class="keyword">if</span> nargin&lt;4, y=0:size(M,2); <span class="keyword">end</span>
+0027     <span class="keyword">if</span> nargin&lt;3, x=0:size(M,1); <span class="keyword">end</span>
+0028 <span class="keyword">end</span>
+0029 lx=length(x);
+0030 ly=length(y);
+0031 lz=length(z);
+0032 <span class="keyword">if</span> (lx~=size(M,1)+1)||(ly~=size(M,2)+1)||(lz~=size(M,3)+1),
+0033   error(<span class="string">'Array and Vector sizes do not match!'</span>); <span class="keyword">end</span>
+0034 fid=fopen(outfile,<span class="string">'w'</span>); 
+0035 fprintf(fid,<span class="string">'# vtk DataFile Version 3.0\n'</span>);
+0036 fprintf(fid,<span class="string">'DC3dInvRes 3d grid model\n'</span>);
+0037 fprintf(fid,<span class="string">'ASCII\n'</span>);
+0038 fprintf(fid,<span class="string">'DATASET RECTILINEAR_GRID\n'</span>);
+0039 fprintf(fid,<span class="string">'DIMENSIONS %d %d %d\n'</span>,lx,ly,lz);
+0040 fprintf(fid,<span class="string">'X_COORDINATES %d float\n'</span>,lx);
+0041 fprintf(fid,<span class="string">'%g'</span>,x(1));
+0042 <span class="keyword">for</span> i=2:lx, fprintf(fid,<span class="string">' %g'</span>,x(i)); <span class="keyword">end</span>
+0043 fprintf(fid,<span class="string">'\n'</span>);
+0044 fprintf(fid,<span class="string">'Y_COORDINATES %d float\n'</span>,ly);
+0045 fprintf(fid,<span class="string">'%g'</span>,y(1));
+0046 <span class="keyword">for</span> i=2:ly, fprintf(fid,<span class="string">' %g'</span>,y(i)); <span class="keyword">end</span>
+0047 fprintf(fid,<span class="string">'\n'</span>);
+0048 fprintf(fid,<span class="string">'Z_COORDINATES %d float\n'</span>,lz);
+0049 fprintf(fid,<span class="string">'%g'</span>,-z(1));
+0050 <span class="keyword">for</span> i=2:lz, fprintf(fid,<span class="string">' %g'</span>,-z(i)); <span class="keyword">end</span>
+0051 fprintf(fid,<span class="string">'\n'</span>);
+0052 fprintf(fid,<span class="string">'CELL_DATA %d\n'</span>,prod(size(M)));
+0053 <span class="keyword">if</span> islog,
+0054     fprintf(fid,<span class="string">'SCALARS %s(log10) float\nLOOKUP_TABLE default\n'</span>,name);
+0055     fprintf(fid,<span class="string">'%g\n'</span>,log10(M(:)));
+0056 <span class="keyword">else</span>
+0057     fprintf(fid,<span class="string">'SCALARS %s float\nLOOKUP_TABLE default\n'</span>,name);
+0058     fprintf(fid,<span class="string">'%g\n'</span>,M(:));
+0059 <span class="keyword">end</span>
+0060 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

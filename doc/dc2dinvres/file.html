@@ -1,0 +1,60 @@
+<html>
+<head>
+<title>DC2DInvRes - File Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<h2>DC2DInvRes - File Menu</h2>
+<h3><a name="read"></a>Open data file</h3>
+<p>Three data formats of data are possible (and detected automatically):
+the format of RES2DINV, a raw data format (user is asked for meaning of the individual columns) and an multi-electrode based format described in the following
+  (the # character can be used for comments):</p>
+<pre>
+  number_of_electrodes
+  x_1 z_1 # position of first electrode<br>
+  ...<br>
+  x_n z_n # position of last electrode<br>
+  number_of_data<br>
+  a_1 b_1 m_1 n_1 rhoa_1 (error_1) # first datum point<br>
+  ...<br>
+  a_k b_k m_k n_k rhoa_k (error_k) # last datum point (errors are optional)
+(and optional)
+  number_of_topo_points<br>
+  x_1 z_1 # position of 1st topo point
+  ...
+  x_t z_t # position of last topo point
+</pre>
+<p>where a_i, b_i ... are the numbers (not positions) of used electrodes in the 
+  list above.<br>
+  Infinite electrodes for b and/or n are defined by number 0.</p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+O</p>
+<h3><a name="add"></a>Add Data</h3>
+The data read from the file are added to the existing data. So it is easy to combine 
+different configurations on the same profile to get better results. 
+<p><a href="hotkeys.html">Hotkey</a>: Shift+A</p>
+<hr>
+<h3><a name="save"></a>Save Workspace</h3>
+The complete workspace (e.g. data, model and sensitivities) are saved to a *.mat 
+file, defaulting the same root like the data file with extension MAT. Recommended 
+for inversion results. 
+<p><a href="hotkeys.html">Hotkey</a>: Shift+S</p>
+<h3></h3>
+<h3><a name="load"></a>Load Workspace</h3>
+<p>A former saved mat-file can be loaded to work on with the model.<br>
+  Attention: files named *-sens.mat are saved sensitivities and contain no model!</p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+L</p>
+<h3></h3>
+<h3><a name="figure"></a>Export Figure</h3>
+<p>The displayed figure is exported into a *.png file (e.g. to work with other 
+  programs). The name is normally the same root like the data set, followed by 
+  some self-explaining addition and the extension png.</p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+E</p>
+<h3></h3>
+<hr>
+<h3><a name="exit"></a>Exit</h3>
+<p>Termination of program. </p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+X</p>
+<p>&nbsp; </p>
+</body>
+</html>

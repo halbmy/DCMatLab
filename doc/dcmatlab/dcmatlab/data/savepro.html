@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of savepro</title>
+  <meta name="keywords" content="savepro">
+  <meta name="description" content="SAVEPRO - Save pro-file data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; savepro.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>savepro
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVEPRO - Save pro-file data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function savepro(filename,N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVEPRO - Save pro-file data
+ savepro(filename,N)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="saveinv2dfile.html" class="code" title="function saveinv2dfile(fname,N,maxi,eltoken)">saveinv2dfile</a>	SAVEINV2DFILE - Save INV2D file format</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function save2dnew(fname,N)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function savepro(filename,N)</a>
+0002 
+0003 <span class="comment">% SAVEPRO - Save pro-file data</span>
+0004 <span class="comment">% savepro(filename,N)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'2 input arguments required!'</span>); <span class="keyword">end</span>
+0007 <span class="keyword">if</span> ~isfield(N,<span class="string">'zweid'</span>), error(<span class="string">'No profile data in file!'</span>); <span class="keyword">end</span>
+0008 fid=fopen(filename,<span class="string">'w'</span>);
+0009 [pn,fn]=fileparts(filename);
+0010 olddir=pwd;
+0011 <span class="keyword">if</span> ~isempty(pn), cd(pn); <span class="keyword">end</span>
+0012 <span class="keyword">for</span> n=1:length(N.zweid),
+0013     nn=N.zweid{n};
+0014     <span class="keyword">if</span> length(nn.a)&gt;0,
+0015         nn.r=N.r(N.nr{n});
+0016         <span class="keyword">if</span> isfield(N,<span class="string">'names'</span>)&amp;&amp;(length(N.names)&gt;=n),
+0017             name=N.names{n};
+0018             <span class="keyword">if</span> strfind(name,<span class="string">'='</span>)&amp;&amp;isempty(strfind(name,<span class="string">'.dat'</span>)), name=[name <span class="string">'.dat'</span>]; <span class="keyword">end</span>
+0019             name=strrep(strrep(name,<span class="string">' '</span>,<span class="string">''</span>),<span class="string">'='</span>,<span class="string">'_'</span>);
+0020         <span class="keyword">else</span>
+0021             nu=num2str(n);<span class="keyword">if</span> length(nu)&lt;2, nu=[<span class="string">'0'</span> nu]; <span class="keyword">end</span>
+0022             name=[<span class="string">'file'</span> num2str(n) <span class="string">'.dat'</span>];    
+0023         <span class="keyword">end</span>
+0024         <a href="saveinv2dfile.html" class="code" title="function saveinv2dfile(fname,N,maxi,eltoken)">saveinv2dfile</a>(name,nn);
+0025         xx1=nn.elec(nn.a(1),1);xx2=nn.elec(nn.m(1),1);
+0026         aa=find(N.nr{n}==nn.a(1));
+0027         mm=find(N.nr{n}==nn.m(1));
+0028         <span class="comment">%     xz1=N.elec(N.a(aa),1:2);</span>
+0029         fprintf(fid,<span class="string">'%s '</span>,name);
+0030         <span class="keyword">if</span> isfield(N,<span class="string">'points'</span>)&amp;&amp;(length(N.points)&gt;=n),
+0031             fprintf(fid,<span class="string">' %.1f'</span>,N.points{n});
+0032         <span class="keyword">else</span>
+0033             xz1=N.elec(N.a(N.nr{n}(1)),1:2);
+0034             xz2=N.elec(N.m(N.nr{n}(1)),1:2);
+0035             xz0=xz1-(xz2-xz1)*xx1/(xx2-xx1);
+0036             fprintf(fid,name);
+0037             fprintf(fid,<span class="string">' %.1f'</span>,[xz0 (xz1+xz2)/2]);
+0038         <span class="keyword">end</span>
+0039         fprintf(fid,<span class="string">'\n\r'</span>);
+0040     <span class="keyword">end</span>
+0041 <span class="keyword">end</span>
+0042 fclose(fid);
+0043 chdir(olddir);
+0044 
+0045 <a name="_sub1" href="#_subfunctions" class="code">function save2dnew(fname,N)</a>
+0046 fid=fopen(fname,<span class="string">'w'</span>);
+0047 <span class="keyword">if</span> fid&lt;0,
+0048     error(<span class="string">'File not found!'</span>);
+0049 <span class="keyword">end</span>
+0050 fprintf(fid,<span class="string">'%d # Number of electrodes\n'</span>,size(N.elec,1));
+0051 fprintf(fid,<span class="string">'# Positions(x,z) for all electrodes\n'</span>);
+0052 ss=<span class="string">''</span>;
+0053 <span class="keyword">for</span> l=1:size(N.elec,2), ss=[ss <span class="string">'\t%g'</span>]; <span class="keyword">end</span>
+0054 ss=[ss <span class="string">'\n'</span>];
+0055 ss(1:2)=[];
+0056 fprintf(fid,ss,N.elec');
+0057 <span class="comment">% for i=1:size(N.elec,1),</span>
+0058 <span class="comment">%     fprintf(fid,'%s\r\n',num2str(N.elec(i,:)));</span>
+0059 <span class="comment">% end</span>
+0060 fprintf(fid,<span class="string">'%d # Number of measurements\n'</span>,length(N.r));
+0061 fprintf(fid,<span class="string">'# Electrode numbers A B M N (0=inf), rhoa, error, ...\n'</span>);
+0062 mess=[N.a(:) N.b(:) N.m(:) N.n(:) N.r(:)];
+0063 ss=<span class="string">'%3d %3d %3d %3d  %.2f'</span>;
+0064 <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>),
+0065     mess=[mess N.err(:)*100];
+0066     ss=[ss <span class="string">'  %.2f'</span>];
+0067 <span class="keyword">end</span>
+0068 ss=[ss <span class="string">'\n'</span>];
+0069 fprintf(fid,ss,mess');
+0070 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

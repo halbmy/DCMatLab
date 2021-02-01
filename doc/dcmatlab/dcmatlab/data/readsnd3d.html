@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readsnd3d</title>
+  <meta name="keywords" content="readsnd3d">
+  <meta name="description" content="READSND3D - Read 3d file by use of soundings">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readsnd3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readsnd3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READSND3D - Read 3d file by use of soundings</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=readsnd3d(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READSND3D - Read 3d file by use of soundings
+ N = readsnd3d(filename);
+ Format:
+ sounding_filename_1 x_location y_location angle [flag]
+ ...
+ sounding files consists of 3 columns for AB/2 MN/2 and apparent resistivity</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="abmn2n.html" class="code" title="function N=abmn2n(AA,BB,MM,NN)">abmn2n</a>	ABMN2N - Converts position arrays for A,B,M and N into data struct</li><li><a href="combdata3d.html" class="code" title="function N=combdata3d(N1,N2)">combdata3d</a>	COMBDATA3D - Combine 3d data sets</li><li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li><li><a href="readvesfile.html" class="code" title="function [out]=readvesfile(vesfile)">readvesfile</a>	READVESFILE - read vertical sounding file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read3dfile.html" class="code" title="function N=read3dfile(datfile)">read3dfile</a>	READ3DFILE - Read 3d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=readsnd3d(filename)</a>
+0002 
+0003 <span class="comment">% READSND3D - Read 3d file by use of soundings</span>
+0004 <span class="comment">% N = readsnd3d(filename);</span>
+0005 <span class="comment">% Format:</span>
+0006 <span class="comment">% sounding_filename_1 x_location y_location angle [flag]</span>
+0007 <span class="comment">% ...</span>
+0008 <span class="comment">% sounding files consists of 3 columns for AB/2 MN/2 and apparent resistivity</span>
+0009 
+0010 N=[];
+0011 [fpath,fname,fext]=fileparts(filename);
+0012 fid=fopen(fullfile(fpath,[fname fext]),<span class="string">'r'</span>);
+0013 <span class="keyword">if</span> isequal(fid,-1), error(<span class="string">'Could not open file!'</span>); <span class="keyword">end</span>
+0014 <span class="keyword">try</span>
+0015     zeile=fgetl(fid);
+0016     l=0;
+0017     <span class="keyword">while</span> ischar(zeile),
+0018         l=l+1;
+0019         ishalf=sscanf(zeile,<span class="string">'%*s %*s %*s %*s %d'</span>);
+0020         <span class="keyword">if</span> isempty(ishalf), ishalf=0; <span class="keyword">else</span> zeile=zeile(1:end-1); <span class="keyword">end</span>
+0021         vesfile=sscanf(zeile,<span class="string">'%s %*s %*s %*s'</span>);
+0022         xyphi=sscanf(zeile,<span class="string">'%*s %f %f %f'</span>);
+0023         xpos=xyphi(1);ypos=xyphi(2);phi=xyphi(3);
+0024         fprintf(<span class="string">'Sounding %s at x=%.1fm,y=%.1fm,phi=%d\n'</span>,vesfile,xpos,ypos,round(phi));
+0025         vesfull=fullfile(fpath,vesfile);
+0026         <span class="keyword">if</span> ~exist(vesfull,<span class="string">'file'</span>),
+0027             fprintf(<span class="string">'VES file %s does not exist!\n'</span>,vesfile);
+0028         <span class="keyword">else</span>
+0029             data=<a href="readvesfile.html" class="code" title="function [out]=readvesfile(vesfile)">readvesfile</a>(vesfull);
+0030             AA=data(:,1);MM=data(:,2);
+0031             BB=-AA;NN=-MM;
+0032             V2=<a href="abmn2n.html" class="code" title="function N=abmn2n(AA,BB,MM,NN)">abmn2n</a>(AA,BB,MM,NN);V=V2;
+0033             <span class="keyword">if</span> ishalf,
+0034                 V.b(:)=0;
+0035             <span class="keyword">end</span>
+0036             V.elec(:,1)=V2.elec(:,1)*sin(phi*pi/180)+xpos;
+0037             V.elec(:,2)=V2.elec(:,1)*cos(phi*pi/180)+ypos;
+0038             V.elec(:,3)=0;V.elec=round(V.elec*100)/100;
+0039             V.r=data(:,3);<span class="comment">%data{3};</span>
+0040             <span class="keyword">if</span> isempty(N),
+0041                 N=V;
+0042             <span class="keyword">else</span>
+0043                 N=<a href="combdata3d.html" class="code" title="function N=combdata3d(N1,N2)">combdata3d</a>(N,V);
+0044             <span class="keyword">end</span>
+0045             eind{l}=data(:,[1 3]);<span class="comment">%data{1} data{3}];</span>
+0046             zweid{l}=V2;
+0047             names{l}=strrep(vesfile,<span class="string">'.ves'</span>,<span class="string">''</span>);
+0048             nr{l}=length(N.r)-length(V.r)+1:length(N.r);
+0049             pos{l}=[xpos ypos phi];
+0050         <span class="keyword">end</span>
+0051         zeile=fgetl(fid);
+0052     <span class="keyword">end</span>
+0053     N.zweid=zweid;N.nr=nr;
+0054     N.eind=eind;
+0055     N.names=names;
+0056     N.pos=pos;
+0057     fclose(fid);
+0058 <span class="keyword">catch</span>
+0059     fclose(fid);
+0060     display(lasterr);
+0061     <span class="keyword">return</span>;
+0062 <span class="keyword">end</span>
+0063 <span class="keyword">if</span> ~isempty(N), N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

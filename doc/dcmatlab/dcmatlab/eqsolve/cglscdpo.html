@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cglscdpo</title>
+  <meta name="keywords" content="cglscdpo">
+  <meta name="description" content="% CGLSCDP - least squares normal equations solver">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; cglscdpo.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cglscdpo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% CGLSCDP - least squares normal equations solver</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function x = cglscdp(A,b,lam,C,D,P,dx) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% CGLSCDP - least squares normal equations solver
+% x = cglscdp(A,y,lam,C,D,P,dx)
+% solves implicitly the equation
+% ( (DS)'*DS + lam*C'C ) x = (DS)'*D*y (-lam*C'C dx)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function x = cglscdp(A,b,lam,C,D,P,dx)</a>
+0002 
+0003 <span class="comment">%% CGLSCDP - least squares normal equations solver</span>
+0004 <span class="comment">%% x = cglscdp(A,y,lam,C,D,P,dx)</span>
+0005 <span class="comment">%% solves implicitly the equation</span>
+0006 <span class="comment">%% ( (DS)'*DS + lam*C'C ) x = (DS)'*D*y (-lam*C'C dx)</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;3, error(<span class="string">'Too less input arguments!'</span>); <span class="keyword">end</span>
+0009 [m,n] = size(A); 
+0010 <span class="keyword">if</span> nargin&lt;3, lam=1; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;4, C=1; <span class="keyword">end</span> <span class="comment">%speye(n); end</span>
+0012 <span class="keyword">if</span> nargin&lt;5, D=1; <span class="keyword">end</span> <span class="comment">%ones(m,1); end</span>
+0013 <span class="keyword">if</span> nargin&lt;6, P=1; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> (nargin&lt;7)||(isequal(dx,0)), dx=zeros(n,1); <span class="keyword">end</span>
+0015 <span class="keyword">if</span> min(size(D))==1, D=spdiags(D(:),0,length(D)); <span class="keyword">end</span>
+0016 L=C;    
+0017 <span class="comment">% Prepare for CG iteration.</span>
+0018 nn=size(P,2);
+0019 PI = P\speye(size(P,1));
+0020 x = PI*zeros(n,1);
+0021 z = D*(b - A*(P*x)); <span class="comment">% residuum of unregularized equation</span>
+0022 p = (z'*D*A*P)'-PI*(L*dx)*lam; <span class="comment">% residuum of normal equation</span>
+0023 r = p;
+0024 normr2 = r'*r;
+0025 <span class="comment">% Iterate.</span>
+0026 acc=1e-8;
+0027 abbr = normr2*acc; <span class="comment">% goal for norm(r)^2</span>
+0028 j=0;
+0029 wb=waitbar(0,<span class="string">'CGLS CDP'</span>);
+0030 fort=0;oldf=0;
+0031 t0=clock;
+0032 <span class="keyword">while</span>(normr2&gt;abbr)
+0033   j=j+1;  
+0034   q = D*(A*(P*p));
+0035   normr2old=normr2;
+0036   Pp=P*p;
+0037   alpha = normr2/(q'*q+Pp'*(L*Pp)*lam);
+0038   x  = x + alpha*p;
+0039   z  = z - alpha*q;
+0040   r = (z'*D*A*P)'-PI*(L*(P*x+dx))*lam;
+0041   normr2 = r'*r;
+0042   beta = normr2/normr2old;
+0043   p = r + beta*p;
+0044   fort=1+log10(normr2/abbr)/log10(acc);
+0045   <span class="keyword">if</span> fort&gt;oldf+0.05,
+0046     waitbar(fort,wb);
+0047     oldf=fort;
+0048   <span class="keyword">end</span>
+0049 <span class="keyword">end</span>
+0050 close(wb);
+0051 x=P*x;
+0052 message(sprintf(<span class="string">'Solved weighted normal equations in %.1fs, %d iterations,lam=%.1f'</span>,<span class="keyword">...</span>
+0053     etime(clock,t0),j,lam));</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

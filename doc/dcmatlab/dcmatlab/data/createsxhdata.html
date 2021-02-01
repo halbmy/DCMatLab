@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of createsxhdata</title>
+  <meta name="keywords" content="createsxhdata">
+  <meta name="description" content="CREATESXHDATA - Create Surface-cross-borehole dataset">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; createsxhdata.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>createsxhdata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CREATESXHDATA - Create Surface-cross-borehole dataset</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=createsxhdata(nsel,x0,dx,holes,nbel,rdip,tdip) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CREATESXHDATA - Create Surface-cross-borehole dataset
+ N=createsxhdata(nsel,x0,dx,holes,nbel,rdip,tdip)
+ nsel..number of surface electrodes at x0,x0+dx,...
+ holes..vector of borehole positions
+ nbel..number of borehole electrodes (may be array)
+ createsxhdata(25,-12,1,[-6 6],9)
+ rdip..receiver is dipole (otherwise pole)
+ tdip..transmittor is dipole (otherwise pole)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=createsxhdata(nsel,x0,dx,holes,nbel,rdip,tdip)</a>
+0002 
+0003 <span class="comment">% CREATESXHDATA - Create Surface-cross-borehole dataset</span>
+0004 <span class="comment">% N=createsxhdata(nsel,x0,dx,holes,nbel,rdip,tdip)</span>
+0005 <span class="comment">% nsel..number of surface electrodes at x0,x0+dx,...</span>
+0006 <span class="comment">% holes..vector of borehole positions</span>
+0007 <span class="comment">% nbel..number of borehole electrodes (may be array)</span>
+0008 <span class="comment">% createsxhdata(25,-12,1,[-6 6],9)</span>
+0009 <span class="comment">% rdip..receiver is dipole (otherwise pole)</span>
+0010 <span class="comment">% tdip..transmittor is dipole (otherwise pole)</span>
+0011 
+0012 <span class="keyword">if</span> nargin&lt;5, error(<span class="string">'Too less input arguments'</span>); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;6, rdip=0; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&lt;7, tdip=0; <span class="keyword">end</span>
+0015 
+0016 N.elec=(0:nsel-1)'*dx+x0;
+0017 N.elec(:,2)=0;
+0018 nholes=length(holes);
+0019 <span class="keyword">for</span> n=1:nholes,
+0020     last=nsel+(n-1)*nbel;
+0021     N.elec(last+1:last+nbel,1)=holes(n);
+0022     N.elec(last+1:last+nbel,2)=(1:nbel)'*dx;
+0023 <span class="keyword">end</span>
+0024 N.a=[];N.b=[];N.m=[];N.n=[];N.r=[];
+0025 <span class="comment">% Surface to borehole</span>
+0026 <span class="keyword">for</span> n=1:nholes,
+0027    ib=min(length(nbel),n);
+0028    <span class="keyword">for</span> s=1:nsel-tdip,
+0029       <span class="keyword">for</span> b=1:nbel(ib)-rdip,
+0030         N.a(end+1)=s;
+0031         N.m(end+1)=nsel+(n-1)*nbel(ib)+b;
+0032         N.b(end+1)=(N.a(end)+1)*tdip;
+0033         N.n(end+1)=(N.m(end)+1)*rdip;
+0034       <span class="keyword">end</span>
+0035    <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 <span class="comment">% cross-hole</span>
+0038 <span class="keyword">if</span> nsel==0, <span class="comment">% only if no surface electrodes given</span>
+0039     <span class="keyword">for</span> n=1:nholes,
+0040         ib=min(length(nbel),n);
+0041         <span class="keyword">for</span> n2=n+1:nholes,
+0042             <span class="keyword">for</span> b=1:nbel(ib)-tdip,
+0043                 <span class="keyword">for</span> b2=1:nbel(ib)-rdip,
+0044                     N.a(end+1)=nsel+(n-1)*nbel(ib)+b;
+0045                     N.m(end+1)=nsel+(n2-1)*nbel(ib)+b2;
+0046                     N.b(end+1)=(N.a(end)+1)*tdip;
+0047                     N.n(end+1)=(N.m(end)+1)*rdip;
+0048                 <span class="keyword">end</span>
+0049             <span class="keyword">end</span>
+0050         <span class="keyword">end</span>
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 N.a=N.a(:);N.b=N.b(:);N.m=N.m(:);N.n=N.n(:);
+0054 N.r=ones(size(N.a))*100;
+0055 N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

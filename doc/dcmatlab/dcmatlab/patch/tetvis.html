@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of tetvis</title>
+  <meta name="keywords" content="tetvis">
+  <meta name="description" content="TETVIS - 3D Tetraeder visualization">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; tetvis.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>tetvis
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>TETVIS - 3D Tetraeder visualization</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function clog=tetvis(x,y,z,v,dd,val,sx,sy,sz) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> TETVIS - 3D Tetraeder visualization
+ tetvis(x,y,z,v,dd,sx,sy,sz,val)
+ x,y,z .. vectors of arbitrary points in 3d-space
+ v     .. value vector accompanied to x,yz
+ dd    .. grid size
+ sx/sy/sz .. slice positions for x/y/z (can be vectors)
+ val   .. isovalue for isosurface</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="newtetpatch.html" class="code" title="">newtetpatch</a>	function tetpatch(meshname,paraname,isoval,sx,sy,sz)</li><li><a href="rumpf.html" class="code" title="">rumpf</a>	</li><li><a href="tetpatch.html" class="code" title="">tetpatch</a>	function tetpatch(meshname,paraname,isoval,sx,sy,sz)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function clog=tetvis(x,y,z,v,dd,val,sx,sy,sz)</a>
+0002 
+0003 <span class="comment">% TETVIS - 3D Tetraeder visualization</span>
+0004 <span class="comment">% tetvis(x,y,z,v,dd,sx,sy,sz,val)</span>
+0005 <span class="comment">% x,y,z .. vectors of arbitrary points in 3d-space</span>
+0006 <span class="comment">% v     .. value vector accompanied to x,yz</span>
+0007 <span class="comment">% dd    .. grid size</span>
+0008 <span class="comment">% sx/sy/sz .. slice positions for x/y/z (can be vectors)</span>
+0009 <span class="comment">% val   .. isovalue for isosurface</span>
+0010 
+0011 <span class="keyword">if</span> nargin==1,
+0012     v=x;x=1:length(v);y=x;z=x;
+0013 <span class="keyword">elseif</span> nargin&lt;4,
+0014     x=[0 0 0 0 1 1 1 1];
+0015     y=[0 0 1 1 0 0 1 1];
+0016     z=[0 1 0 1 0 1 0 1];
+0017     v=sin(x).*cos(y)+sin(z.^2);
+0018 <span class="keyword">end</span>
+0019 <span class="keyword">if</span> nargin&lt;5, dd=1; <span class="keyword">end</span>
+0020 <span class="keyword">if</span> length(dd)&lt;2, d(2)=dd(1); <span class="keyword">end</span>
+0021 <span class="keyword">if</span> length(dd)&lt;3, d(3)=dd(2); <span class="keyword">end</span>
+0022 <span class="keyword">if</span> nargin&lt;6, val=mean(v); <span class="keyword">end</span>
+0023 <span class="keyword">if</span> nargin&lt;7, sx=999; <span class="keyword">end</span>
+0024 <span class="keyword">if</span> nargin&lt;8, sy=999; <span class="keyword">end</span>
+0025 <span class="keyword">if</span> nargin&lt;9, sz=999; <span class="keyword">end</span>
+0026 <span class="keyword">if</span> min(v)&gt;0, clog=1; <span class="keyword">else</span> clog=0; <span class="keyword">end</span>
+0027 
+0028 <span class="keyword">if</span> clog, v=log10(v);val=log10(val); <span class="keyword">end</span>    
+0029 dx=dd(1);dy=dd(2);dz=dd(3);
+0030 xx=min(x):dx:max(x);yy=min(y):dy:max(y);zz=min(z):dz:max(z);
+0031 <span class="keyword">if</span> sx==999, sx=max(xx); <span class="keyword">end</span>
+0032 <span class="keyword">if</span> sy==999, sy=max(yy); <span class="keyword">end</span>
+0033 <span class="keyword">if</span> sz==999, sz=max(zz); <span class="keyword">end</span>
+0034 [X,Y,Z]=meshgrid(xx,yy,zz);
+0035 fprintf(<span class="string">'Triangulating...'</span>);
+0036 tic;V=griddata3(x,y,z,v,X,Y,Z);toc
+0037 fprintf(<span class="string">'ready\n'</span>);
+0038 sl=slice(X,Y,Z,V,sx,sy,sz);
+0039 <span class="comment">% caxis(log10([90 250]))</span>
+0040 <span class="keyword">for</span> l=1:length(sl), set(sl(l),<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>); <span class="keyword">end</span>
+0041 cmap=colormap;
+0042 cach=caxis;
+0043 <span class="keyword">for</span> l=1:length(val),
+0044       cind=1+round((val(l)-cach(1))/(cach(2)-cach(1))*(length(cmap)-1));
+0045     <span class="keyword">if</span> cind&gt;length(cmap), cind=length(cmap); <span class="keyword">end</span>
+0046     <span class="keyword">if</span> cind&lt;1, cind=1; <span class="keyword">end</span>
+0047     col=cmap(cind,:);
+0048     iso=patch(isosurface(X,Y,Z,V,val(l)),<span class="string">'FaceColor'</span>,col,<span class="string">'EdgeColor'</span>,<span class="string">'black'</span>,<span class="keyword">...</span>
+0049         <span class="string">'SpecularExponent'</span>,5,<span class="string">'SpecularColorReflectance'</span>,0.05);
+0050     isonormals(X,Y,Z,V,iso);
+0051 <span class="keyword">end</span>
+0052 set(gca,<span class="string">'XLim'</span>,[min(xx) max(xx)]);
+0053 set(gca,<span class="string">'YLim'</span>,[min(yy) max(yy)]);
+0054 set(gca,<span class="string">'ZLim'</span>,[min(zz) max(zz)]);
+0055 set(gca,<span class="string">'ZDir'</span>,<span class="string">'reverse'</span>);
+0056 set(gca,<span class="string">'DataAspectRatio'</span>,[1 1 1]);
+0057 xlabel(<span class="string">'x in m'</span>)
+0058 ylabel(<span class="string">'y in m'</span>)
+0059 zlabel(<span class="string">'z in m'</span>)</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

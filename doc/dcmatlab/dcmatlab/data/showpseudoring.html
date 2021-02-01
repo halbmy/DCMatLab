@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showpseudoring</title>
+  <meta name="keywords" content="showpseudoring">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; showpseudoring.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>showpseudoring
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [cmin,cmax]=showpseudoring(N,feld,cmin,cmax) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ce=num2strcell(vec)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [cmin,cmax]=showpseudoring(N,feld,cmin,cmax)</a>
+0002 
+0003 cla reset;
+0004 <span class="keyword">if</span> nargin&lt;2, feld=N.r; <span class="keyword">end</span>
+0005 islog=(min(feld)&gt;0);
+0006 <span class="keyword">if</span> nargin&lt;3, cmin=min(feld); <span class="keyword">end</span>
+0007 <span class="keyword">if</span> nargin&lt;4, cmax=max(feld); <span class="keyword">end</span>
+0008 <span class="keyword">if</span> islog, feld=log10(feld);cmin=log10(cmin);cmax=log10(cmax); <span class="keyword">end</span>
+0009 nel=size(N.elec,1);
+0010 xm=mean(N.elec(:,1));
+0011 ym=mean(N.elec(:,2));
+0012 phi1=atan2(N.elec(1,2)-ym,N.elec(1,1)-xm);
+0013 phi2=atan2(N.elec(2,2)-ym,N.elec(2,1)-xm);
+0014 di=(phi2&gt;phi1)*2-1;
+0015 aa=double(N.a-1);bb=double(N.b-1);mm=double(N.m-1);nn=double(N.n-1);
+0016 <span class="comment">% fi=find(bb&lt;aa);bb(fi)=bb(fi)+nel;</span>
+0017 <span class="comment">% fi=find(mm&lt;bb);mm(fi)=mm(fi)+nel;</span>
+0018 <span class="comment">% fi=find(nn&lt;mm);nn(fi)=nn(fi)+nel;</span>
+0019 <span class="comment">% sep=mm-bb;%fi=find(sep&lt;0);sep(fi)=sep(fi)+nel;</span>
+0020 ab=(aa+bb)/2;ab(abs(aa-bb)&gt;nel/2)=-0.5;
+0021 mn=(mm+nn)/2;mn(abs(mm-nn)&gt;nel/2)=-0.5;
+0022 sep=abs(ab-mn)-1;
+0023 sep=min(sep,nel-2-sep);
+0024 <span class="comment">% mid=mod(bb+sep/2,nel)+1;</span>
+0025 mid=(bb+mm)/2;fi=find(abs(bb-mm)&gt;nel/2);mid(fi)=mid(fi)-nel/2;
+0026 fi=find(mid&lt;0);mid(fi)=mid(fi)+nel;
+0027 fi=find(mm-bb&gt;(nel-2)/2);
+0028 mid(fi)=mod(aa(fi)-sep(fi)/2,nel)+1;
+0029 r=max(sep)-sep+1;
+0030 r=r;
+0031 phi=(mid-1)/nel*2*pi;
+0032 rr=sqrt((N.elec(:,1)-xm).^2+(N.elec(:,2)-ym).^2);
+0033 xx=r.*cos(phi1+phi);
+0034 yy=r.*sin(phi1+phi);
+0035 x=linspace(min(xx),max(xx),100);
+0036 y=linspace(min(yy),max(yy),100);
+0037 [X,Y]=meshgrid(x,y);
+0038 Z=griddata1(xx,yy,feld,X,Y);
+0039 XY=X.^2+Y.^2;Z(find(XY&lt;0.8))=NaN;
+0040 imagesc(x,y,Z);
+0041 cmap=colormap(jet);
+0042 caxis([cmin-(cmax-cmin)/length(cmap)*2 cmax]);
+0043 cmap(1,:)=1;
+0044 colormap(cmap);
+0045 axis equal tight
+0046 set(gca,<span class="string">'YDir'</span>,<span class="string">'normal'</span>,<span class="string">'XAxisLocation'</span>,<span class="string">'top'</span>);
+0047 <span class="comment">% xlabel('relative x');</span>
+0048 <span class="comment">% ylabel('relative y');</span>
+0049 hold on
+0050 plot(xx,yy,<span class="string">'k.'</span>,<span class="string">'MarkerSize'</span>,1);
+0051 rrr=rr*max(r)/max(rr);
+0052 <span class="keyword">if</span> 0,
+0053     phiel=(0:nel-1)'*di/nel*2*pi;
+0054     plot(rrr.*cos(phi1+phiel),rrr.*sin(phi1+phiel),<span class="string">'kx-'</span>);
+0055 <span class="keyword">else</span>
+0056     phiel=atan2(N.elec(:,2)-ym,N.elec(:,1)-xm);
+0057     plot(rrr.*cos(phiel),rrr.*sin(phiel),<span class="string">'kx-'</span>);
+0058 <span class="keyword">end</span>
+0059 plot(rrr(1).*cos(phi1),rrr(1).*sin(phi1),<span class="string">'ro'</span>);
+0060 hold off
+0061 hc=colorbar(<span class="string">'horiz'</span>);
+0062 dar=get(hc,<span class="string">'DataAspectRatio'</span>);
+0063 set(hc,<span class="string">'DataAspectRatio'</span>,dar.*[1 32 1]);
+0064 <span class="comment">% set(hc,'DataAspectRatio',[1 32 1]);</span>
+0065 xl=get(hc,<span class="string">'XLim'</span>);xl(1)=xl(1)+diff(xl)/64;
+0066 set(hc,<span class="string">'XLim'</span>,xl);
+0067 xt=get(hc,<span class="string">'XTick'</span>);xtl=<a href="#_sub1" class="code" title="subfunction ce=num2strcell(vec)">num2strcell</a>(xt);
+0068 <span class="keyword">if</span> islog,
+0069     <span class="keyword">if</span> min(feld(:))&gt;1,
+0070         xtl=<a href="#_sub1" class="code" title="subfunction ce=num2strcell(vec)">num2strcell</a>(round(10.^xt));
+0071     <span class="keyword">else</span>
+0072         xtl=<a href="#_sub1" class="code" title="subfunction ce=num2strcell(vec)">num2strcell</a>(round(10.^xt*10)/10);
+0073     <span class="keyword">end</span>
+0074     set(hc,<span class="string">'XTickMode'</span>,<span class="string">'manual'</span>,<span class="string">'XTickLabel'</span>,xtl);
+0075 <span class="keyword">end</span>
+0076 
+0077     
+0078 <a name="_sub1" href="#_subfunctions" class="code">function ce=num2strcell(vec)</a>
+0079 
+0080 <span class="keyword">for</span> i=1:length(vec),
+0081     ce{i}=num2str(vec(i));
+0082 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

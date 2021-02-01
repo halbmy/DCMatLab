@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of saveres2dinvfile</title>
+  <meta name="keywords" content="saveres2dinvfile">
+  <meta name="description" content="SAVERES2DINVFILE -  SAVE Data in 2D Loke&amp;Barker Format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; saveres2dinvfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>saveres2dinvfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVERES2DINVFILE -  SAVE Data in 2D Loke&amp;Barker Format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function saveres2dinvfile(outfile,N,field,ipfield) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVERES2DINVFILE -  SAVE Data in 2D Loke&amp;Barker Format
+ saveres2dinvfile(outfile,N,N.elec&lt;,field&gt;)
+ saves field, otherwise N.r</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function saveres2dinvfile(outfile,N,field,ipfield)</a>
+0002 
+0003 <span class="comment">% SAVERES2DINVFILE -  SAVE Data in 2D Loke&amp;Barker Format</span>
+0004 <span class="comment">% saveres2dinvfile(outfile,N,N.elec&lt;,field&gt;)</span>
+0005 <span class="comment">% saves field, otherwise N.r</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Too less input arguments!'</span>); <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;3, field=N.r; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;4, ipfield=[]; <span class="keyword">end</span>
+0010 
+0011 isip=isequal(size(field),size(ipfield));
+0012 fid=fopen(outfile,<span class="string">'w'</span>);
+0013 fprintf(fid,<span class="string">'Mixed Array\r\n'</span>);
+0014 del=min(diff(N.elec(:,1)));
+0015 fprintf(fid,<span class="string">'%.1f\r\n'</span>,del);
+0016 fprintf(fid,<span class="string">'11\r\n'</span>);
+0017 fprintf(fid,<span class="string">'0\r\n'</span>);
+0018 fprintf(fid,<span class="string">'Type of measurement (0=app. resistivity,1=resistance)\r\n'</span>);
+0019 fprintf(fid,<span class="string">'0\r\n'</span>);
+0020 data=length(N.r);
+0021 fprintf(fid,<span class="string">'%d\r\n'</span>,data);
+0022 fprintf(fid,<span class="string">'1\r\n'</span>);
+0023 <span class="keyword">if</span> isip, fprintf(fid,<span class="string">'1\r\nPhase angle\r\ndeg\r\n0.0,5.0\r\n'</span>);
+0024 <span class="keyword">else</span> fprintf(fid,<span class="string">'0\r\n'</span>); <span class="keyword">end</span>
+0025 <span class="keyword">for</span> l = 1:data,
+0026     n=2;
+0027     s=sprintf(<span class="string">'%.1f '</span>,N.elec(N.a(l),:));
+0028     <span class="keyword">if</span> N.b(l)&gt;0,
+0029         s=[s sprintf(<span class="string">'%.1f '</span>,N.elec(N.b(l),:))];
+0030         n=n+1;
+0031     <span class="keyword">end</span>        
+0032     s=[s sprintf(<span class="string">'%.1f '</span>,N.elec(N.m(l),:))];
+0033     <span class="keyword">if</span> N.n(l)&gt;0,
+0034         s=[s sprintf(<span class="string">'%.1f '</span>,N.elec(N.n(l),:))];
+0035         n=n+1;
+0036     <span class="keyword">end</span>
+0037     <span class="keyword">if</span> isip, fprintf(fid,<span class="string">'%d %s %.2f %.2f\r\n'</span>,n,s,field(l),ipfield(l));
+0038     <span class="keyword">else</span> fprintf(fid,<span class="string">'%d %s %.2f\r\n'</span>,n,s,field(l)); <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 <span class="keyword">for</span> l=1:5, fprintf(fid,<span class="string">'0\r\n'</span>); <span class="keyword">end</span>
+0041 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of dcintersect</title>
+  <meta name="keywords" content="dcintersect">
+  <meta name="description" content="DCINTERSECT - Find intersecting data from 2 data sets">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; dcintersect.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>dcintersect
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>DCINTERSECT - Find intersecting data from 2 data sets</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Data,fi1,fi2,Data2a]=dcintersect(Data1,Data2,sortdata,delelecs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> DCINTERSECT - Find intersecting data from 2 data sets
+ [Data,index1,index2] = dcintersect(Data1,Data2)
+ with Data.r = Data1.r/Data2.r OR
+ [Data1a,Data2a] = dcintersect(Data1,Data2)
+ [Data1a,index1,index2,Data2a] = dcintersect(Data1,Data2)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="deldeadelecs.html" class="code" title="function NN=deldeadelecs(N)">deldeadelecs</a>	DELDEADELECS - Delete dead electrodes</li><li><a href="extractmeasurement.html" class="code" title="function N=extractmeasurement(N,fi)">extractmeasurement</a>	EXTRACTMEASUREMENT - Extract measurement from data struct</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Data,fi1,fi2,Data2a]=dcintersect(Data1,Data2,sortdata,delelecs)</a>
+0002 
+0003 <span class="comment">% DCINTERSECT - Find intersecting data from 2 data sets</span>
+0004 <span class="comment">% [Data,index1,index2] = dcintersect(Data1,Data2)</span>
+0005 <span class="comment">% with Data.r = Data1.r/Data2.r OR</span>
+0006 <span class="comment">% [Data1a,Data2a] = dcintersect(Data1,Data2)</span>
+0007 <span class="comment">% [Data1a,index1,index2,Data2a] = dcintersect(Data1,Data2)</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;4, delelecs=0; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;3, sortdata=0; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> sortdata,
+0012     abmn1=[min(Data1.a(:),Data1.b(:)) max(Data1.a(:),Data1.b(:)) min(Data1.m(:),Data1.n(:)) min(Data1.m(:),Data1.n(:))];
+0013     abmn2=[min(Data2.a(:),Data2.b(:)) max(Data2.a(:),Data2.b(:)) min(Data2.m(:),Data2.n(:)) min(Data2.m(:),Data2.n(:))];
+0014 <span class="keyword">else</span>
+0015     abmn1=[Data1.a(:) Data1.b(:) Data1.m(:) Data1.n(:)];
+0016     abmn2=[Data2.a(:) Data2.b(:) Data2.m(:) Data2.n(:)];
+0017 <span class="keyword">end</span>
+0018 [abmn,fi1,fi2]=intersect(abmn1,abmn2,<span class="string">'rows'</span>);
+0019 <span class="keyword">if</span> delelecs,
+0020     Data=<a href="deldeadelecs.html" class="code" title="function NN=deldeadelecs(N)">deldeadelecs</a>(<a href="extractmeasurement.html" class="code" title="function N=extractmeasurement(N,fi)">extractmeasurement</a>(Data1,fi1));
+0021 <span class="keyword">else</span>
+0022     Data=<a href="extractmeasurement.html" class="code" title="function N=extractmeasurement(N,fi)">extractmeasurement</a>(Data1,fi1);
+0023 <span class="keyword">end</span>
+0024 <span class="keyword">if</span> (nargout&gt;3)|(nargout==2), <span class="comment">% give back two data</span>
+0025     Data2a=<a href="deldeadelecs.html" class="code" title="function NN=deldeadelecs(N)">deldeadelecs</a>(<a href="extractmeasurement.html" class="code" title="function N=extractmeasurement(N,fi)">extractmeasurement</a>(Data2,fi2));
+0026     <span class="keyword">if</span> nargout==2, fi1=Data2a; <span class="keyword">end</span>
+0027 <span class="keyword">else</span> <span class="comment">% give back the ratio of the</span>
+0028     <span class="keyword">if</span> isfield(Data1,<span class="string">'r'</span>)&amp;&amp;isfield(Data2,<span class="string">'r'</span>),
+0029         Data.r=Data2.r(fi2)./Data1.r(fi1);
+0030     <span class="keyword">elseif</span> isfield(Data1,<span class="string">'rho'</span>)&amp;&amp;isfield(Data2,<span class="string">'rho'</span>),
+0031         Data.r=Data2.rho(fi2)./Data1.rho(fi1);
+0032     <span class="keyword">end</span>
+0033 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

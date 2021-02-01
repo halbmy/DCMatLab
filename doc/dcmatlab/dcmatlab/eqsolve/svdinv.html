@@ -1,0 +1,497 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of svdinv</title>
+  <meta name="keywords" content="svdinv">
+  <meta name="description" content="SVDINV - Tikhonov inversion by means of SVD">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; svdinv.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>svdinv
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SVDINV - Tikhonov inversion by means of SVD</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x,lam]=svdinv(A,b,err) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SVDINV - Tikhonov inversion by means of SVD
+ x = svdinv(A,b,err)
+ if err is not given, a constant</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [reg_min,G,reg_param] = gcv(U,s,b,method)</a></li><li><a href="#_sub2" class="code">function x_lambda = tikhonov(U,s,V,b,lambda)</a></li><li><a href="#_sub3" class="code">function [reg_corner,rho,eta,reg_param] = l_curve(U,sm,b,method,L,V)</a></li><li><a href="#_sub4" class="code">function [reg_c,rho_c,eta_c] = l_corner(rho,eta,reg_param,U,s,b,method,M)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,lam]=svdinv(A,b,err)</a>
+0002 
+0003 <span class="comment">% SVDINV - Tikhonov inversion by means of SVD</span>
+0004 <span class="comment">% x = svdinv(A,b,err)</span>
+0005 <span class="comment">% if err is not given, a constant</span>
+0006 <span class="keyword">if</span> nargin&lt;3, err=1; <span class="keyword">end</span>
+0007 
+0008 D=diag(1./log(1+err));
+0009 b=D*b;
+0010 [U,S,V]=svd(D*A,0);
+0011 s=diag(S);
+0012 clear S
+0013 r=max(find(s&gt;eps));
+0014 <span class="comment">%U=U(:,1:r);V=V(:,1:r);s=s(1:r);</span>
+0015 lam=<a href="#_sub3" class="code" title="subfunction [reg_corner,rho,eta,reg_param] = l_curve(U,sm,b,method,L,V)">l_curve</a>(U,s,b,<span class="string">'Tikh'</span>);
+0016 <span class="keyword">if</span> lam&lt;1e-3, lam=1; <span class="keyword">end</span>
+0017 message(sprintf(<span class="string">'Lambda chosen as %g'</span>,lam));
+0018 x=<a href="#_sub2" class="code" title="subfunction x_lambda = tikhonov(U,s,V,b,lambda)">tikhonov</a>(U,s,V,b,lam);
+0019 
+0020 <a name="_sub1" href="#_subfunctions" class="code">function [reg_min,G,reg_param] = gcv(U,s,b,method)</a>
+0021 
+0022 <span class="comment">% Set defaults.</span>
+0023 <span class="keyword">if</span> (nargin==3), method=<span class="string">'Tikh'</span>; <span class="keyword">end</span>  <span class="comment">% Default method.</span>
+0024 npoints = 100;                      <span class="comment">% Number of points on the curve.</span>
+0025 smin_ratio = 16*eps;                <span class="comment">% Smallest regularization parameter.</span>
+0026 
+0027 <span class="comment">% Initialization.</span>
+0028 [m,n] = size(U); [p,ps] = size(s);
+0029 beta = U'*b; beta2 = b'*b - beta'*beta;
+0030 <span class="keyword">if</span> (ps==2)
+0031   s = s(p:-1:1,1)./s(p:-1:1,2); beta = beta(p:-1:1);
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> (nargout &gt; 0), find_min = 1; <span class="keyword">else</span> find_min = 0; <span class="keyword">end</span>
+0034 
+0035 <span class="keyword">if</span> (method(1:4)==<span class="string">'Tikh'</span> | method(1:4)==<span class="string">'tikh'</span>)
+0036 
+0037   reg_param = zeros(npoints,1); G = reg_param; s2 = s.^2;
+0038   reg_param(npoints) = max([s(p),s(1)*smin_ratio]);
+0039   ratio = (s(1)/reg_param(npoints))^(1/(npoints-1));
+0040   ratio = 1.2*(s(1)/reg_param(npoints))^(1/(npoints-1));
+0041   <span class="keyword">for</span> i=npoints-1:-1:1, reg_param(i) = ratio*reg_param(i+1); <span class="keyword">end</span>
+0042   delta0 = 0;
+0043   <span class="keyword">if</span> (m &gt; n &amp; beta2 &gt; 0), delta0 = beta2; <span class="keyword">end</span>
+0044   <span class="keyword">for</span> i=1:npoints
+0045     f1 = (reg_param(i)^2)./(s2 + reg_param(i)^2);
+0046     fb = f1.*beta(1:p); rho2 = fb'*fb + delta0;
+0047     G(i) = rho2/(m - n + sum(f1))^2;
+0048   <span class="keyword">end</span> 
+0049 <span class="comment">%plot entfernt von micro</span>
+0050 <span class="comment">%  loglog(reg_param,G,'-'), xlabel('lambda'), ylabel('G(lambda)')</span>
+0051 <span class="comment">%  title('GCV function')</span>
+0052   <span class="keyword">if</span> (find_min)
+0053     [minG,minGi] = min(G); reg_min = reg_param(minGi);
+0054 <span class="comment">%    HoldState = ishold; hold on;</span>
+0055 <span class="comment">%    loglog(reg_min,minG,'*',[reg_min,reg_min],[minG/1000,minG],':')</span>
+0056 <span class="comment">%    title(['GCV function, minimum at ',num2str(reg_min)])</span>
+0057 <span class="comment">%    if (~HoldState), hold off; end</span>
+0058   <span class="keyword">end</span>
+0059 
+0060 <span class="keyword">elseif</span> (method(1:4)==<span class="string">'tsvd'</span> | method(1:4)==<span class="string">'tgsv'</span>)
+0061 
+0062   rho2(p-1) = beta(p)^2;
+0063   <span class="keyword">if</span> (m &gt; n &amp; beta2 &gt; 0), rho2(p-1) = rho2(p-1) + beta2; <span class="keyword">end</span>
+0064   <span class="keyword">for</span> k=p-2:-1:1, rho2(k) = rho2(k+1) + beta(k+1)^2; <span class="keyword">end</span>
+0065   <span class="keyword">for</span> k=1:p-1
+0066     G(k) = rho2(k)/(m - k + (n - p))^2;
+0067   <span class="keyword">end</span>
+0068   reg_param = [1:p-1]';
+0069   semilogy(reg_param,G,<span class="string">'o'</span>), xlabel(<span class="string">'k'</span>), ylabel(<span class="string">'G(k)'</span>)
+0070   title(<span class="string">'GCV function'</span>)
+0071   <span class="keyword">if</span> (find_min)
+0072     [minG,reg_min] = min(G);
+0073     HoldState = ishold; hold on;
+0074     semilogy(reg_min,minG,<span class="string">'*'</span>,[reg_min,reg_min],[minG/1000,minG],<span class="string">'--'</span>)
+0075     title([<span class="string">'GCV function, minimum at '</span>,num2str(reg_min)])
+0076     <span class="keyword">if</span> (~HoldState), hold off; <span class="keyword">end</span>
+0077   <span class="keyword">end</span>
+0078 
+0079 <span class="keyword">elseif</span> (method(1:4)==<span class="string">'dsvd'</span> | method(1:4)==<span class="string">'dgsv'</span>)
+0080 
+0081   reg_param = zeros(npoints,1); G = reg_param;
+0082   reg_param(npoints) = max([s(p),s(1)*smin_ratio]);
+0083   ratio = (s(1)/reg_param(npoints))^(1/(npoints-1));
+0084   <span class="keyword">for</span> i=npoints-1:-1:1, reg_param(i) = ratio*reg_param(i+1); <span class="keyword">end</span>
+0085   delta0 = 0;
+0086   <span class="keyword">if</span> (m &gt; n &amp; beta2 &gt; 0), delta0 = beta2; <span class="keyword">end</span>
+0087   <span class="keyword">for</span> i=1:npoints
+0088     f1 = reg_param(i)./(s + reg_param(i));
+0089     fb = f1.*beta(1:p); rho2 = fb'*fb + delta0;
+0090     G(i) = rho2/(m - n + sum(f1))^2;
+0091   <span class="keyword">end</span> 
+0092   loglog(reg_param,G,<span class="string">':'</span>), xlabel(<span class="string">'lambda'</span>), ylabel(<span class="string">'G(lambda)'</span>)
+0093   title(<span class="string">'GCV function'</span>)
+0094   <span class="keyword">if</span> (find_min)
+0095     [minG,minGi] = min(G); reg_min = reg_param(minGi);
+0096     HoldState = ishold; hold on;
+0097     loglog(reg_min,minG,<span class="string">'*'</span>,[reg_min,reg_min],[minG/1000,minG],<span class="string">'--'</span>)
+0098     title([<span class="string">'GCV function, minimum at '</span>,num2str(reg_min)])
+0099     <span class="keyword">if</span> (~HoldState), hold off; <span class="keyword">end</span>
+0100   <span class="keyword">end</span>
+0101 
+0102 <span class="keyword">elseif</span> (method(1:4)==<span class="string">'mtsv'</span>)
+0103 
+0104   error(<span class="string">'The MTSVD method is not supported'</span>)
+0105 
+0106 <span class="keyword">else</span>, error(<span class="string">'Illegal method'</span>), <span class="keyword">end</span>
+0107 
+0108 
+0109 <a name="_sub2" href="#_subfunctions" class="code">function x_lambda = tikhonov(U,s,V,b,lambda)</a>
+0110 
+0111 <span class="comment">% Initialization.</span>
+0112 <span class="keyword">if</span> (min(lambda)&lt;0)
+0113   error(<span class="string">'Illegal regularization parameter lambda'</span>)
+0114 <span class="keyword">end</span>
+0115 [n,pv] = size(V); [p,ps] = size(s);
+0116 eta = s(:,1).*(U(:,1:p)'*b);
+0117 ll = length(lambda); x_lambda = zeros(n,ll);
+0118 
+0119 <span class="comment">% Treat each lambda separately.</span>
+0120 <span class="keyword">if</span> (ps==1)
+0121   <span class="keyword">for</span> i=1:ll
+0122     x_lambda(:,i) = V(:,1:p)*(eta./(s.^2 + lambda(i)^2));
+0123   <span class="keyword">end</span>
+0124 <span class="keyword">else</span> 
+0125   <span class="keyword">if</span> p==n,         <span class="comment">% from S. Pohl</span>
+0126     x0 = 0;
+0127   <span class="keyword">else</span>
+0128     x0 = V(:,p+1:n)*U(:,p+1:n)'*b; 
+0129   <span class="keyword">end</span>;
+0130   <span class="keyword">for</span> i=1:ll
+0131     x_lambda(:,i) = V(:,1:p)*(eta./(s(:,1).^2 + lambda(i)^2*s(:,2).^2)) + x0;
+0132   <span class="keyword">end</span>
+0133 <span class="keyword">end</span>
+0134 
+0135 <a name="_sub3" href="#_subfunctions" class="code">function [reg_corner,rho,eta,reg_param] = l_curve(U,sm,b,method,L,V)</a>
+0136 
+0137 <span class="comment">% Set defaults.</span>
+0138 <span class="keyword">if</span> (nargin==3), method=<span class="string">'Tikh'</span>; <span class="keyword">end</span>  <span class="comment">% Tikhonov reg. is default.</span>
+0139 npoints = 100;  <span class="comment">% Number of points on the L-curve for Tikh and dsvd.</span>
+0140 smin_ratio = 16*eps;  <span class="comment">% Smallest regularization parameter.</span>
+0141 
+0142 <span class="comment">% Initialization.</span>
+0143 [m,n] = size(U); [p,ps] = size(sm);
+0144 <span class="keyword">if</span> (nargout &gt; 0), locate = 1; <span class="keyword">else</span> locate = 0; <span class="keyword">end</span>
+0145 beta = U'*b; beta2 = b'*b - beta'*beta;
+0146 <span class="keyword">if</span> (ps==1)
+0147   s = sm; beta = beta(1:p);
+0148 <span class="keyword">else</span>
+0149   s = sm(p:-1:1,1)./sm(p:-1:1,2); beta = beta(p:-1:1);
+0150 <span class="keyword">end</span>
+0151 xi = beta(1:p)./s;
+0152 
+0153 <span class="keyword">if</span> (method(1:4)==<span class="string">'Tikh'</span> | method(1:4)==<span class="string">'tikh'</span>)
+0154 
+0155   eta = zeros(npoints,1); rho = eta; reg_param = eta; s2 = s.^2;
+0156   reg_param(npoints) = max([s(p),s(1)*smin_ratio]);
+0157   ratio = (s(1)/reg_param(npoints))^(1/(npoints-1));
+0158   ratio = (s(1)/reg_param(npoints))^(1/(npoints-1));
+0159   <span class="keyword">for</span> i=npoints-1:-1:1, reg_param(i) = ratio*reg_param(i+1); <span class="keyword">end</span>
+0160   <span class="keyword">for</span> i=1:npoints
+0161     f = s2./(s2 + reg_param(i)^2);
+0162     eta(i) = norm(f.*xi);
+0163     rho(i) = norm((1-f).*beta(1:p));
+0164   <span class="keyword">end</span>
+0165   <span class="keyword">if</span> (m &gt; n &amp; beta2 &gt; 0), rho = sqrt(rho.^2 + beta2); <span class="keyword">end</span>
+0166   marker = <span class="string">'-'</span>; pos = .8; txt = <span class="string">'Tikh.'</span>;
+0167 
+0168 <span class="keyword">elseif</span> (method(1:4)==<span class="string">'tsvd'</span> | method(1:4)==<span class="string">'tgsv'</span>)
+0169 
+0170   eta = zeros(p,1); rho = eta;
+0171   eta(1) = xi(1)^2;
+0172   <span class="keyword">for</span> k=2:p, eta(k) = eta(k-1) + xi(k)^2; <span class="keyword">end</span>
+0173   eta = sqrt(eta);
+0174   <span class="keyword">if</span> (m &gt; n)
+0175     <span class="keyword">if</span> (beta2 &gt; 0), rho(p) = beta2; <span class="keyword">else</span> rho(p) = eps^2; <span class="keyword">end</span>
+0176   <span class="keyword">else</span>
+0177     rho(p) = eps^2;
+0178   <span class="keyword">end</span>
+0179   <span class="keyword">for</span> k=p-1:-1:1, rho(k) = rho(k+1) + beta(k+1)^2; <span class="keyword">end</span>
+0180   rho = sqrt(rho);
+0181   reg_param = [1:p]'; marker = <span class="string">'o'</span>; pos = .75;
+0182   <span class="keyword">if</span> (ps==1)
+0183     U = U(:,1:p); txt = <span class="string">'TSVD'</span>;
+0184   <span class="keyword">else</span>
+0185     U = U(:,1:p); txt = <span class="string">'TGSVD'</span>;
+0186   <span class="keyword">end</span>
+0187 
+0188 <span class="keyword">elseif</span> (method(1:4)==<span class="string">'dsvd'</span> | method(1:4)==<span class="string">'dgsv'</span>)
+0189 
+0190   eta = zeros(npoints,1); rho = eta; reg_param = eta;
+0191   reg_param(npoints) = max([s(p),s(1)*smin_ratio]);
+0192   ratio = (s(1)/reg_param(npoints))^(1/(npoints-1));
+0193   <span class="keyword">for</span> i=npoints-1:-1:1, reg_param(i) = ratio*reg_param(i+1); <span class="keyword">end</span>
+0194   <span class="keyword">for</span> i=1:npoints
+0195     f = s./(s + reg_param(i));
+0196     eta(i) = norm(f.*xi);
+0197     rho(i) = norm((1-f).*beta(1:p));
+0198   <span class="keyword">end</span>
+0199   <span class="keyword">if</span> (m &gt; n &amp; beta2 &gt; 0), rho = sqrt(rho.^2 + beta2); <span class="keyword">end</span>
+0200   marker = <span class="string">':'</span>; pos = .85;
+0201   <span class="keyword">if</span> (ps==1), txt = <span class="string">'DSVD'</span>; <span class="keyword">else</span> txt = <span class="string">'DGSVD'</span>; <span class="keyword">end</span>
+0202 
+0203 <span class="keyword">elseif</span> (method(1:4)==<span class="string">'mtsv'</span>)
+0204 
+0205   <span class="keyword">if</span> (nargin~=6)
+0206     error(<span class="string">'The matrices L and V must also be specified'</span>)
+0207   <span class="keyword">end</span>
+0208   [p,n] = size(L); rho = zeros(p,1); eta = rho;
+0209   [Q,R] = qr(L*V(:,n:-1:n-p),0);
+0210   <span class="keyword">for</span> i=1:p
+0211     k = n-p+i;
+0212     Lxk = L*V(:,1:k)*xi(1:k);
+0213     zk = R(1:n-k,1:n-k)\(Q(:,1:n-k)'*Lxk); zk = zk(n-k:-1:1);
+0214     eta(i) = norm(Q(:,n-k+1:p)'*Lxk);
+0215     <span class="keyword">if</span> (i &lt; p)
+0216       rho(i) = norm(beta(k+1:n) + s(k+1:n).*zk);
+0217     <span class="keyword">else</span>
+0218       rho(i) = eps;
+0219     <span class="keyword">end</span>
+0220   <span class="keyword">end</span>
+0221   <span class="keyword">if</span> (m &gt; n &amp; beta2 &gt; 0), rho = sqrt(rho.^2 + beta2); <span class="keyword">end</span>
+0222   reg_param = [n-p+1:n]'; txt = <span class="string">'MTSVD'</span>;
+0223   U = U(:,reg_param); sm = sm(reg_param);
+0224   marker = <span class="string">'x'</span>; pos = .7; ps = 2;  <span class="comment">% General form regularization.</span>
+0225  
+0226 <span class="keyword">else</span>, error(<span class="string">'Illegal method'</span>), <span class="keyword">end</span>
+0227 
+0228 <span class="comment">% Locate the &quot;corner&quot; of the L-curve, if required.  If the Spline</span>
+0229 <span class="comment">% Toolbox is not available, return NaN for reg_corner.</span>
+0230 <span class="keyword">if</span> (locate)
+0231   SkipCorner = ( (method(1:4)==<span class="string">'tsvd'</span> | method(1:4)==<span class="string">'tgsv'</span> | <span class="keyword">...</span>
+0232                   method(1:4)==<span class="string">'mtsv'</span>) &amp; exist(<span class="string">'spdemos'</span>)~=2 );
+0233   <span class="keyword">if</span> (SkipCorner)
+0234     reg_corner = NaN;
+0235   <span class="keyword">else</span>
+0236     [reg_corner,rho_c,eta_c] = <a href="#_sub4" class="code" title="subfunction [reg_c,rho_c,eta_c] = l_corner(rho,eta,reg_param,U,s,b,method,M)">l_corner</a>(rho,eta,reg_param,U,sm,b,method);
+0237   <span class="keyword">end</span>
+0238 <span class="keyword">end</span>
+0239 
+0240 <a name="_sub4" href="#_subfunctions" class="code">function [reg_c,rho_c,eta_c] = l_corner(rho,eta,reg_param,U,s,b,method,M)</a>
+0241 
+0242 <span class="comment">% Set default regularization method.</span>
+0243 <span class="keyword">if</span> (nargin &lt;= 3)
+0244   method = <span class="string">'none'</span>;
+0245   <span class="keyword">if</span> (nargin==2), reg_param = [1:length(rho)]'; <span class="keyword">end</span>
+0246 <span class="keyword">else</span>
+0247   <span class="keyword">if</span> (nargin==6), method = <span class="string">'Tikh'</span>; <span class="keyword">end</span>
+0248 <span class="keyword">end</span>
+0249 
+0250 <span class="comment">% Set threshold for skipping very small singular values in the</span>
+0251 <span class="comment">% L-curve analysis.</span>
+0252 s_thr = eps;  <span class="comment">% Neglect singular values less than s_thr.</span>
+0253 
+0254 <span class="comment">% Set default parameters for treatment of discrete L-curve.</span>
+0255 deg   = 2;  <span class="comment">% Degree of local smooting polynomial.</span>
+0256 q     = 2;  <span class="comment">% Half-width of local smoothing interval.</span>
+0257 order = 4;  <span class="comment">% Order of fitting 2-D spline curve.</span>
+0258 
+0259 <span class="comment">% Initialization.</span>
+0260 <span class="keyword">if</span> (length(rho) &lt; order)
+0261   error(<span class="string">'Too few data points for L-curve analysis'</span>)
+0262 <span class="keyword">end</span>
+0263 <span class="keyword">if</span> (nargin &gt; 3)
+0264   [p,ps] = size(s); [m,n] = size(U);
+0265   <span class="keyword">if</span> (ps==2), s = s(p:-1:1,1)./s(p:-1:1,2); U = U(:,p:-1:1); <span class="keyword">end</span>
+0266   beta = U'*b; xi = beta./s;
+0267 <span class="keyword">end</span>
+0268 
+0269 <span class="comment">% Restrict the analysis of the L-curve according to M (if specified)</span>
+0270 <span class="comment">% and s_thr.</span>
+0271 <span class="keyword">if</span> (nargin==8)
+0272   index = find(eta &lt; M);
+0273   rho = rho(index); eta = eta(index); reg_param = reg_param(index);
+0274   s = s(index); beta = beta(index); xi = xi(index);
+0275 <span class="keyword">end</span>
+0276 
+0277 <span class="keyword">if</span> (method(1:4)==<span class="string">'Tikh'</span> | method(1:4)==<span class="string">'tikh'</span>)
+0278 
+0279   <span class="comment">% The L-curve is differentiable; computation of curvature in</span>
+0280   <span class="comment">% log-log scale is easy.</span>
+0281 
+0282   <span class="comment">% Initialization.</span>
+0283   [reg_m,reg_n] = size(reg_param);
+0284   phi = zeros(reg_m,reg_n); dphi = phi; psi = phi; dpsi = phi;
+0285   s2 = s.^2; beta2 = beta.^2; xi2 = xi.^2;
+0286 
+0287   <span class="comment">% Compute some intermediate quantities.</span>
+0288   <span class="keyword">for</span> i = 1:length(reg_param)
+0289     f  = s2./(s2 + reg_param(i)^2); cf = 1 - f;
+0290     f1 = -2*f.*cf/reg_param(i);
+0291     f2 = -f1.*(3-4*f)/reg_param(i);
+0292     phi(i)  = sum(f.*f1.*xi2);
+0293     psi(i)  = sum(cf.*f1.*beta2);
+0294     dphi(i) = sum((f1.^2 + f.*f2).*xi2);
+0295     dpsi(i) = sum((-f1.^2 + cf.*f2).*beta2);
+0296   <span class="keyword">end</span>
+0297 
+0298   <span class="comment">% Now compute the first and second derivatives of eta and rho</span>
+0299   <span class="comment">% with respect to lambda;</span>
+0300   deta  =  phi./eta;
+0301   drho  = -psi./rho;
+0302   ddeta =  dphi./eta - deta.*(deta./eta);
+0303   ddrho = -dpsi./rho - drho.*(drho./rho);
+0304 
+0305   <span class="comment">% Convert to derivatives of log(eta) and log(rho).</span>
+0306   dlogeta  = deta./eta;
+0307   dlogrho  = drho./rho;
+0308   ddlogeta = ddeta./eta - (dlogeta).^2;
+0309   ddlogrho = ddrho./rho - (dlogrho).^2;
+0310 
+0311   <span class="comment">% Let g = curvature.</span>
+0312   g = (dlogrho.*ddlogeta - ddlogrho.*dlogeta)./<span class="keyword">...</span>
+0313       (dlogrho.^2 + dlogeta.^2).^(1.5);
+0314 
+0315   <span class="comment">% Locate the corner.  If the curvature is negative everywhere,</span>
+0316   <span class="comment">% then define the leftmost point of the L-curve as the corner.</span>
+0317   [gmax,gi] = max(g);
+0318   <span class="keyword">if</span> (gmax &lt; 0)
+0319     lr = length(rho);
+0320     reg_c = reg_param(lr); rho_c = rho(lr); eta_c = eta(lr);
+0321   <span class="keyword">else</span>
+0322     rho_c = rho(gi); eta_c = eta(gi); reg_c = reg_param(gi);
+0323   <span class="keyword">end</span>
+0324 
+0325 <span class="keyword">elseif</span> (method(1:4)==<span class="string">'tsvd'</span> | method(1:4)==<span class="string">'tgsv'</span> | <span class="keyword">...</span>
+0326         method(1:4)==<span class="string">'mtsv'</span> | method(1:4)==<span class="string">'none'</span>)
+0327 
+0328   <span class="comment">% The L-curve is discrete and may include unwanted fine-grained</span>
+0329   <span class="comment">% corners.  Use local smoothing, followed by fitting a 2-D spline</span>
+0330   <span class="comment">% curve to the smoothed discrete L-curve.</span>
+0331 
+0332   <span class="comment">% Check if the Spline Toolbox exists, otherwise return.</span>
+0333   <span class="keyword">if</span> (exist(<span class="string">'spdemos'</span>)~=2)
+0334     error(<span class="string">'The Spline Toolbox in not available so l_corner cannot be used'</span>)
+0335   <span class="keyword">end</span>
+0336 
+0337   <span class="comment">% For TSVD, TGSVD, and MTSVD, restrict the analysis of the L-curve</span>
+0338   <span class="comment">% according to s_thr.</span>
+0339   <span class="keyword">if</span> (nargin &gt; 3)
+0340     index = find(s &gt; s_thr);
+0341     rho = rho(index); eta = eta(index); reg_param = reg_param(index);
+0342     s = s(index); beta = beta(index); xi = xi(index);
+0343   <span class="keyword">end</span>
+0344 
+0345   <span class="comment">% Convert to logarithms.</span>
+0346   lr = length(rho);
+0347   lrho = log(rho); leta = log(eta); slrho = lrho; sleta = leta;
+0348 
+0349   <span class="comment">% For all interior points k = q+1:length(rho)-q-1 on the discrete</span>
+0350   <span class="comment">% L-curve, perform local smoothing with a polynomial of degree deg</span>
+0351   <span class="comment">% to the points k-q:k+q.</span>
+0352   v = [-q:q]'; A = zeros(2*q+1,deg+1); A(:,1) = ones(length(v),1);
+0353   <span class="keyword">for</span> j = 2:deg+1, A(:,j) = A(:,j-1).*v; <span class="keyword">end</span>
+0354   <span class="keyword">for</span> k = q+1:lr-q-1
+0355     cr = A\lrho(k+v); slrho(k) = cr(1);
+0356     ce = A\leta(k+v); sleta(k) = ce(1);
+0357   <span class="keyword">end</span>
+0358 
+0359   <span class="comment">% Fit a 2-D spline curve to the smoothed discrete L-curve.</span>
+0360   sp = spmak([1:lr+order],[slrho';sleta']);
+0361   pp = ppcut(sp2pp(sp),[4,lr+1]);
+0362 
+0363   <span class="comment">% Extract abscissa and ordinate splines and differentiate them.</span>
+0364   P     = spleval(pp);  dpp   = fnder(pp);
+0365   D     = spleval(dpp); ddpp  = fnder(pp,2);
+0366   DD    = spleval(ddpp);
+0367   ppx   = P(1,:);       ppy   = P(2,:);
+0368   dppx  = D(1,:);       dppy  = D(2,:);
+0369   ddppx = DD(1,:);      ddppy = DD(2,:);
+0370 
+0371   <span class="comment">% Compute the corner of the spline curve via max. curvature.</span>
+0372   <span class="comment">% Define curvature = 0 where both dppx and dppy are zero.</span>
+0373   k1    = dppx.*ddppy - ddppx.*dppy;
+0374   k2    = (dppx.^2 + dppy.^2).^(1.5);
+0375   I_nz  = find(k2 ~= 0);
+0376   kappa = zeros(1,length(dppx));
+0377   kappa(I_nz) = -k1(I_nz)./k2(I_nz);
+0378   [kmax,ikmax] = max(kappa);
+0379   x_corner = ppx(ikmax); y_corner = ppy(ikmax);
+0380 
+0381   <span class="comment">% Locate the point on the discrete L-curve which is closest to the</span>
+0382   <span class="comment">% corner of the spline curve.  Prefer a point below and to the</span>
+0383   <span class="comment">% left of the corner.  If the curvature is negative everywhere,</span>
+0384   <span class="comment">% then define the leftmost point of the L-curve as the corner.</span>
+0385   <span class="keyword">if</span> (kmax &lt; 0)
+0386     reg_c = reg_param(lr); rho_c = rho(lr); eta_c = eta(lr);
+0387   <span class="keyword">else</span>
+0388     index = find(lrho &lt; x_corner &amp; leta &lt; y_corner);
+0389     <span class="keyword">if</span> (length(index) &gt; 0)
+0390       [dummy,rpi] = min((lrho(index)-x_corner).^2 + (leta(index)-y_corner).^2);
+0391       rpi = index(rpi);
+0392     <span class="keyword">else</span>
+0393       [dummy,rpi] = min((lrho-x_corner).^2 + (leta-y_corner).^2);
+0394     <span class="keyword">end</span>
+0395     reg_c = reg_param(rpi); rho_c = rho(rpi); eta_c = eta(rpi);
+0396   <span class="keyword">end</span>
+0397 
+0398 <span class="keyword">elseif</span> (method(1:4)==<span class="string">'dsvd'</span> | method(1:4)==<span class="string">'dgsv'</span>)
+0399 
+0400   <span class="comment">% The L-curve is differentiable; computation of curvature in</span>
+0401   <span class="comment">% log-log scale is easy.</span>
+0402 
+0403   <span class="comment">% Initialization.</span>
+0404   [reg_m,reg_n] = size(reg_param);
+0405   phi = zeros(reg_m,reg_n); dphi = phi; psi = phi; dpsi = phi;
+0406   beta2 = beta.^2; xi2 = xi.^2;
+0407 
+0408   <span class="comment">% Compute some intermediate quantities.</span>
+0409   <span class="keyword">for</span> i = 1:length(reg_param)
+0410     f  = s./(s + reg_param(i)); cf = 1 - f;
+0411     f1 = -f.*cf/reg_param(i);
+0412     f2 = -2*f1.*cf/reg_param(i);
+0413     phi(i)  = sum(f.*f1.*xi2);
+0414     psi(i)  = sum(cf.*f1.*beta2);
+0415     dphi(i) = sum((f1.^2 + f.*f2).*xi2);
+0416     dpsi(i) = sum((-f1.^2 + cf.*f2).*beta2);
+0417   <span class="keyword">end</span>
+0418 
+0419   <span class="comment">% Now compute the first and second derivatives of eta and rho</span>
+0420   <span class="comment">% with respect to lambda;</span>
+0421   deta  =  phi./eta;
+0422   drho  = -psi./rho;
+0423   ddeta =  dphi./eta - deta.*(deta./eta);
+0424   ddrho = -dpsi./rho - drho.*(drho./rho);
+0425 
+0426   <span class="comment">% Convert to derivatives of log(eta) and log(rho).</span>
+0427   dlogeta  = deta./eta;
+0428   dlogrho  = drho./rho;
+0429   ddlogeta = ddeta./eta - (dlogeta).^2;
+0430   ddlogrho = ddrho./rho - (dlogrho).^2;
+0431 
+0432   <span class="comment">% Let g = curvature.</span>
+0433   g = (dlogrho.*ddlogeta - ddlogrho.*dlogeta)./<span class="keyword">...</span>
+0434       (dlogrho.^2 + dlogeta.^2).^(1.5);
+0435 
+0436   <span class="comment">% Locate the corner.  If the curvature is negative everywhere,</span>
+0437   <span class="comment">% then define the leftmost point of the L-curve as the corner.</span>
+0438   [gmax,gi] = max(g);
+0439   <span class="keyword">if</span> (gmax &lt; 0)
+0440     lr = length(rho);
+0441     reg_c = reg_param(lr); rho_c = rho(lr); eta_c = eta(lr);
+0442   <span class="keyword">else</span>
+0443     rho_c = rho(gi); eta_c = eta(gi); reg_c = reg_param(gi);
+0444   <span class="keyword">end</span>
+0445 
+0446 <span class="keyword">else</span>, error(<span class="string">'Illegal method'</span>), <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

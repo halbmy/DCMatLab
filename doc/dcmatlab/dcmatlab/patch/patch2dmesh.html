@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of patch2dmesh</title>
+  <meta name="keywords" content="patch2dmesh">
+  <meta name="description" content="PATCH2DMESH - Patch a 2D mesh">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; patch2dmesh.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>patch2dmesh
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PATCH2DMESH - Patch a 2D mesh</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function patch2dmesh(Mesh,field,alphavalue) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PATCH2DMESH - Patch a 2D mesh
+ patch2dmesh(Mesh)
+ patch2dmesh(Mesh,field)
+ patch2dmesh(Mesh,field,alphavalues)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="tripatch.html" class="code" title="">tripatch</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function patch2dmesh(Mesh,field,alphavalue)</a>
+0002 
+0003 <span class="comment">% PATCH2DMESH - Patch a 2D mesh</span>
+0004 <span class="comment">% patch2dmesh(Mesh)</span>
+0005 <span class="comment">% patch2dmesh(Mesh,field)</span>
+0006 <span class="comment">% patch2dmesh(Mesh,field,alphavalues)</span>
+0007 
+0008 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'dim'</span>)||(Mesh.dim~=2)||~isfield(Mesh,<span class="string">'node'</span>)||~isfield(Mesh,<span class="string">'cell'</span>),
+0009     error(<span class="string">'Mesh is not a valid 2d mesh!'</span>); <span class="keyword">end</span>
+0010 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'nnodes'</span>), Mesh.nnodes=size(Mesh.node,1); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'ncells'</span>), Mesh.ncells=size(Mesh.cell,1); <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;2,
+0013     <span class="keyword">if</span> isfield(Mesh,<span class="string">'ZZcellattr'</span>), field=Mesh.cellattr; <span class="keyword">else</span>
+0014         field=(1:Mesh.ncells)'; <span class="keyword">end</span>
+0015 <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;3, alphavalue=ones(size(field)); <span class="keyword">end</span>
+0017 <span class="keyword">if</span> length(field)&gt;Mesh.ncells, error(<span class="string">'Field too long!'</span>); <span class="keyword">end</span>
+0018 islog=0;
+0019 <span class="keyword">if</span> min(field)&gt;0, field=log10(field);islog=1; <span class="keyword">end</span>
+0020 cmin=min(field);cmax=max(field);
+0021 perc=5;
+0022 [N,X]=hist(field,100);
+0023 C=cumsum(N)/sum(N);
+0024 <span class="comment">% cmin=X(min(find(C&gt;perc/100)));</span>
+0025 <span class="comment">% cmax=X(max(find(C&lt;1-perc/100)));</span>
+0026 
+0027 cmap=colormap;emap=cmap;lecm=length(cmap)-1;
+0028 <span class="keyword">for</span> i=1:length(field),
+0029     cind=round(1+(field(i)-cmin)/(cmax-cmin)*lecm);
+0030     <span class="keyword">if</span> cind&lt;1, cind=1; <span class="keyword">end</span>
+0031     <span class="keyword">if</span> cind&gt;lecm, cind=lecm; <span class="keyword">end</span>
+0032     col=cmap(cind,:);
+0033     col=col*alphavalue(i)+1-alphavalue(i);
+0034     nums=Mesh.cell(i,:);
+0035     patch(Mesh.node(nums,1),Mesh.node(nums,2),col,<span class="string">'EdgeColor'</span>,<span class="keyword">...</span>
+0036     emap(cind,:),<span class="string">'LineStyle'</span>,<span class="string">'none'</span>);
+0037         <span class="comment">%[0 0 0]);</span>
+0038 <span class="keyword">end</span>
+0039 axis equal tight
+0040 xtl=cellstr(get(gca,<span class="string">'XTickLabel'</span>));xtl{end-1}=<span class="string">'x/m'</span>;
+0041 ytl=cellstr(get(gca,<span class="string">'YTickLabel'</span>));ytl{end-1}=<span class="string">'z/m'</span>;
+0042 set(gca,<span class="string">'XTickLabel'</span>,xtl,<span class="string">'YTickLabel'</span>,ytl);
+0043 
+0044 cb=colorbar(<span class="string">'horiz'</span>);
+0045 <span class="comment">% xt=get(cb,'XTick');</span>
+0046 xt=linspace(cmin,cmax,10);
+0047 <span class="keyword">if</span> islog, xt=10.^xt; <span class="keyword">end</span>
+0048 fi=find(abs(xt)&gt;1);xt(fi)=round(xt(fi)*10)/10;
+0049 fi=find(abs(xt)&gt;10);xt(fi)=round(xt(fi));
+0050 set(cb,<span class="string">'XTick'</span>,linspace(0,1,10),<span class="string">'XTickLabel'</span>,num2strcell(xt));</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

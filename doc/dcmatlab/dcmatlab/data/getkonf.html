@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getkonf</title>
+  <meta name="keywords" content="getkonf">
+  <meta name="description" content="GETKONF - Get configuration factor (calls getkonf2d/3d)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; getkonf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getkonf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GETKONF - Get configuration factor (calls getkonf2d/3d)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function konf=getkonf(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GETKONF - Get configuration factor (calls getkonf2d/3d)
+ N.k = getkonf(N); % where N is data struct</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>	GETKONF - Get Configuration factor from electrode positions</li><li><a href="getkonf3d.html" class="code" title="function konf=getkonf3d(N,negz)">getkonf3d</a>	GETKONF - Get Configuration factor from electrode positions</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="abmn2n.html" class="code" title="function N=abmn2n(AA,BB,MM,NN)">abmn2n</a>	ABMN2N - Converts position arrays for A,B,M and N into data struct</li><li><a href="createsxhdata.html" class="code" title="function N=createsxhdata(nsel,x0,dx,holes,nbel,rdip,tdip)">createsxhdata</a>	CREATESXHDATA - Create Surface-cross-borehole dataset</li><li><a href="electrodeerr2d.html" class="code" title="function [maxerr,A,E]=electrodeerr2d(N,dx)">electrodeerr2d</a>	ELECTRODEERR2D - Error caused by electrode displacement (2d)</li><li><a href="electrodeerr3d.html" class="code" title="function [maxerr,E,A]=electrodeerr3d(N,dx,dy)">electrodeerr3d</a>	ELECTRODEERR3D - Error caused by electrode displacement (3d)</li><li><a href="getkellipse.html" class="code" title="function kl = getkellipse2d(N,l,d)">getkellipse</a>	GETKELLIPSE - Get geometric factor for half-ellipsoidal electrodes</li><li><a href="read2drawfile.html" class="code" title="function N = read2drawfile(datafile,fmt)">read2drawfile</a>	READ2DRAWFILE - read 2d raw file</li><li><a href="read3draw.html" class="code" title="function N = read3draw(datafile)">read3draw</a>	READ2DLB - Read 3D Raw Data File</li><li><a href="read3drawfile.html" class="code" title="function N = read3drawfile(datafile)">read3drawfile</a>	READ3DRAWFILE - Read 3D Raw Data File</li><li><a href="read4ch.html" class="code" title="function N=read4ch(datfile)">read4ch</a>	datfile='ddf3d4.org';</li><li><a href="readampfile.html" class="code" title="function N=readampfile(filename)">readampfile</a>	READAMPFILE - Read ABEM multi purpose file (*.amp)</li><li><a href="readgemfile.html" class="code" title="function N=readgemfile(gemfile)">readgemfile</a>	READGEMFILE - read sensinv3d file</li><li><a href="readinv3dfile.html" class="code" title="function N=readinv3dfile(fname)">readinv3dfile</a>	READINV3DFILE - Read data file in inv3d format</li><li><a href="readlippmonfile.html" class="code" title="function [Data,zeit]=readlippmonfile(filename)">readlippmonfile</a>	filename='100210_1305.txt';</li><li><a href="readmcffile.html" class="code" title="function N=readmcffile(mcffile,txtfile,nx,ny,dx,dy,x0,y0,ismeand)">readmcffile</a>	mcffile='d:\Guenther.T\3d\jan\d16reip.mcf';</li><li><a href="readres2dinvfile.html" class="code" title="function N = readres2dinvfile(datafile)">readres2dinvfile</a>	READRES2DINVFILE - Read 2D Loke&Barker File</li><li><a href="readres2dinvfile1.html" class="code" title="function [N,XX,EL,SP] = readres2dinvfile(datafile)">readres2dinvfile1</a>	READRES2DINVFILE - Read 2D Loke&Barker File</li><li><a href="readres3dinvfile.html" class="code" title="function N = readres3dinvfile(datafile,raw)">readres3dinvfile</a>	READRES3DINVFILE - Read 3D Loke&Barker File</li><li><a href="reads2dfile.html" class="code" title="function N=readsnd2d(filename)">reads2dfile</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="reads3dfile.html" class="code" title="function N=readsnd3d(filename)">reads3dfile</a>	READSND3D - Read 3d file by use of soundings</li><li><a href="readsnd2d.html" class="code" title="function N=readsnd2d(filename)">readsnd2d</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="readsnd3d.html" class="code" title="function N=readsnd3d(filename)">readsnd3d</a>	READSND3D - Read 3d file by use of soundings</li><li><a href="readstgfile.html" class="code" title="function N = readstgfile(fname)">readstgfile</a>	READSTGFILE - Read sting device file (*.stg)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function konf=getkonf(varargin)</a>
+0002 
+0003 <span class="comment">% GETKONF - Get configuration factor (calls getkonf2d/3d)</span>
+0004 <span class="comment">% N.k = getkonf(N); % where N is data struct</span>
+0005 
+0006 N=varargin{1};
+0007 <span class="keyword">if</span> isfield(N,<span class="string">'elec'</span>),
+0008   <span class="keyword">if</span> size(N.elec,2)&gt;2, 
+0009     konf=<a href="getkonf3d.html" class="code" title="function konf=getkonf3d(N,negz)">getkonf3d</a>(varargin{:}); 
+0010   <span class="keyword">else</span>
+0011       fl=sqrt(sum(diff(N.elec([1 end],:)).^2));
+0012       fm=sqrt(sum((N.elec(1,:)-mean(N.elec)).^2));
+0013       <span class="keyword">if</span> fl&lt;fm, <span class="comment">%apparently circle file</span>
+0014           konf=1;
+0015       <span class="keyword">else</span>
+0016           konf=<a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>(varargin{:}); 
+0017       <span class="keyword">end</span>
+0018   <span class="keyword">end</span>
+0019 <span class="keyword">else</span>
+0020   error(<span class="string">'No electrodes present!'</span>);
+0021 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

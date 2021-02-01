@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of read2drawfile</title>
+  <meta name="keywords" content="read2drawfile">
+  <meta name="description" content="READ2DRAWFILE - read 2d raw file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; read2drawfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>read2drawfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READ2DRAWFILE - read 2d raw file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N = read2drawfile(datafile,fmt) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READ2DRAWFILE - read 2d raw file
+ N = read2drawfile(filename,formatstring)
+ formatstring = [ headerlines n_a n_b n_m n_n rhoa ]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li><li><a href="readpro.html" class="code" title="function N=readpro(filename)">readpro</a>	READPRO - Read 3D PRO-File of 2D-Profiles</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N = read2drawfile(datafile,fmt)</a>
+0002 <span class="comment">% READ2DRAWFILE - read 2d raw file</span>
+0003 <span class="comment">% N = read2drawfile(filename,formatstring)</span>
+0004 <span class="comment">% formatstring = [ headerlines n_a n_b n_m n_n rhoa ]</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, fmt=[1 1 3 5 7 12]; <span class="keyword">end</span>
+0007 DATA=textread(datafile,<span class="string">''</span>,<span class="string">'headerlines'</span>,fmt(1));
+0008 data=size(DATA,1);
+0009 AA=DATA(:,fmt(2));
+0010 <span class="keyword">if</span> fmt(3)&gt;0, BB=DATA(:,fmt(3)); <span class="keyword">else</span> 
+0011     BB=[]; <span class="keyword">end</span>
+0012 MM=DATA(:,fmt(4));
+0013 <span class="keyword">if</span> fmt(5)&gt;0, NN=DATA(:,fmt(5)); <span class="keyword">else</span>
+0014     NN=zeros(size(MM)); <span class="keyword">end</span>
+0015 <span class="comment">% N.r=DATA(:,max(find(DATA(1,:))));</span>
+0016 N.r=DATA(:,fmt(6));
+0017 fak=1e3;
+0018 AA=round(AA*fak)/fak;BB=round(BB*fak)/fak;
+0019 MM=round(MM*fak)/fak;NN=round(NN*fak)/fak;
+0020 <span class="comment">% message(strcat(mess1,' --&gt; ',titel));</span>
+0021 <span class="comment">% message(sprintf('%s min=%.1f,max=%.1f',mess2,min(N.r),max(N.r)));</span>
+0022 N.elec=unique(sortrows([AA;BB;MM;NN]),<span class="string">'rows'</span>);
+0023 <span class="keyword">if</span> size(N.elec,2)&lt;2, N.elec(:,2)=0; <span class="keyword">end</span>
+0024 N.a=zeros(data,1);
+0025 N.b=zeros(data,1);
+0026 N.m=zeros(data,1);
+0027 N.n=zeros(data,1);
+0028 N.k=zeros(data,1);
+0029 
+0030 fac=111111;
+0031 qel=N.elec(:,1)+N.elec(:,2)*fac;
+0032 qa=AA(:,1);qm=MM(:,1);
+0033 <span class="keyword">if</span> size(AA,2)&gt;1, qa=qa+AA(:,2)*fac; <span class="keyword">end</span>
+0034 <span class="keyword">if</span> size(MM,2)&gt;1, qm=qm+MM(:,2)*fac; <span class="keyword">end</span>
+0035 [aa,bb]=meshgrid(qa,qel);
+0036 [ii,jj]=find((aa-bb)==0);
+0037 N.a(jj)=ii;
+0038 <span class="keyword">if</span> ~isempty(BB),
+0039     qb=BB(:,1);
+0040     <span class="keyword">if</span> size(BB,2)&gt;1, qb=qb+BB(:,2)*fac; <span class="keyword">end</span>
+0041     [aa,bb]=meshgrid(qb,qel);
+0042     [ii,jj]=find((aa-bb)==0);
+0043     N.b(jj)=ii;
+0044 <span class="keyword">end</span>
+0045 [aa,bb]=meshgrid(qm,qel);
+0046 [ii,jj]=find((aa-bb)==0);
+0047 N.m(jj)=ii;
+0048 <span class="keyword">if</span> ~isempty(NN),
+0049     qn=NN(:,1);
+0050     <span class="keyword">if</span> size(NN,2)&gt;1, qn=qn+NN(:,2)*fac; <span class="keyword">end</span>
+0051     [aa,bb]=meshgrid(qn,qel);
+0052     [ii,jj]=find((aa-bb)==0);
+0053     N.n(jj)=ii;
+0054 <span class="keyword">end</span>
+0055 
+0056 N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

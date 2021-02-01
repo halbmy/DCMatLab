@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pos2poly</title>
+  <meta name="keywords" content="pos2poly">
+  <meta name="description" content="POS2POLY - Creates poly file from position matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; pos2poly.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>pos2poly
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>POS2POLY - Creates poly file from position matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Poly=pos2poly(pos,maxdep,dd) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> POS2POLY - Creates poly file from position matrix
+ Poly = pos2poly(pos,maxdep,dx)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Poly=pos2poly(pos,maxdep,dd)</a>
+0002 
+0003 <span class="comment">% POS2POLY - Creates poly file from position matrix</span>
+0004 <span class="comment">% Poly = pos2poly(pos,maxdep,dx)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;3, dd=0.2; <span class="keyword">end</span>
+0007 <span class="keyword">if</span> nargin&lt;2, maxdep=(pos(<span class="keyword">end</span>,1)-pos(1,1))/4; <span class="keyword">end</span>
+0008 
+0009 xx=pos(:,1)';
+0010 A=[xx-[0 dd*diff(xx)];xx;xx+[dd*diff(xx) 0]];
+0011 <span class="keyword">if</span> dd&gt;0.333, A(1,:)=[]; <span class="keyword">end</span>
+0012 xx=A(:);zz=interp1(pos(:,1),pos(:,2),xx);
+0013 <span class="keyword">if</span> dd&gt;0.333, xx=[xx(1);xx];zz=[zz(1);zz]; <span class="keyword">end</span>
+0014 zz(1)=zz(1)-maxdep;zz(end)=zz(end)-maxdep;
+0015 Poly.node=[xx zz];
+0016 <span class="keyword">if</span> dd&gt;0.333, Poly.node(1:2:<span class="keyword">end</span>,3)=-99;
+0017 <span class="keyword">else</span> Poly.node(2:3:end-1,3)=-99; <span class="keyword">end</span>
+0018 <span class="comment">% Poly.node([1 end],3)=0;</span>
+0019 Poly.edge=(1:size(Poly.node,1))';
+0020 Poly.edge(:,2)=Poly.edge(:,1)+1;Poly.edge(<span class="keyword">end</span>,2)=1;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

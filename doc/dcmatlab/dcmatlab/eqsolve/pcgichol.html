@@ -1,0 +1,242 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pcgichol</title>
+  <meta name="keywords" content="pcgichol">
+  <meta name="description" content="PCG    Preconditioned Conjugate Gradients Method">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; pcgichol.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>pcgichol
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PCG    Preconditioned Conjugate Gradients Method</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x,flag,relres,iter,resvec] = pcgichol(A,b,tol,maxit,M1,x0) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PCG    Preconditioned Conjugate Gradients Method</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,flag,relres,iter,resvec] = pcgichol(A,b,tol,maxit,M1,x0)</a>
+0002 <span class="comment">%PCG    Preconditioned Conjugate Gradients Method</span>
+0003 
+0004 <span class="keyword">if</span> (nargin &lt; 2)
+0005    error(<span class="string">'Not enough input arguments.'</span>);
+0006 <span class="keyword">end</span>
+0007 
+0008 <span class="comment">% Determine whether A is a matrix, a string expression,</span>
+0009 <span class="comment">% the name of a function or an inline object.</span>
+0010 [m,n] = size(A);
+0011 <span class="keyword">if</span> (m ~= n)
+0012     error(<span class="string">'Matrix must be square.'</span>);
+0013 <span class="keyword">end</span>
+0014 <span class="keyword">if</span> ~isequal(size(b),[m,1])
+0015     es = sprintf([<span class="string">'Right hand side must be a column vector of'</span> <span class="keyword">...</span>
+0016             <span class="string">' length %d to match the coefficient matrix.'</span>],m);
+0017     error(es);
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="comment">% Assign default values to unspecified parameters</span>
+0021 <span class="keyword">if</span> (nargin &lt; 3) | isempty(tol)
+0022    tol = 1e-6;
+0023 <span class="keyword">end</span>
+0024 <span class="keyword">if</span> (nargin &lt; 4) | isempty(maxit)
+0025    maxit = min(n,20);
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">% Check for all zero right hand side vector =&gt; all zero solution</span>
+0029 n2b = norm(b);                      <span class="comment">% Norm of rhs vector, b</span>
+0030 <span class="keyword">if</span> (n2b == 0)                       <span class="comment">% if    rhs vector is all zeros</span>
+0031    x = zeros(n,1);                  <span class="comment">% then  solution is all zeros</span>
+0032    flag = 0;                        <span class="comment">% a valid solution has been obtained</span>
+0033    relres = 0;                      <span class="comment">% the relative residual is actually 0/0</span>
+0034    iter = 0;                        <span class="comment">% no iterations need be performed</span>
+0035    resvec = 0;                      <span class="comment">% resvec(1) = norm(b-A*x) = norm(0)</span>
+0036    <span class="keyword">if</span> (nargout &lt; 2)
+0037       itermsg(<span class="string">'pcg'</span>,tol,maxit,0,flag,iter,NaN);
+0038    <span class="keyword">end</span>
+0039    <span class="keyword">return</span>
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="keyword">if</span> ((nargin &gt;= 5) &amp; ~isempty(M1))
+0043    existM1 = 1;
+0044    <span class="keyword">if</span> ~isequal(size(M1),[m,m])
+0045       es = sprintf([<span class="string">'Preconditioner must be a square matrix'</span> <span class="keyword">...</span>
+0046             <span class="string">' of size %d to match the problem size.'</span>],m);
+0047       error(es);
+0048    <span class="keyword">end</span>   
+0049 <span class="keyword">else</span>
+0050    existM1 = 0;
+0051    m1type = <span class="string">'matrix'</span>;
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="keyword">if</span> ((nargin &gt;= 6) &amp; ~isempty(x0))
+0055    <span class="keyword">if</span> ~isequal(size(x0),[n,1])
+0056       es = sprintf([<span class="string">'Initial guess must be a column vector of'</span> <span class="keyword">...</span>
+0057             <span class="string">' length %d to match the problem size.'</span>],n);
+0058       error(es);
+0059    <span class="keyword">else</span>
+0060       x = x0;
+0061    <span class="keyword">end</span>
+0062 <span class="keyword">else</span>
+0063    x = zeros(n,1);
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">% Set up for the method</span>
+0067 flag = 1;
+0068 xmin = x;                          <span class="comment">% Iterate which has minimal residual so far</span>
+0069 imin = 0;                          <span class="comment">% Iteration at which xmin was computed</span>
+0070 tolb = tol * n2b;                  <span class="comment">% Relative tolerance</span>
+0071 r = b - A * x;                  <span class="comment">% Zero-th residual</span>
+0072 normr = norm(r);                   <span class="comment">% Norm of residual</span>
+0073 
+0074 <span class="keyword">if</span> (normr &lt;= tolb)                 <span class="comment">% Initial guess is a good enough solution</span>
+0075    flag = 0;
+0076    relres = normr / n2b;
+0077    iter = 0;
+0078    resvec = normr;
+0079    <span class="keyword">if</span> (nargout &lt; 2)
+0080       itermsg(<span class="string">'pcg'</span>,tol,maxit,0,flag,iter,relres);
+0081    <span class="keyword">end</span>
+0082    <span class="keyword">return</span>
+0083 <span class="keyword">end</span>
+0084 
+0085 resvec = zeros(maxit+1,1);         <span class="comment">% Preallocate vector for norm of residuals</span>
+0086 resvec(1) = normr;                 <span class="comment">% resvec(1) = norm(b-A*x0)</span>
+0087 normrmin = normr;                  <span class="comment">% Norm of minimum residual</span>
+0088 rho = 1;
+0089 stag = 0;                          <span class="comment">% stagnation of the method</span>
+0090 
+0091 <span class="comment">% loop over maxit iterations (unless convergence or failure)</span>
+0092 
+0093 <span class="keyword">for</span> i = 1 : maxit
+0094     <span class="comment">%y = M1' \ r;</span>
+0095     y = ( r' / M1 )'; <span class="comment">% sollte eigentlich schneller sein ist es aber nicht</span>
+0096     <span class="keyword">if</span> isinf(norm(y,inf))
+0097         flag = 2;
+0098         <span class="keyword">break</span>
+0099     <span class="keyword">end</span>
+0100     
+0101     <span class="comment">%z= (y'/M1)';</span>
+0102     z = M1 \ y;
+0103     <span class="keyword">if</span> isinf(norm(z,inf))
+0104         flag = 2;
+0105         <span class="keyword">break</span>
+0106     <span class="keyword">end</span>
+0107     
+0108    rho1 = rho;
+0109    rho = r' * z;
+0110    <span class="keyword">if</span> ((rho == 0) | isinf(rho))
+0111       flag = 4;
+0112       <span class="keyword">break</span>
+0113    <span class="keyword">end</span>
+0114    <span class="keyword">if</span> (i == 1)
+0115       p = z;
+0116    <span class="keyword">else</span>
+0117       beta = rho / rho1;
+0118       <span class="keyword">if</span> ((beta == 0) | isinf(beta))
+0119          flag = 4;
+0120          <span class="keyword">break</span>
+0121       <span class="keyword">end</span>
+0122       p = z + beta * p;
+0123    <span class="keyword">end</span>
+0124    q = A * p;
+0125    pq = p' * q;
+0126    <span class="keyword">if</span> ((pq &lt;= 0) | isinf(pq))
+0127       flag = 4;
+0128       <span class="keyword">break</span>
+0129    <span class="keyword">else</span>
+0130       alpha = rho / pq;
+0131    <span class="keyword">end</span>
+0132    <span class="keyword">if</span> isinf(alpha)
+0133       flag = 4;
+0134       <span class="keyword">break</span>
+0135    <span class="keyword">end</span>
+0136    <span class="keyword">if</span> (alpha == 0)                  <span class="comment">% stagnation of the method</span>
+0137       stag = 1;
+0138    <span class="keyword">end</span>
+0139    
+0140    <span class="comment">% Check for stagnation of the method</span>
+0141    <span class="keyword">if</span> (stag == 0)
+0142       stagtest = zeros(n,1);
+0143       ind = (x ~= 0);
+0144       stagtest(ind) = p(ind) ./ x(ind);
+0145       stagtest(~ind &amp; p ~= 0) = Inf;
+0146       <span class="keyword">if</span> (abs(alpha)*norm(stagtest,inf) &lt; eps)
+0147          stag = 1;
+0148       <span class="keyword">end</span>
+0149    <span class="keyword">end</span>
+0150    
+0151    x = x + alpha * p;               <span class="comment">% form new iterate</span>
+0152    normr = norm(b - A * x);
+0153    resvec(i+1) = normr;
+0154    
+0155    <span class="keyword">if</span> (normr &lt;= tolb)               <span class="comment">% check for convergence</span>
+0156       flag = 0;
+0157       iter = i;
+0158       <span class="keyword">break</span>
+0159    <span class="keyword">end</span>
+0160    
+0161    <span class="keyword">if</span> (stag == 1)
+0162       flag = 3;
+0163       <span class="keyword">break</span>
+0164    <span class="keyword">end</span>
+0165    
+0166    <span class="keyword">if</span> (normr &lt; normrmin)           <span class="comment">% update minimal norm quantities</span>
+0167       normrmin = normr;
+0168       xmin = x;
+0169       imin = i;
+0170    <span class="keyword">end</span>
+0171    
+0172    r = r - alpha * q;
+0173    
+0174 <span class="keyword">end</span>                                <span class="comment">% for i = 1 : maxit</span>
+0175 
+0176 <span class="comment">% returned solution is first with minimal residual</span>
+0177 <span class="keyword">if</span> (flag == 0)
+0178    relres = normr / n2b;
+0179 <span class="keyword">else</span>
+0180    x = xmin;
+0181    iter = imin;
+0182    relres = normrmin / n2b;
+0183 <span class="keyword">end</span>
+0184 
+0185 <span class="comment">% truncate the zeros from resvec</span>
+0186 <span class="keyword">if</span> ((flag &lt;= 1) | (flag == 3))
+0187    resvec = resvec(1:i+1);
+0188 <span class="keyword">else</span>
+0189    resvec = resvec(1:i);
+0190 <span class="keyword">end</span>
+0191 
+0192 <span class="comment">% only display a message if the output flag is not used</span>
+0193 <span class="keyword">if</span> (nargout &lt; 2)
+0194    itermsg(<span class="string">'pcg'</span>,tol,maxit,i,flag,iter,relres);   
+0195 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

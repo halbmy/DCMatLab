@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of regcgls</title>
+  <meta name="keywords" content="regcgls">
+  <meta name="description" content="REGCGLS - Regularized CG-based Least Squares">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; regcgls.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>regcgls
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>REGCGLS - Regularized CG-based Least Squares</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x,rho,eta,j,X] = regcgls(A,b,lambda,acc,jmax,x0) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> REGCGLS - Regularized CG-based Least Squares
+ [X,rho,eta,j,X] = regcgls(A,b,lambda,acc,jmax,x0)
+
+ Solves implicitly the regularized normal equations
+ ( A' A + lambda*I )*x = A'*b
+ acc - accuracy, jmax - maximum step number, x0 - starting vector</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="invls.html" class="code" title="function x=invls(A,b)">invls</a>	% INVLS - Solve Inverse subsystem by Least Squares</li><li><a href="invtls.html" class="code" title="function x=invtsvd(A,b)">invtls</a>	% INVTSVD - Solve Inverse subsystem by Truncated SVD</li><li><a href="invtrunc.html" class="code" title="function dm=invtrunc(A,b,lambdas)">invtrunc</a>	% INVTRUNC - Solve Inverse Subproblem for several lambdas</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,rho,eta,j,X] = regcgls(A,b,lambda,acc,jmax,x0)</a>
+0002 <span class="comment">% REGCGLS - Regularized CG-based Least Squares</span>
+0003 <span class="comment">% [X,rho,eta,j,X] = regcgls(A,b,lambda,acc,jmax,x0)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Solves implicitly the regularized normal equations</span>
+0006 <span class="comment">% ( A' A + lambda*I )*x = A'*b</span>
+0007 <span class="comment">% acc - accuracy, jmax - maximum step number, x0 - starting vector</span>
+0008  
+0009 <span class="comment">% Initialization.</span>
+0010 [m,n] = size(A); 
+0011 <span class="comment">%IN</span>
+0012 <span class="keyword">if</span> nargout&gt;4, X = []; eta=[]; rho=[]; <span class="keyword">end</span>
+0013 <span class="comment">%OUT</span>
+0014 <span class="keyword">if</span> nargin&lt;3, lambda=0.001; <span class="keyword">end</span>
+0015 <span class="keyword">if</span> nargin&lt;4, acc=1e-6; <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;5, jmax=100; <span class="keyword">end</span>
+0017 <span class="keyword">if</span> nargin&lt;6, x0=zeros(n,1); <span class="keyword">end</span>
+0018 <span class="keyword">if</span> isempty(x0), x0=zeros(n,1); <span class="keyword">end</span>
+0019 <span class="comment">% Prepare for CG iteration.</span>
+0020 x = x0;
+0021 <span class="comment">%p = A'*b;%-lambda*x;</span>
+0022 <span class="comment">%leave=p'*p*(acc^2);</span>
+0023 z = b - A*x;
+0024 p = (z'*A)'-lambda*x;
+0025 normr2 = p'*p;
+0026 acc=acc*normr2;
+0027 <span class="comment">% Iterate.</span>
+0028 j=0;
+0029 <span class="keyword">while</span>(j&lt;jmax)&amp;(normr2&gt;acc),
+0030   j=j+1;  
+0031   q = A*p;
+0032   alpha = normr2/(q'*q+lambda*p'*p);
+0033   x  = x + alpha*p;
+0034   z  = z - alpha*q;
+0035   r  = (z'*A)'-lambda*x;
+0036   normr2old=normr2;
+0037   normr2 = r'*r;
+0038   beta = normr2/normr2old;
+0039   p = r + beta*p;
+0040   <span class="keyword">if</span> (nargout==5), 
+0041       X = [X x];
+0042       rho = [rho norm(z)];
+0043       eta = [eta norm(x)]; 
+0044   <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 <span class="comment">%fprintf('%d) ',j);</span>
+0047 <span class="keyword">if</span> nargout&lt;5, rho=norm(z);eta=norm(x); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

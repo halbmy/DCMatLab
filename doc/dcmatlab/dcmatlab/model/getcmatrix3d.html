@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getcmatrix3d</title>
+  <meta name="keywords" content="getcmatrix3d">
+  <meta name="description" content="GETCMATRIX - Get constraint matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; getcmatrix3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getcmatrix3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GETCMATRIX - Get constraint matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function C = getcmatrix3d(Model,INV) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GETCMATRIX - Get constraint matrix
+ L = getcmatrix3d(Model,INV);
+ Model - Model structure (Para or grid)
+ INV - structure of options
+       weight = weighting matrix C(for matrix inversion)
+                0 - equal weighting
+                1 - smoothness 1st order
+                2 - smoothness 2nd order
+                3 - smoothness 2nd order (Neumann boundaries)
+                4 - smoothness 2nd order (Mixed boundaries)
+                5 - weighting by coverage
+       rbnorm = normalize distances (1)
+       rbzfak = factor for weighting z-derivatives (1)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C = getcmatrix3d(Model,INV)</a>
+0002 
+0003 <span class="comment">% GETCMATRIX - Get constraint matrix</span>
+0004 <span class="comment">% L = getcmatrix3d(Model,INV);</span>
+0005 <span class="comment">% Model - Model structure (Para or grid)</span>
+0006 <span class="comment">% INV - structure of options</span>
+0007 <span class="comment">%       weight = weighting matrix C(for matrix inversion)</span>
+0008 <span class="comment">%                0 - equal weighting</span>
+0009 <span class="comment">%                1 - smoothness 1st order</span>
+0010 <span class="comment">%                2 - smoothness 2nd order</span>
+0011 <span class="comment">%                3 - smoothness 2nd order (Neumann boundaries)</span>
+0012 <span class="comment">%                4 - smoothness 2nd order (Mixed boundaries)</span>
+0013 <span class="comment">%                5 - weighting by coverage</span>
+0014 <span class="comment">%       rbnorm = normalize distances (1)</span>
+0015 <span class="comment">%       rbzfak = factor for weighting z-derivatives (1)</span>
+0016 
+0017 <span class="keyword">global</span> XX YY ZZ
+0018 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'Model input required for input'</span>); <span class="keyword">end</span>
+0019 <span class="keyword">if</span> nargin&lt;2, INV=struct(<span class="string">'default'</span>,1); <span class="keyword">end</span>
+0020 <span class="comment">%% complement fields</span>
+0021 <span class="keyword">if</span> ~isfield(INV,<span class="string">'weight'</span>), INV.weight=0; <span class="keyword">end</span>
+0022 <span class="keyword">if</span> ~isfield(INV,<span class="string">'mico'</span>), INV.mico=0; <span class="keyword">end</span>
+0023 <span class="keyword">if</span> ~isfield(INV,<span class="string">'rbnorm'</span>), INV.rbnorm=1; <span class="keyword">end</span>
+0024 <span class="keyword">if</span> ~isfield(INV,<span class="string">'rbzfak'</span>), INV.rbzfak=1; <span class="keyword">end</span>
+0025 
+0026 <span class="comment">%% decoupling matrices</span>
+0027 Wx=1;Wy=1;Wz=1;
+0028 <span class="keyword">if</span> ~iscell(Model.M),
+0029     simo=size(Model.M);
+0030     <span class="keyword">if</span> isequal(size(XX),simo-[1 0 0]),
+0031         Wx=spdiags(1-XX(:),0,numel(XX),numel(XX));
+0032     <span class="keyword">end</span>
+0033     <span class="keyword">if</span> isequal(size(YY),simo-[0 1 0]),
+0034         Wy=spdiags(1-YY(:),0,numel(YY),numel(YY));
+0035     <span class="keyword">end</span>
+0036     <span class="keyword">if</span> isequal(size(ZZ),simo-[0 0 1]),
+0037         Wz=spdiags(1-ZZ(:),0,numel(ZZ),numel(ZZ));
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 <span class="comment">%% determine regularization matrices</span>
+0041 C=1; <span class="comment">% 0th order damping</span>
+0042 <span class="keyword">if</span> INV.weight==1, <span class="comment">% first order smoothness</span>
+0043     <span class="keyword">if</span> iscell(Model.M),
+0044         C=smoothmat(Model);
+0045         C=C+speye(size(C))*0.01;
+0046     <span class="keyword">else</span>
+0047         [C,Cx,Cy,Cz]=smooth3d1st(Model.x,Model.y,Model.z,INV.rbnorm,INV.rbzfak);
+0048         Cx=Wx*Cx;
+0049         Cy=Wy*Cy;
+0050         Cz=Wz*Cz;
+0051         Cxyz=[Cx;Cy;Cz*sqrt(INV.rbzfak)];
+0052         <span class="keyword">if</span> isfield(INV,<span class="string">'blocky'</span>)&amp;&amp;(INV.blocky&gt;0),
+0053 <span class="comment">%             MM=log(Model.M(:));</span>
+0054 <span class="comment">%             sm=abs(Cxyz*MM);su2=sum(sm.^2);sua=sum(sm);</span>
+0055 <span class="comment">%             wxz=ones(size(sm));fi=find(sm);</span>
+0056 <span class="comment">%             if ~isempty(fi), wxz(fi)=su2/sua./sm(fi); end</span>
+0057 <span class="comment">%             wxz(wxz&gt;1)=1;</span>
+0058             wxz=irls(Cxyz*log(Model.M(:)),0,1);
+0059             Cxyz=spdiags(wxz,0,length(wxz),length(wxz))*Cxyz;
+0060         <span class="keyword">end</span>
+0061         C=Cxyz'*Cxyz;
+0062     <span class="keyword">end</span>
+0063 <span class="keyword">end</span>
+0064 <span class="keyword">if</span> ismember(INV.weight,2:4), <span class="comment">% 2nd order smoothness</span>
+0065     <span class="keyword">if</span> iscell(Model.M),
+0066         C=smoothmat2(Model);
+0067         C=C+speye(size(C));
+0068     <span class="keyword">else</span>
+0069         C1=smooth3d2nd(Model.x,Model.y,Model.z,INV.weight-2,INV.rbnorm,INV.rbzfak);
+0070         <span class="keyword">if</span> isfield(INV,<span class="string">'blocky'</span>)&amp;&amp;(INV.blocky&gt;0),
+0071             MM=log(Model.M(:));
+0072             sm=abs(C1*MM);su2=sum(sm.^2);sua=sum(sm);
+0073             wxz=ones(size(sm));fi=find(sm);
+0074             <span class="keyword">if</span> ~isempty(fi), wxz(fi)=su2/sua./sm(fi); <span class="keyword">end</span>
+0075             wxz(wxz&gt;1)=1;
+0076             C1=spdiags(wxz,0,length(wxz),length(wxz))*C1;
+0077         <span class="keyword">end</span>
+0078         C=C1'*C1;
+0079     <span class="keyword">end</span>
+0080 <span class="keyword">end</span>
+0081 <span class="keyword">if</span> INV.weight==5, <span class="comment">% Weighting by coverage</span>
+0082     <span class="keyword">global</span> Cov
+0083     <span class="keyword">if</span> isempty(Cov),
+0084         <span class="keyword">global</span> S
+0085         Cov=ones(size(S,2),1);
+0086         <span class="keyword">for</span> i=1:length(Cov), Cov(i)=sum(abs(S(:,i))); <span class="keyword">end</span>
+0087     <span class="keyword">end</span>
+0088     C=spdiags(1./Cov(:),0,prod(size(Cov)),prod(size(Cov)));
+0089 <span class="keyword">end</span>
+0090 <span class="keyword">if</span> INV.weight==6, <span class="comment">% my favourite mix against stripes</span>
+0091     C1=smooth3d2nd(Model.x,Model.y,Model.z,1,INV.rbnorm,INV.rbzfak);
+0092     C=(C1'*C1+smooth3d1st(Model.x,Model.y,Model.z,INV.rbnorm,INV.rbzfak))*0.5+speye(numel(Model.M))*0.01;
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

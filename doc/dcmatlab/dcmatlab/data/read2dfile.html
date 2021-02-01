@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of read2dfile</title>
+  <meta name="keywords" content="read2dfile">
+  <meta name="description" content="READ2DFILE - Read 2d data file (all file types)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; read2dfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>read2dfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READ2DFILE - Read 2d data file (all file types)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=read2dfile(datfile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READ2DFILE - Read 2d data file (all file types)
+ N = read2dfile(datfile)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="check2dfile.html" class="code" title="function erg=check2dfile(fname)">check2dfile</a>	CHECK2DFILE - Check 2d data file for file type</li><li><a href="getpseudos.html" class="code" title="function N=getpseudos(N,dirs)">getpseudos</a>	GETPSEUDOS - Extract profiles from 3D data set</li><li><a href="read2drawfile.html" class="code" title="function N = read2drawfile(datafile,fmt)">read2drawfile</a>	READ2DRAWFILE - read 2d raw file</li><li><a href="readampfile.html" class="code" title="function N=readampfile(filename)">readampfile</a>	READAMPFILE - Read ABEM multi purpose file (*.amp)</li><li><a href="readflwfile.html" class="code" title="function N = readflwfile(filename)">readflwfile</a>	READ FLW (geotom flow) file</li><li><a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>	READINV2DFILE - Read INV2D data file</li><li><a href="readres2dinvfile.html" class="code" title="function N = readres2dinvfile(datafile)">readres2dinvfile</a>	READRES2DINVFILE - Read 2D Loke&Barker File</li><li><a href="readresecsfile.html" class="code" title="function N=readresecsfile(filename)">readresecsfile</a>	READRESECSFILE - Read RESECS ascii export file (*.TXT)</li><li><a href="readsnd2d.html" class="code" title="function N=readsnd2d(filename)">readsnd2d</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="readstgfile.html" class="code" title="function N = readstgfile(fname)">readstgfile</a>	READSTGFILE - Read sting device file (*.stg)</li><li><a href="readsyscalfile.html" class="code" title="function N = readsyscalfile(filename)">readsyscalfile</a>	READ IRIS Syscal Pro file</li><li><a href="readtx0file.html" class="code" title="function [N,ff] = readtx0file(filename,trotz)">readtx0file</a>	READTX0FILE - Read TX0 file (Lippmann multielectrode device)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="readdatafile.html" class="code" title="function N=readdatafile(datfile)">readdatafile</a>	READDATAFILE - tries to read any data file</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=read2dfile(datfile)</a>
+0002 
+0003 <span class="comment">% READ2DFILE - Read 2d data file (all file types)</span>
+0004 <span class="comment">% N = read2dfile(datfile)</span>
+0005 
+0006 N=[];
+0007 <span class="keyword">if</span> exist(datfile)~=2, error(<span class="string">'File does not exist!'</span>); <span class="keyword">end</span>
+0008 [fpath,name,ext]=fileparts(datfile);
+0009 lext=lower(ext);
+0010 <span class="keyword">if</span> isequal(lext,<span class="string">'.amp'</span>), <span class="comment">% ABEM multi-purpose file</span>
+0011     N=<a href="readampfile.html" class="code" title="function N=readampfile(filename)">readampfile</a>(datfile);
+0012 <span class="keyword">elseif</span> isequal(lext,<span class="string">'.stg'</span>), <span class="comment">% STING device file</span>
+0013     N=<a href="readstgfile.html" class="code" title="function N = readstgfile(fname)">readstgfile</a>(datfile);
+0014 <span class="keyword">elseif</span> isequal(lext,<span class="string">'.flw'</span>), <span class="comment">% GEOTOM device file</span>
+0015     N=<a href="readflwfile.html" class="code" title="function N = readflwfile(filename)">readflwfile</a>(datfile);
+0016 <span class="keyword">elseif</span> isequal(lext,<span class="string">'.tx0'</span>), <span class="comment">% Lippmann device file</span>
+0017     N=<a href="readtx0file.html" class="code" title="function [N,ff] = readtx0file(filename,trotz)">readtx0file</a>(datfile);
+0018 <span class="keyword">elseif</span> isequal(lext,<span class="string">'.bin'</span>), <span class="comment">% IRIS SYSCAL Pro device file</span>
+0019     N=<a href="readsyscalfile.html" class="code" title="function N = readsyscalfile(filename)">readsyscalfile</a>(datfile);
+0020 <span class="keyword">elseif</span> isequal(lext,<span class="string">'.s2d'</span>), <span class="comment">% SOUNDINGS file</span>
+0021     N=<a href="readsnd2d.html" class="code" title="function N=readsnd2d(filename)">readsnd2d</a>(datfile);
+0022 <span class="keyword">elseif</span> ismember(lext,{<span class="string">'.wen'</span>,<span class="string">'.dd'</span>,<span class="string">'.pd'</span>,<span class="string">'.pp'</span>,<span class="string">'.slm'</span>})
+0023     N=<a href="readres2dinvfile.html" class="code" title="function N = readres2dinvfile(datafile)">readres2dinvfile</a>(datfile);
+0024 <span class="keyword">else</span>
+0025     cf=<a href="check2dfile.html" class="code" title="function erg=check2dfile(fname)">check2dfile</a>(datfile); <span class="comment">%1-res2dinv,2-unified data,3-raw,4-resecs</span>
+0026     <span class="comment">% if unknown &amp; *.txt -&gt; resecs</span>
+0027     <span class="keyword">if</span> (cf==0)&amp;&amp;isequal(lower(ext),<span class="string">'.txt'</span>), cf=4; <span class="keyword">end</span> <span class="comment">%resecs</span>
+0028 <span class="comment">%     if findex==4, cf=4; end %does not work on v6.5</span>
+0029     <span class="keyword">switch</span> cf,
+0030         <span class="keyword">case</span> 1, <span class="comment">% RES2dINV file</span>
+0031             N=<a href="readres2dinvfile.html" class="code" title="function N = readres2dinvfile(datafile)">readres2dinvfile</a>(datfile);
+0032         <span class="keyword">case</span> 2, <span class="comment">% house format</span>
+0033             N=<a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>(datfile);
+0034             <span class="keyword">if</span> isfield(N,<span class="string">'i'</span>)&amp;&amp;(max(N.i)&gt;10), N.i=N.i/1000; <span class="keyword">end</span> <span class="comment">%A statt mA</span>
+0035             <span class="keyword">if</span> isfield(N,<span class="string">'u'</span>)&amp;&amp;(max(N.u)&gt;10), N.u=N.u/1000; <span class="keyword">end</span> <span class="comment">%V statt mV</span>
+0036         <span class="keyword">case</span> 3, <span class="comment">% raw data file</span>
+0037             sfmt=inputdlg(<span class="string">'Please specify the number of headerlines and the row numbers for A,B,M,N and the apparent resistivity (space separated)!'</span>,<span class="keyword">...</span>
+0038                 <span class="string">'Raw file format'</span>,1,{<span class="string">'1  1  4  7  10  13'</span>});
+0039             <span class="keyword">if</span> ~isempty(sfmt), N=<a href="read2drawfile.html" class="code" title="function N = read2drawfile(datafile,fmt)">read2drawfile</a>(datfile,str2double(sfmt{1})); <span class="keyword">end</span>
+0040         <span class="keyword">case</span> 4, <span class="comment">% RESECS device file</span>
+0041             N=<a href="readresecsfile.html" class="code" title="function N=readresecsfile(filename)">readresecsfile</a>(datfile);
+0042             <span class="keyword">if</span> isfield(N,<span class="string">'u'</span>), fi=find(abs(N.u)&gt;9.9); <span class="keyword">else</span> fi=[]; <span class="keyword">end</span>
+0043             <span class="keyword">if</span> ~isempty(fi),
+0044                 fn=fieldnames(N);
+0045                 <span class="keyword">for</span> i=1:length(fn),
+0046                     fie=getfield(N,fn{i});
+0047                     <span class="keyword">if</span> size(fie,2)==1, fie(fi)=[]; <span class="keyword">end</span>
+0048                     N=setfield(N,fn{i},fie);
+0049                 <span class="keyword">end</span>
+0050             <span class="keyword">end</span>
+0051             NN=<a href="getpseudos.html" class="code" title="function N=getpseudos(N,dirs)">getpseudos</a>(N);
+0052             nr=1;le=length(NN.zweid);
+0053             <span class="keyword">if</span> le==0, display(<span class="string">'No profiles found!'</span>);<span class="keyword">return</span>; <span class="keyword">end</span>
+0054             <span class="keyword">if</span> le&gt;1,
+0055                 ss=inputdlg([num2str(le) <span class="string">'profiles present. Specify number!'</span>]);
+0056                 nr=str2num(ss{1});
+0057             <span class="keyword">end</span>
+0058             N=NN.zweid{nr};
+0059         <span class="keyword">otherwise</span>
+0060             display(<span class="string">'File format unknown!'</span>);
+0061             <span class="keyword">return</span>;
+0062     <span class="keyword">end</span>
+0063 <span class="keyword">end</span>
+0064 fi=find(N.a==0);
+0065 <span class="keyword">if</span> any(fi), 
+0066     N.a(fi)=N.b(fi);N.b(fi)=0;
+0067     <span class="keyword">if</span> isfield(N,<span class="string">'k'</span>), N.k(fi)=-N.k(fi); <span class="keyword">end</span>
+0068     <span class="keyword">if</span> isfield(N,<span class="string">'k'</span>), N.u(fi)=-N.u(fi); <span class="keyword">end</span>
+0069 <span class="keyword">end</span>
+0070 
+0071 <span class="comment">% switch check2dfile(datfile),</span>
+0072 <span class="comment">%     case 1,</span>
+0073 <span class="comment">%         N=readres2dinvfile(datfile);</span>
+0074 <span class="comment">%     case 2,</span>
+0075 <span class="comment">%         N=readinv2dfile(datfile);</span>
+0076 <span class="comment">%     case 3,</span>
+0077 <span class="comment">%         sfmt=inputdlg('Please specify the number of headerlines and the row numbers for A,B,M,N and the apparent resistivity (space separated)!',...</span>
+0078 <span class="comment">%             'Raw file format',1,{'1  1  3  5  7  12'});</span>
+0079 <span class="comment">%         N=read2drawfile(datfile,sfmt);</span>
+0080 <span class="comment">%     case 4,</span>
+0081 <span class="comment">%         NN=readresecsfile(datfile);</span>
+0082 <span class="comment">%         NN=getpseudos(NN);nr=1;le=length(NN.zweid);</span>
+0083 <span class="comment">%         if le==0, display('No profiles found!');return; end</span>
+0084 <span class="comment">%         if le&gt;1,</span>
+0085 <span class="comment">%             ss=inputdlg([num2str(le) 'profiles present. Specify number!']);</span>
+0086 <span class="comment">%             nr=str2double(ss{1});</span>
+0087 <span class="comment">%         end</span>
+0088 <span class="comment">%         N=NN.zweid{nr};</span>
+0089 <span class="comment">%     otherwise</span>
+0090 <span class="comment">%         error('File type unknown!');</span>
+0091 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

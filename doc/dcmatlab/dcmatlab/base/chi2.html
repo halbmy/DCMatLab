@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of chi2</title>
+  <meta name="keywords" content="chi2">
+  <meta name="description" content="CHI2 - computation of chi^2-error">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; chi2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>chi2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CHI2 - computation of chi^2-error</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function chiq=chi2(soll,ist,err,lolo) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CHI2 - computation of chi^2-error
+ chiq = chi2(data,response,error[,islog])
+ data, response .. vectors to compare
+ error .. error/standard deviation
+ islog .. treat data and response as logarithmic (default=1)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function chiq=chi2(soll,ist,err,lolo)</a>
+0002 
+0003 <span class="comment">% CHI2 - computation of chi^2-error</span>
+0004 <span class="comment">% chiq = chi2(data,response,error[,islog])</span>
+0005 <span class="comment">% data, response .. vectors to compare</span>
+0006 <span class="comment">% error .. error/standard deviation</span>
+0007 <span class="comment">% islog .. treat data and response as logarithmic (default=1)</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;3, err=0.03; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;4, lolo=1; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> lolo,
+0012 <span class="comment">%     chiq=mean(((log(ist)-log(soll))./log(1+err)./log(soll)).^2);</span>
+0013     chiq=mean(((log(ist(:))-log(soll(:)))./log(1+err(:))).^2);
+0014 <span class="keyword">else</span>
+0015 <span class="comment">%     chiq=mean(((ist(:)./soll(:)-1).^2)./(err(:).^2));</span>
+0016     chiq=mean(((ist(:)-soll(:))./err(:)).^2);
+0017 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

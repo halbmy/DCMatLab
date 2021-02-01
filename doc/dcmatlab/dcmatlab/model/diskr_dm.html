@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of diskr_dm</title>
+  <meta name="keywords" content="diskr_dm">
+  <meta name="description" content="DISKR_DM - Discretization after Dey&amp;Morrison(1979)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; diskr_dm.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>diskr_dm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>DISKR_DM - Discretization after Dey&amp;Morrison(1979)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function C = diskr_dm(X,Y,Z,SIGMA,rb) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> DISKR_DM - Discretization after Dey&amp;Morrison(1979)
+ C = diskr_dm(x,y,z,sigma)
+ x,y,z - grid nodes
+ sigma - conductivities (lx+1).(ly+1).(lz+1)
+ with sigma(:,:,1)=0;</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mfdfwd3d.html" class="code" title="function [R,Rrez,MEA]=mfdfwd3d(Mod,N,FOR)">mfdfwd3d</a>	FDFWD3D - 3D DC Forward Calculation with finite differences</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C = diskr_dm(X,Y,Z,SIGMA,rb)</a>
+0002 <span class="comment">% DISKR_DM - Discretization after Dey&amp;Morrison(1979)</span>
+0003 <span class="comment">% C = diskr_dm(x,y,z,sigma)</span>
+0004 <span class="comment">% x,y,z - grid nodes</span>
+0005 <span class="comment">% sigma - conductivities (lx+1).(ly+1).(lz+1)</span>
+0006 <span class="comment">% with sigma(:,:,1)=0;</span>
+0007 <span class="keyword">if</span> nargin&lt;5, rb=0; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;3, 
+0009     SIGMA=ones(length(X)+1,length(Y)+1,length(Z)+1);
+0010     SIGMA(:,:,1)=0;
+0011 <span class="keyword">end</span>
+0012 I=length(X);
+0013 J=length(Y);
+0014 K=length(Z);
+0015 IJK=I*J*K;
+0016 C=spalloc(IJK,IJK,7*IJK);
+0017 Cs=zeros(IJK,1);Cx=reshape(Cs,I,J,K);
+0018 Cy=Cx;Cz=Cx;xC=Cx;yC=Cx;zC=Cx;
+0019 
+0020 dX=X(2:I)-X(1:I-1);
+0021 dY=Y(2:J)-Y(1:J-1);
+0022 dZ=Z(2:K)-Z(1:K-1);
+0023 dX=[dX(1) dX dX(I-1)];
+0024 dY=[dY(1) dY dY(J-1)];
+0025 dZ=[dZ(1) dZ dZ(K-1)];
+0026 
+0027 dX=reshape(dX,I+1,1,1);dY=reshape(dY,1,J+1,1);dZ=reshape(dZ,1,1,K+1);
+0028 
+0029 DX=reshape(repmat(dX,1,J*K),I+1,J,K);
+0030 DY=reshape(repmat(repmat(dY,1,K),I,1),I,J+1,K);
+0031 DZ=reshape(repmat(dZ,I*J,1),I,J,K+1);
+0032 SIGMA(:,:,1)=0; <span class="comment">% for CQ !</span>
+0033 
+0034 <span class="comment">%% TOP (-z)</span>
+0035    zC=SIGMA(1:I,2:J+1,1:K).*DX(1:I,:,:).*DY(:,2:J+1,:);
+0036 zC=zC+SIGMA(2:I+1,2:J+1,1:K).*DX(2:I+1,:,:).*DY(:,2:J+1,:);
+0037 zC=zC+SIGMA(1:I,1:J,1:K).*DX(1:I,:,:).*DY(:,1:J,:);
+0038 zC=zC+SIGMA(2:I+1,1:J,1:K).*DX(2:I+1,:,:).*DY(:,1:J,:);
+0039 zC=-0.25*zC./DZ(:,:,1:K);
+0040 <span class="comment">%% BOTTOM (+z)</span>
+0041    Cz=SIGMA(1:I,2:J+1,2:K+1).*DX(1:I,:,:).*DY(:,2:J+1,:);
+0042 Cz=Cz+SIGMA(2:I+1,2:J+1,2:K+1).*DX(2:I+1,:,:).*DY(:,2:J+1,:);
+0043 Cz=Cz+SIGMA(1:I,1:J,2:K+1).*DX(1:I,:,:).*DY(:,1:J,:);
+0044 Cz=Cz+SIGMA(2:I+1,1:J,2:K+1).*DX(2:I+1,:,:).*DY(:,1:J,:);
+0045 Cz=-0.25*Cz./DZ(:,:,2:K+1);
+0046 <span class="comment">%% LEFT (-x)</span>
+0047    xC=SIGMA(1:I,1:J,1:K).*DY(:,1:J,:).*DZ(:,:,1:K);
+0048 xC=xC+SIGMA(1:I,2:J+1,1:K).*DY(:,2:J+1,:).*DZ(:,:,1:K);
+0049 xC=xC+SIGMA(1:I,1:J,2:K+1).*DY(:,1:J,:).*DZ(:,:,2:K+1);
+0050 xC=xC+SIGMA(1:I,2:J+1,2:K+1).*DY(:,2:J+1,:).*DZ(:,:,2:K+1);
+0051 xC=-0.25*xC./DX(1:I,:,:);
+0052 <span class="comment">%% RIGHT (+x)</span>
+0053    Cx=SIGMA(2:I+1,1:J,1:K).*DY(:,1:J,:).*DZ(:,:,1:K);
+0054 Cx=Cx+SIGMA(2:I+1,2:J+1,1:K).*DY(:,2:J+1,:).*DZ(:,:,1:K);
+0055 Cx=Cx+SIGMA(2:I+1,1:J,2:K+1).*DY(:,1:J,:).*DZ(:,:,2:K+1);
+0056 Cx=Cx+SIGMA(2:I+1,2:J+1,2:K+1).*DY(:,2:J+1,:).*DZ(:,:,2:K+1);
+0057 Cx=-0.25*Cx./DX(2:I+1,:,:);
+0058 <span class="comment">%% FRONT (-y)</span>
+0059    yC=SIGMA(1:I,1:J,1:K).*DX(1:I,:,:).*DZ(:,:,1:K);
+0060 yC=yC+SIGMA(2:I+1,1:J,1:K).*DX(2:I+1,:,:).*DZ(:,:,1:K);
+0061 yC=yC+SIGMA(1:I,1:J,2:K+1).*DX(1:I,:,:).*DZ(:,:,2:K+1);
+0062 yC=yC+SIGMA(2:I+1,1:J,2:K+1).*DX(2:I+1,:,:).*DZ(:,:,2:K+1);
+0063 yC=-0.25*yC./DY(:,1:J,:);
+0064 <span class="comment">%% BACK (+y)</span>
+0065    Cy=SIGMA(1:I,2:J+1,1:K).*DX(1:I,:,:).*DZ(:,:,1:K);
+0066 Cy=Cy+SIGMA(2:I+1,2:J+1,1:K).*DX(2:I+1,:,:).*DZ(:,:,1:K);
+0067 Cy=Cy+SIGMA(1:I,2:J+1,2:K+1).*DX(1:I,:,:).*DZ(:,:,2:K+1);
+0068 Cy=Cy+SIGMA(2:I+1,2:J+1,2:K+1).*DX(2:I+1,:,:).*DZ(:,:,2:K+1);
+0069 Cy=-0.25*Cy./DY(:,2:J+1,:);
+0070 
+0071 Cs=-(Cx+Cy+Cz+xC+yC+zC);
+0072 
+0073 xC(1,:,:)=0.0;Cx(I,:,:)=0.0;
+0074 yC(:,1,:)=0.0;Cy(:,J,:)=0.0;
+0075 Cz(:,:,K)=0.0;
+0076 
+0077 <span class="keyword">if</span> rb,
+0078 <span class="comment">% Mixed boundary conditions</span>
+0079 <span class="comment">%% C_0 = C_0 - C_n*cos(n,r)*dx/r</span>
+0080 <span class="comment">% Take Midpoint(surface) as source</span>
+0081 xm=median(X);<span class="comment">%(X(1)+X(I))/2;</span>
+0082 ym=median(Y);<span class="comment">%(Y(1)+Y(J))/2;</span>
+0083 zm=Z(1);
+0084 <span class="comment">% cos(n1,n2)=(n1.n2)/(abs(n1)*abs(n2));  n2=[1 0 0];</span>
+0085 <span class="comment">% cos(r,e)/r = r.e / (r^2)</span>
+0086 RR=[reshape(repmat(X-xm,1,J*K),1,IJK);reshape(repmat(repmat(Y-ym,1,K),I,1),1,IJK);reshape(repmat(Z-zm,I*J,1),1,IJK)];
+0087 rq=reshape(sum(RR.^2),I,J,K);
+0088 <span class="comment">% Left boundary</span>
+0089 i=1;xx=xm-X(i);
+0090 Cs(i,:,:)=Cs(i,:,:)-dX(i)*Cx(i,:,:)*xx./rq(i,:,:);
+0091 <span class="comment">% Right boundary</span>
+0092 i=I;xx=X(i)-xm;
+0093 Cs(i,:,:)=Cs(i,:,:)-dX(i)*xC(i,:,:)*xx./rq(i,:,:);
+0094 <span class="comment">% Front boundary</span>
+0095 j=1;yy=ym-Y(j);
+0096 Cs(:,j,:)=Cs(:,j,:)-dY(j)*Cy(:,j,:)*yy./rq(:,j,:);
+0097 <span class="comment">%Back boundary</span>
+0098 j=J;yy=Y(j)-ym;
+0099 Cs(:,j,:)=Cs(:,j,:)-dY(j)*yC(:,j,:)*yy./rq(:,j,:);
+0100 <span class="comment">% Bottom boundary</span>
+0101 k=K;zz=Z(K)-zm;
+0102 Cs(:,:,k)=Cs(:,:,k)-dZ(k)*zC(:,:,k)*zz./rq(:,:,k);
+0103 <span class="comment">% end of boundary conditions</span>
+0104 <span class="keyword">end</span>
+0105 C=spdiags([Cz(:) Cy(:) Cx(:) Cs(:) xC(:) yC(:) zC(:)],[-I*J -I -1 0 1 I I*J],IJK,IJK);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

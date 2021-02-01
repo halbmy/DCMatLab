@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of invshifted</title>
+  <meta name="keywords" content="invshifted">
+  <meta name="description" content="INVSHIFTED - make shifted CG and choose by L-criterion">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; invshifted.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>invshifted
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>INVSHIFTED - make shifted CG and choose by L-criterion</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x,lambda,rho,eta] = invshifted(A,y,startlam,minlam,kuh) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> INVSHIFTED - make shifted CG and choose by L-criterion
+ x = invshifted(S,y,startlam,minlam,q)
+ [x,lambda,rho,eta] = invshifted(A,y,startlam,minlam,q)
+ solves regularized normal equations with
+ lambda = startlam, startlam*q, startlam*q^2, ... , minlam
+ and chooses lambda by L-Curve criterion</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="cgshifted.html" class="code" title="function [X,rho,eta,iter] = cgshifted(A,y,alpha)">cgshifted</a>	% INVSHIFTED - Tikhonov-Phillips regularisation with shifted CG</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [X,rho,eta,iter] = cgshifted(A,y,alpha)</a></li><li><a href="#_sub2" class="code">function mm=lkurve(rho,eta,ak)</a></li><li><a href="#_sub3" class="code">function curv=curvature(x,y,n,t)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,lambda,rho,eta] = invshifted(A,y,startlam,minlam,kuh)</a>
+0002 
+0003 <span class="comment">% INVSHIFTED - make shifted CG and choose by L-criterion</span>
+0004 <span class="comment">% x = invshifted(S,y,startlam,minlam,q)</span>
+0005 <span class="comment">% [x,lambda,rho,eta] = invshifted(A,y,startlam,minlam,q)</span>
+0006 <span class="comment">% solves regularized normal equations with</span>
+0007 <span class="comment">% lambda = startlam, startlam*q, startlam*q^2, ... , minlam</span>
+0008 <span class="comment">% and chooses lambda by L-Curve criterion</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;3, startlam=1; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;4, minlam=0.0005; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;5, kuh=0.8; <span class="keyword">end</span>
+0013 
+0014 kmax=fix(-log(startlam/minlam)/log(kuh)+1);
+0015 ak=startlam*(kuh.^(0:kmax));
+0016 
+0017 <span class="keyword">global</span> DM INV warten
+0018 t0=clock;
+0019 [DM,rho,eta,iter] = <a href="cgshifted.html" class="code" title="function [X,rho,eta,iter] = cgshifted(A,y,alpha)">cgshifted</a>(A,y,ak);
+0020 save(<span class="string">'rhoeta.mat'</span>,<span class="string">'rho'</span>,<span class="string">'eta'</span>,<span class="string">'ak'</span>);
+0021 message(sprintf(<span class="string">'Solved shifted systems(lam=%.3f-%.3f, %.2fs %d Iterations)'</span>,<span class="keyword">...</span>
+0022     max(ak),min(ak),etime(clock,t0),iter));
+0023 
+0024 <span class="keyword">if</span> isfield(INV,<span class="string">'auto'</span>)&amp;&amp;(INV.auto==0), <span class="comment">%manual</span>
+0025   save(<span class="string">'rhoeta.mat'</span>,<span class="string">'rho'</span>,<span class="string">'eta'</span>,<span class="string">'ak'</span>);
+0026   warten=0;
+0027   i_choose;
+0028   <span class="keyword">while</span>(warten==0), pause(1.0); <span class="keyword">end</span>
+0029   x=DM(:,warten);
+0030 <span class="keyword">else</span> <span class="comment">% automatic</span>
+0031   warten=lkurv(rho,eta,ak);
+0032   <span class="keyword">if</span> isempty(warten), warten=1; <span class="keyword">end</span>
+0033   x=DM(:,warten);
+0034   message(sprintf(<span class="string">'Choosing alpha_%d=%g'</span>,warten,ak(warten)));
+0035   lambda=ak(warten);
+0036   INV.lam=lambda;
+0037 <span class="keyword">end</span>
+0038 clear <span class="keyword">global</span> warten
+0039 
+0040 <a name="_sub1" href="#_subfunctions" class="code">function [X,rho,eta,iter] = cgshifted(A,y,alpha)</a>
+0041 
+0042 <span class="comment">%% INVSHIFTED - Tikhonov-Phillips regularisation with shifted CG</span>
+0043 <span class="comment">%% [X,rho,eta,iter] = invshifted(A,b,alpha)</span>
+0044 
+0045 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Too few input arguments!!'</span>); <span class="keyword">end</span>
+0046 <span class="keyword">if</span> nargin&lt;3, alpha=0.15; <span class="keyword">end</span>
+0047 <span class="keyword">if</span> ~(alpha(1)&gt;0), alpha=0.15; <span class="keyword">end</span>
+0048 
+0049 X=zeros(length(A(1,:)),length(alpha));
+0050 R=X;
+0051 
+0052 <span class="comment">%% outer variables</span>
+0053 uu=y;         <span class="comment">%% u=\tilde u</span>
+0054 vv=(uu'*A)';     <span class="comment">%% v=\tilde v</span>
+0055 beta=norm(vv);
+0056 v=vv/beta; u=uu/beta;
+0057 p=vv; r=vv; uold=0;
+0058 maxss=norm(r)*1e-8;
+0059 
+0060 kmax=length(alpha)-1;
+0061 <span class="comment">% P anders</span>
+0062 <span class="comment">%shifted=0:kmax;</span>
+0063 <span class="keyword">for</span> k = 0:kmax, P(:,k+1)=vv; <span class="keyword">end</span>
+0064 R=P;
+0065 
+0066 <span class="comment">%% inner variables</span>
+0067 gg=ones(kmax+1,1);     <span class="comment">% \hat\gamma</span>
+0068 ww=zeros(kmax+1,1);     <span class="comment">% \hat\omega</span>
+0069 ss=beta*ones(kmax+1,1);  <span class="comment">% \hat\sigma Knackpunkt</span>
+0070 kmin=0;
+0071 iter=0;
+0072 wb=waitbar(0,<span class="string">'Shifted CG Inversion...'</span>);
+0073 <span class="keyword">while</span> kmin&lt;kmax,   
+0074   iter=iter+1;
+0075   q=A*v;
+0076   delta=reshape(q,1,length(q))*reshape(q,length(q),1);
+0077   uu=q-delta*u-beta*uold;
+0078   vv=(uu'*A)';  <span class="comment">% =A'*uu</span>
+0079   beta=norm(vv);
+0080   v=vv/beta;
+0081   uold=u;
+0082   u=uu/beta;
+0083 
+0084   <span class="keyword">for</span> k = kmin:kmax,
+0085     ddk=alpha(k+1)+delta;
+0086     gg(k+1)=1/(ddk-ww(k+1)/gg(k+1));
+0087     ww(k+1)=(beta*gg(k+1)).^2;
+0088     ss(k+1)=-beta*gg(k+1)*ss(k+1);
+0089     X(:,k+1)=X(:,k+1)+gg(k+1)*P(:,k+1);
+0090     R(:,k+1)=ss(k+1)*v;
+0091     P(:,k+1)=R(:,k+1)+ww(k+1)*P(:,k+1);
+0092   <span class="keyword">end</span>
+0093   <span class="comment">%shifted(kmin+1:kmax+1)=iter;</span>
+0094   ok=kmin;
+0095   kmin=max(find(abs(ss)&lt;maxss));
+0096   <span class="keyword">if</span> isempty(kmin), kmin=0; <span class="keyword">end</span>
+0097   <span class="keyword">if</span> kmin&gt;ok, waitbar(kmin/kmax,wb); <span class="keyword">end</span>
+0098 <span class="keyword">end</span>
+0099 close(wb);
+0100 <span class="comment">%save shifted shifted</span>
+0101 rho=[];eta=[];
+0102 <span class="keyword">for</span> k = 0:kmax,
+0103   rho=[rho norm(A*X(:,k+1)-y)];
+0104   eta=[eta norm(X(:,k+1))];
+0105 <span class="keyword">end</span>
+0106 
+0107 <a name="_sub2" href="#_subfunctions" class="code">function mm=lkurve(rho,eta,ak)</a>
+0108 
+0109 <span class="comment">%% LKURV - L-Curve Criterion</span>
+0110 <span class="comment">%%         Estimation of maximum curvature and plotting</span>
+0111 <span class="comment">%% index=lkurv(rho,eta[,alphas])</span>
+0112 
+0113 <span class="comment">%global hinv</span>
+0114 <span class="comment">%cc=-(curvature(log(rho),log(eta),1,ak));</span>
+0115 <span class="comment">%mm=ecke(rho,eta);</span>
+0116 
+0117 <span class="keyword">if</span> nargin&lt;3, ak=[]; <span class="keyword">end</span>
+0118 <span class="keyword">if</span> isempty(ak),
+0119   cc=-<a href="#_sub3" class="code" title="subfunction curv=curvature(x,y,n,t)">curvature</a>(rho,eta,1);
+0120 <span class="keyword">else</span>
+0121   cc=<a href="#_sub3" class="code" title="subfunction curv=curvature(x,y,n,t)">curvature</a>(rho,eta,0,ak);
+0122 <span class="keyword">end</span>
+0123 mm=min(find(cc==max(cc)));
+0124 <span class="keyword">if</span> (mm==1)|(mm==length(cc)-1),
+0125     mm=1;flag=0;
+0126     <span class="keyword">while</span>((flag==0)&amp;(mm+1&lt;length(rho))),
+0127         mm=mm+1;
+0128         <span class="keyword">if</span>((cc(mm)&gt;cc(mm-1))&amp;(cc(mm)&gt;cc(mm+1))) flag=1; <span class="keyword">end</span>
+0129     <span class="keyword">end</span>
+0130     <span class="keyword">if</span> flag==0, mm=min(find(cc==max(cc))); <span class="keyword">end</span>
+0131 <span class="keyword">end</span>
+0132 <span class="keyword">if</span> nargout==0,
+0133   figure(9);
+0134   plot(rho,eta,<span class="string">'bx:'</span>,rho(mm),eta(mm),<span class="string">'ro'</span>,rho,abs(cc)/max(abs(cc))*max(eta),<span class="string">'g+'</span>);
+0135   le=legend(<span class="string">'L-Curve'</span>,<span class="string">'Optimized \lambda'</span>,<span class="string">'Curvature'</span>);
+0136   set(le,<span class="string">'FontSize'</span>,14);
+0137   xlabel(<span class="string">'Solution norm ||S\Delta m - \Delta d||'</span>,<span class="string">'Fontsize'</span>,14);
+0138   ylabel(<span class="string">'Model norm ||\Delta m||'</span>,<span class="string">'FontSize'</span>,14)
+0139   fac=1;
+0140   text(rho(1)-0.5,eta(1)-1,strcat(<span class="string">'\lambda='</span>,num2str(ak(1),<span class="string">'%.3f'</span>)),<span class="string">'FontSize'</span>,14)
+0141   text(rho(mm)+0.1,eta(mm)+0.5,strcat(<span class="string">'\lambda='</span>,num2str(ak(mm),<span class="string">'%.3f'</span>)),<span class="string">'FontSize'</span>,14)
+0142   text(rho(end)+0.1,eta(end)+0.5,strcat(<span class="string">'\lambda='</span>,num2str(ak(end),<span class="string">'%.3f'</span>)),<span class="string">'FontSize'</span>,14)
+0143 <span class="comment">%  exportfig(gcf,'l-kurve','Format','png','Resolution',300,'Color','rgb');</span>
+0144 <span class="keyword">end</span>
+0145 
+0146 <a name="_sub3" href="#_subfunctions" class="code">function curv=curvature(x,y,n,t)</a>
+0147 <span class="comment">% Curvature of parametric function x(t), y(t)</span>
+0148 <span class="comment">% curv=curvature(x,y,n)</span>
+0149 <span class="comment">% n-number of sampling points</span>
+0150 nn=min([length(x) length(y)]);
+0151 x=x(1:nn);
+0152 y=y(1:nn);
+0153 <span class="keyword">if</span> nargin&lt;4, t=reshape(1:nn,size(x)); <span class="keyword">end</span>
+0154 <span class="keyword">if</span> nargin&lt;3, n=0; <span class="keyword">end</span>
+0155 vor=n;nach=n;
+0156 <span class="keyword">if</span> n==0,
+0157     ys=(y(3:nn)-y(1:nn-2))./(x(3:nn)-x(1:nn-2));
+0158     dydx=diff(y)./diff(x);
+0159     yss=diff(dydx)./(x(3:nn)-x(1:nn-2))*2;
+0160     curv=yss./((1+ys.^2).^1.5);
+0161     curv=[curv(1);curv(:);curv(length(curv))];
+0162 <span class="keyword">else</span>
+0163   <span class="keyword">if</span> n==1,
+0164       xp=(x(3:nn)-x(1:nn-2))./(t(3:nn)-t(1:nn-2));
+0165       yp=(y(3:nn)-y(1:nn-2))./(t(3:nn)-t(1:nn-2));
+0166       <span class="comment">%xpp=x(1:nn-2)+x(3:nn)-2*x(2:nn-1);</span>
+0167       <span class="comment">%ypp=y(1:nn-2)+y(3:nn)-2*y(2:nn-1);</span>
+0168       xpp=(x(3:nn)-x(2:nn-1))./(t(3:nn)-t(2:nn-1));
+0169       xpp=xpp-(x(2:nn-1)-x(1:nn-2))./(t(2:nn-1)-t(1:nn-2));
+0170       xpp=xpp./(t(3:nn)-t(1:nn-2))/2;
+0171       ypp=(y(3:nn)-y(2:nn-1))./(t(3:nn)-t(2:nn-1));
+0172       xpp=ypp-(y(2:nn-1)-y(1:nn-2))./(t(2:nn-1)-t(1:nn-2));
+0173       xpp=ypp./(t(3:nn)-t(1:nn-2))/2;
+0174   <span class="keyword">end</span>
+0175   <span class="keyword">if</span> n==2,
+0176       xp=(x(1:nn-4)-8*x(2:nn-3)+8*x(4:nn-1)-x(5:nn))/12;
+0177       yp=(y(1:nn-4)-8*y(2:nn-3)+8*y(4:nn-1)-y(5:nn))/12;
+0178       xpp=(-x(1:nn-4)+16*x(2:nn-3)-30*x(3:nn-2)+16*x(4:nn-1)-x(5:nn))/12;
+0179       ypp=(-y(1:nn-4)+16*y(2:nn-3)-30*y(3:nn-2)+16*y(4:nn-1)-y(5:nn))/12;
+0180   <span class="keyword">end</span>
+0181   <span class="keyword">if</span> n==3,
+0182       xp=-x(1:nn-3)+x(2:nn-2);
+0183       yp=-y(1:nn-3)+y(2:nn-2);    
+0184       xpp=2*x(1:nn-3)-5*x(2:nn-2)+4*x(3:nn-1)-x(4:nn);
+0185       ypp=2*y(1:nn-3)-5*y(2:nn-2)+4*y(3:nn-1)-y(4:nn);
+0186       vor=0;nach=3;
+0187   <span class="keyword">end</span>
+0188   <span class="keyword">if</span> n==4,
+0189       xp=(-3*x(2:nn-5)-10*x(3:nn-4)+18*x(4:nn-3)-6*x(5:nn-2)+x(6:nn-1))/12;
+0190       yp=(-3*y(2:nn-5)-10*y(3:nn-4)+18*y(4:nn-3)-6*y(5:nn-2)+y(6:nn-1))/12;
+0191       xpp=(-13*x(1:nn-6)+228*x(2:nn-5)-420*x(3:nn-4)+200*x(4:nn-3)+15*x(5:nn-2)-12*x(6:nn-1)+2*x(7:nn))/180;    
+0192       ypp=(-13*y(1:nn-6)+228*y(2:nn-5)-420*y(3:nn-4)+200*y(4:nn-3)+15*y(5:nn-2)-12*y(6:nn-1)+2*y(7:nn))/180;    
+0193       vor=2;nach=4;
+0194   <span class="keyword">end</span>
+0195   curv=(xp(:).*ypp(:)-xpp(:).*yp(:))./((xp(:).^2+yp(:).^2).^1.5);
+0196   curv=[curv(1)*ones(vor,1);curv(:);curv(length(curv))*ones(nach,1)];
+0197 <span class="keyword">end</span>
+0198 curv=reshape(curv,size(x));
+0199 <span class="keyword">return</span>;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of meshsmoothness</title>
+  <meta name="keywords" content="meshsmoothness">
+  <meta name="description" content="MESHSMOOTHNESS - Calculate smoothness matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; meshsmoothness.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>meshsmoothness
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>MESHSMOOTHNESS - Calculate smoothness matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function C=meshsmoothness(Mesh,po) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MESHSMOOTHNESS - Calculate smoothness matrix</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C=meshsmoothness(Mesh,po)</a>
+0002 
+0003 <span class="comment">% MESHSMOOTHNESS - Calculate smoothness matrix</span>
+0004 
+0005 <span class="keyword">if</span> nargin&lt;2, po=0; <span class="keyword">end</span>
+0006 <span class="comment">% fb=find(Mesh.boundmarker==0);</span>
+0007 <span class="keyword">if</span> Mesh.dim&gt;2, error(<span class="string">'Dimension 3 not yet implemented!'</span>); <span class="keyword">end</span>
+0008 fb=find((Mesh.boundleft&gt;0)&amp;(Mesh.boundright&gt;0));
+0009 C=spalloc(Mesh.ncells,Mesh.ncells,length(fb)*2);
+0010 <span class="keyword">for</span> n=1:length(fb),
+0011     i=Mesh.boundleft(fb(n));
+0012     j=Mesh.boundright(fb(n));
+0013     ve=diff(Mesh.node(Mesh.bound(fb(n),:),:));
+0014     val=(1-abs(ve(1))/norm(ve))^po;
+0015 <span class="comment">%     fprintf('%.3f ',[ve val]);fprintf('\n');</span>
+0016     C(i,i)=C(i,i)+val;
+0017     C(j,j)=C(j,j)+val;
+0018     C(i,j)=-val;
+0019     C(j,i)=-val;
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

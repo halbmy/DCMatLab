@@ -1,0 +1,63 @@
+<html>
+<head>
+<title>DC2DInvRes - Model Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC2DInvRes - Model Menu</h2>
+<h3><a name="modpar"></a>Model parameter</h3>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td valign="top">
+      <p>This dialog is used to control the model parameterizations. </p>
+      <p> By typing dx a new (equidistant) x-grid is defined, which also can be 
+        edited manually.<br>
+        The boundaries of the model layers can be changed both manually or automatically 
+        (by regarding 1D sensitivities or by constructing logarithmically increasing 
+        thicknesses for a given model depth).<br>
+        Furthermore, the background resistivities can be set up. In the presented 
+        example a three-layer case is introduced. Note, that the number of Background 
+        resistivities must equal the number of z-Layers, since the last resistivity 
+        is that below the model.</p>
+    </td>
+    <td><img src="pic/modpar.png" width="469" height="439"></td>
+  </tr>
+</table>
+<h3 align="center">&nbsp;</h3>
+<h3><a name="hom"></a>Homogeneous model</h3>
+<p>This resets all model cells (and background resistivities) back to the homogeneous 
+  half-space of the median resistivity.</p>
+<p><a href="hotkeys.html">Hotkey</a>: Shift+H</p>
+<hr>
+<h3><a name="export"></a>Export model</h3>
+<p>For further work or manual plots the model can be exported into an column-oriented 
+  model file (*.mod) of the following format:</p>
+<p>x_1&nbsp;&nbsp;x_2&nbsp;&nbsp;z_1 z_2&nbsp;&nbsp;&nbsp;&nbsp;resistivity (coverage)<br>
+  ... </p>
+<p>The model files can be used for postprocessing as well as for saving purposes. 
+  It is recommended to save important inversion models as model file. Thus it 
+  is possible to print the model at a later time.</p>
+<h3><a name="import"></a>Import model</h3>
+The exported model is loaded from ASCII type model file (*.mod) into workspace. 
+It may be a synthetic model, a starting/reference model or a formerly save inversion 
+result. 
+<p></p>
+<hr>
+<h3><a name="comparemod"></a>Compare models</h3>
+For several reasons like synthetic model studies, it might be useful to determine 
+the distance of two models.<br>
+After clicking, a input file dialog opens to select a model file (*.mod) on disk. 
+The rms error between the current model and the model on disk is diplayed in a 
+dialog. 
+</body>
+</html>

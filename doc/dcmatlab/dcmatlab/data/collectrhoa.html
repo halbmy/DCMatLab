@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of collectrhoa</title>
+  <meta name="keywords" content="collectrhoa">
+  <meta name="description" content="FDFWD3D - 3D DC Forward Calculation with finite differences">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; collectrhoa.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>collectrhoa
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>FDFWD3D - 3D DC Forward Calculation with finite differences</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [R,Rrez]=collectrhoa(N,MEA,rhoBg) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FDFWD3D - 3D DC Forward Calculation with finite differences
+ Rhoa = collectrhoa(N,MEA,rhoBg)
+ [Rhoa_abmn,Rhoa_mnab] = ...
+   N      - Structure of electrode numbers(a,b,m,n), 
+            k-factors(k) and measurements(r)
+            elec- Electrode Positions
+  MEA - multielectrode potential matrix
+        matrix of (size(N.elec,1))^2</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fefwdcall.html" class="code" title="function R = fefwdcall(N,resistivity,rhobg,dim)">fefwdcall</a>	FEFWDCALL - call DCFEM (finite element forward routine)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [R,Rrez]=collectrhoa(N,MEA,rhoBg)</a>
+0002 
+0003 <span class="comment">% FDFWD3D - 3D DC Forward Calculation with finite differences</span>
+0004 <span class="comment">% Rhoa = collectrhoa(N,MEA,rhoBg)</span>
+0005 <span class="comment">% [Rhoa_abmn,Rhoa_mnab] = ...</span>
+0006 <span class="comment">%   N      - Structure of electrode numbers(a,b,m,n),</span>
+0007 <span class="comment">%            k-factors(k) and measurements(r)</span>
+0008 <span class="comment">%            elec- Electrode Positions</span>
+0009 <span class="comment">%  MEA - multielectrode potential matrix</span>
+0010 <span class="comment">%        matrix of (size(N.elec,1))^2</span>
+0011 
+0012 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Two input arguments required!'</span>); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;3, rhoBg=0; <span class="keyword">end</span>
+0014 <span class="comment">% hacked!!!!!!!!!</span>
+0015 <span class="keyword">if</span> length(rhoBg)&gt;1,
+0016     <span class="keyword">for</span> e=1:size(MEA,1),
+0017         dx=N.elec(:,1)-N.elec(e,1);
+0018         dy=N.elec(:,2)-N.elec(e,2);
+0019         dxdy2=dx.^2+dy.^2;
+0020         dz=N.elec(:,3)-N.elec(e,3);
+0021         dz1=N.elec(:,3)+N.elec(e,3);
+0022         MEA(:,e)=MEA(:,e)+(1./sqrt(dxdy2+dz.^2)+1./sqrt(dxdy2+dz1.^2))/4/pi/rhoBg(e);
+0023 <span class="comment">%         ele(e,1)=1;%???</span>
+0024 <span class="comment">%         MEA(:,e)=MEA(:,e)+1./sqrt(sum(ele.^2,2))/2/pi*rhoBg(e);</span>
+0025     <span class="keyword">end</span>
+0026 <span class="keyword">end</span>
+0027 
+0028 data=length(N.a);
+0029 R=zeros(size(N.a));Rrez=R;
+0030 <span class="keyword">for</span> l = 1:data,
+0031     R(l)=MEA(N.a(l),N.m(l));
+0032     Rrez(l)=MEA(N.m(l),N.a(l));
+0033     <span class="keyword">if</span> N.n(l)&gt;0, 
+0034         R(l)=R(l)-MEA(N.a(l),N.n(l)); 
+0035         Rrez(l)=Rrez(l)-MEA(N.n(l),N.a(l)); 
+0036     <span class="keyword">end</span>
+0037     <span class="keyword">if</span> N.b(l)&gt;0,
+0038         R(l)=R(l)-MEA(N.b(l),N.m(l));
+0039         Rrez(l)=Rrez(l)-MEA(N.m(l),N.b(l));
+0040         <span class="keyword">if</span> N.n(l)&gt;0, 
+0041             R(l)=R(l)+MEA(N.b(l),N.n(l)); 
+0042             Rrez(l)=Rrez(l)+MEA(N.n(l),N.b(l)); 
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 <span class="keyword">if</span> isfield(N,<span class="string">'k'</span>),
+0047     R(:)=R(:).*N.k(:);
+0048     Rrez(:)=Rrez(:).*N.k(:);
+0049 <span class="keyword">else</span>
+0050     display(<span class="string">'warning! no geometric factors present in data file!'</span>);
+0051 <span class="keyword">end</span>
+0052 <span class="keyword">if</span> length(rhoBg)==1,
+0053     R=R+rhoBg;
+0054     Rrez=Rrez+rhoBg;
+0055 <span class="keyword">end</span>
+0056 <span class="keyword">if</span> nargout&lt;2,
+0057     rez=(R-Rrez)*2./(R+Rrez);
+0058     message(sprintf(<span class="string">'Standard deviation of reciprocity %.2f%%'</span>,std(rez)*100));
+0059     R=sqrt(abs(R.*Rrez));
+0060 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

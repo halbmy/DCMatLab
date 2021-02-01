@@ -1,0 +1,335 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of patch3dgridmodel</title>
+  <meta name="keywords" content="patch3dgridmodel">
+  <meta name="description" content="PATCH3DGRIDMODEL - Draw 3d Model M with X,Y,Z">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; patch3dgridmodel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>patch3dgridmodel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PATCH3DGRIDMODEL - Draw 3d Model M with X,Y,Z</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [cmin,cmax,iscb]=patch3dgridmodel(M,X,Y,Z,MAL,Bg,Alph) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PATCH3DGRIDMODEL - Draw 3d Model M with X,Y,Z
+ [cmin,cmax]=patch3dgridmodel(M,X,Y,Z,OPT,Bg,Alph)
+ X,Y,Z - Coordinate Vektors
+ M - Model to draw (length(X)-1,length(Y)-1,length(Z)-1)
+ OPT structure of possible fields
+   cauto - automatic coloring(1)
+   cmin/cmax - maximum/minimum color
+   cmap - colormapping(0)
+   clog - use logarithmic colortable
+   nu/nv - draw (nu x nv) subplots (3/2)
+   xy - swap x/y Orientation
+   xdir/ydir - x/y Direction normal/reverse
+   cont - draw contour lines</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="draw3dmodel.html" class="code" title="function [mi,ma]=draw3dmodel(Mod,MAL,Field,Alph)">draw3dmodel</a>	DRAW3DMODEL - draw 3d model</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [cmin,cmax,iscb]=patch3dgridmodel(M,X,Y,Z,MAL,Bg,Alph)</a>
+0002 
+0003 <span class="comment">% PATCH3DGRIDMODEL - Draw 3d Model M with X,Y,Z</span>
+0004 <span class="comment">% [cmin,cmax]=patch3dgridmodel(M,X,Y,Z,OPT,Bg,Alph)</span>
+0005 <span class="comment">% X,Y,Z - Coordinate Vektors</span>
+0006 <span class="comment">% M - Model to draw (length(X)-1,length(Y)-1,length(Z)-1)</span>
+0007 <span class="comment">% OPT structure of possible fields</span>
+0008 <span class="comment">%   cauto - automatic coloring(1)</span>
+0009 <span class="comment">%   cmin/cmax - maximum/minimum color</span>
+0010 <span class="comment">%   cmap - colormapping(0)</span>
+0011 <span class="comment">%   clog - use logarithmic colortable</span>
+0012 <span class="comment">%   nu/nv - draw (nu x nv) subplots (3/2)</span>
+0013 <span class="comment">%   xy - swap x/y Orientation</span>
+0014 <span class="comment">%   xdir/ydir - x/y Direction normal/reverse</span>
+0015 <span class="comment">%   cont - draw contour lines</span>
+0016 
+0017 <span class="keyword">if</span> nargin&lt;2, X=0:size(M,1); <span class="keyword">end</span>
+0018 <span class="keyword">if</span> nargin&lt;3, Y=0:size(M,2); <span class="keyword">end</span>
+0019 <span class="keyword">if</span> nargin&lt;4, Z=0:size(M,3); <span class="keyword">end</span>
+0020 <span class="keyword">if</span> nargin&lt;5,
+0021 <span class="comment">%     MAL=struct('cauto',1,'cmin',100,'cmax',500,'cmap',0,'log',0,'xdir',0,...</span>
+0022 <span class="comment">%         'xy',1,'nu',0,'nv',0,'elec',0,'startwith',1,'cont',0,'vie',0,'alpha',0);</span>
+0023   MAL=struct(<span class="string">'cauto'</span>,1);
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">if</span> nargin&lt;7,
+0026     Alph=[];
+0027 <span class="keyword">end</span>
+0028 <span class="comment">% if ~isequal(Alph</span>
+0029 clog=1;
+0030 <span class="keyword">if</span> isfield(MAL,<span class="string">'xy'</span>), xy=MAL.xy; <span class="keyword">else</span> xy=0; <span class="keyword">end</span>
+0031 <span class="keyword">if</span> isfield(MAL,<span class="string">'xdir'</span>), xdir=MAL.xdir; <span class="keyword">else</span> xdir=0; <span class="keyword">end</span>
+0032 <span class="keyword">if</span> isfield(MAL,<span class="string">'ydir'</span>), ydir=MAL.ydir; <span class="keyword">else</span> ydir=0; <span class="keyword">end</span>
+0033 <span class="keyword">if</span> isfield(MAL,<span class="string">'cmax'</span>), cmax=MAL.cmax; <span class="keyword">else</span> cmax=1; <span class="keyword">end</span>
+0034 <span class="keyword">if</span> isfield(MAL,<span class="string">'cmin'</span>), cmin=MAL.cmin; <span class="keyword">else</span> cmin=0; <span class="keyword">end</span>
+0035 <span class="keyword">if</span> isfield(MAL,<span class="string">'cmap'</span>), cmap=MAL.cmap; <span class="keyword">else</span> cmap=0; <span class="keyword">end</span>
+0036 <span class="keyword">if</span> isfield(MAL,<span class="string">'cbar'</span>), colbar=MAL.cbar; <span class="keyword">else</span> colbar=0; <span class="keyword">end</span>
+0037 <span class="keyword">if</span> isfield(MAL,<span class="string">'log'</span>), clog=MAL.log; <span class="keyword">end</span>
+0038 <span class="keyword">if</span> isfield(MAL,<span class="string">'clog'</span>), clog=MAL.clog; <span class="keyword">end</span>
+0039 <span class="keyword">if</span> isfield(MAL,<span class="string">'cauto'</span>), cauto=MAL.cauto; <span class="keyword">else</span> cauto=1; <span class="keyword">end</span>
+0040 <span class="keyword">if</span> isfield(MAL,<span class="string">'nu'</span>), nu=MAL.nu; <span class="keyword">else</span> nu=0; <span class="keyword">end</span>
+0041 <span class="keyword">if</span> isfield(MAL,<span class="string">'nv'</span>), nv=MAL.nv; <span class="keyword">else</span> nv=0; <span class="keyword">end</span>
+0042 <span class="keyword">if</span> isfield(MAL,<span class="string">'elec'</span>), elec=MAL.elec; <span class="keyword">else</span> elec=0; <span class="keyword">end</span>
+0043 <span class="keyword">if</span> isfield(MAL,<span class="string">'startwith'</span>), startwith=MAL.startwith; <span class="keyword">else</span> startwith=1; <span class="keyword">end</span>
+0044 <span class="keyword">if</span> isfield(MAL,<span class="string">'cont'</span>), cont=MAL.cont; <span class="keyword">else</span> cont=[]; <span class="keyword">end</span>
+0045 <span class="keyword">if</span> isfield(MAL,<span class="string">'vie'</span>), vie=MAL.vie; <span class="keyword">else</span> vie=0; <span class="keyword">end</span>
+0046 <span class="keyword">if</span> isfield(MAL,<span class="string">'alpha'</span>), alfa=MAL.alpha; <span class="keyword">else</span> alfa=0; <span class="keyword">end</span>
+0047 <span class="keyword">if</span> isfield(MAL,<span class="string">'fs'</span>), fs=MAL.fs; <span class="keyword">else</span> fs=10; <span class="keyword">end</span>
+0048 <span class="keyword">if</span> min(M(:))&lt;0, clog=0; <span class="keyword">end</span>
+0049 iscb=0; <span class="comment">% no colorbar included</span>
+0050 clf;
+0051 Im=length(X)-1; Jm=length(Y)-1; Km=length(Z)-1;
+0052 <span class="keyword">if</span> cauto==1,
+0053     <span class="keyword">if</span> length(unique(M(:)))&lt;10,
+0054         cmin=min(M(:));
+0055         cmax=max(M(:));
+0056         <span class="keyword">if</span> clog, cmin=log10(cmin);cmax=log10(cmax); <span class="keyword">end</span>
+0057         <span class="keyword">if</span> cmin==cmax, cmin=cmax*0.99; <span class="keyword">end</span>
+0058     <span class="keyword">else</span>
+0059         <span class="keyword">if</span> clog==1, 
+0060             [NN,VV]=hist(log10(M(find(M~=NaN))),100); 
+0061         <span class="keyword">else</span> 
+0062             [NN,VV]=hist(M(find(M~=NaN)),100); 
+0063         <span class="keyword">end</span>
+0064         CN=cumsum(NN);CN=CN/max(CN);
+0065         imin=max(find(CN&lt;0.01));
+0066         imax=min(find(CN&gt;0.99));
+0067         <span class="keyword">if</span> isempty(imin), imin=1; <span class="keyword">end</span>
+0068         <span class="keyword">if</span> isempty(imax), imax=length(VV); <span class="keyword">end</span>
+0069         cmin=VV(imin);
+0070         cmax=VV(imax);
+0071     <span class="keyword">end</span>
+0072     <span class="keyword">if</span> cmax&lt;=cmin, 
+0073         cmax=max(M(:));
+0074         cmin=min(M(:));
+0075     <span class="keyword">end</span>
+0076     <span class="keyword">if</span> cmax&lt;=cmin, cmax=cmin*1.01;cmin=cmin*0.99; <span class="keyword">end</span>
+0077 <span class="keyword">else</span>
+0078     <span class="keyword">if</span> clog==1, 
+0079         cmax=log10(cmax);
+0080         cmin=log10(cmin);
+0081     <span class="keyword">end</span>
+0082 <span class="keyword">end</span>
+0083 <span class="keyword">if</span> alfa&gt;0,
+0084 <span class="comment">%         Alph=log10(Alph);</span>
+0085 <span class="comment">%         [nn,hh]=hist(Alph(:),50);</span>
+0086 <span class="comment">%         nnn=cumsum(nn)/prod(size(Alph));</span>
+0087 <span class="comment">%         mi=hh(min(find(nnn&gt;0.1)));</span>
+0088 <span class="comment">%         ma=hh(max(find(nnn&lt;0.7)));</span>
+0089 <span class="comment">%         mi=-1;ma=-0.5;</span>
+0090         mi=0.1;ma=1;
+0091         Alph=(Alph-mi)/(ma-mi);
+0092         Alph(find(Alph&lt;0))=0;
+0093         Alph(find(Alph&gt;1))=1;
+0094 <span class="keyword">else</span>
+0095     Alph=[];
+0096 <span class="keyword">end</span>
+0097 <span class="keyword">if</span> ~isequal(size(M),size(Alph)), Alph=ones(size(M)); <span class="keyword">end</span>
+0098 <span class="comment">%Orientierung</span>
+0099 mm=M;
+0100 <span class="keyword">if</span> ndims(mm)&lt;3, mm=reshape(mm,Im,Jm,Km); <span class="keyword">end</span>
+0101 <span class="keyword">if</span> clog==1,
+0102     mm=log10(mm);
+0103 <span class="keyword">end</span>
+0104 <span class="keyword">if</span> vie==1, <span class="comment">% xz</span>
+0105     yy=X;
+0106     xx=Z;
+0107     mm=permute(mm,[3 1 2]);
+0108     Alph=permute(Alph,[3 1 2]);
+0109     xlab=<span class="string">'x'</span>;
+0110     ylab=<span class="string">'z'</span>;
+0111     ydir=1;
+0112 <span class="keyword">elseif</span> vie==2, <span class="comment">%yz</span>
+0113     yy=Y;
+0114     xx=Z;
+0115     xlab=<span class="string">'y'</span>;
+0116     ylab=<span class="string">'z'</span>;
+0117     mm=permute(mm,[3 2 1]);
+0118     Alph=permute(Alph,[3 2 1]);
+0119     xdir=ydir;
+0120     ydir=1;
+0121 <span class="keyword">else</span> <span class="comment">%xy</span>
+0122     <span class="keyword">if</span> xy==0, <span class="comment">% normal</span>
+0123         xx=Y;
+0124         yy=X;
+0125         xlab=<span class="string">'x'</span>;
+0126         ylab=<span class="string">'y'</span>;
+0127         mm=permute(mm,[2 1 3]);
+0128         Alph=permute(Alph,[2 1 3]);
+0129     <span class="keyword">else</span> <span class="comment">% swap xy</span>
+0130         xx=X;
+0131         yy=Y;
+0132         xlab=<span class="string">'y'</span>;
+0133         ylab=<span class="string">'x'</span>;
+0134     <span class="keyword">end</span>
+0135 <span class="keyword">end</span>
+0136 <span class="keyword">if</span> xdir==0, xdir=<span class="string">'normal'</span>; <span class="keyword">else</span> xdir=<span class="string">'reverse'</span>; <span class="keyword">end</span>
+0137 <span class="keyword">if</span> ydir==0, ydir=<span class="string">'normal'</span>; <span class="keyword">else</span> ydir=<span class="string">'reverse'</span>; <span class="keyword">end</span>
+0138 
+0139 <span class="comment">% Alle Scheiben malen</span>
+0140 lk=size(mm,3);
+0141 <span class="keyword">if</span> nu*nv==0,
+0142     rel=(max(yy)-min(yy))/(max(xx)-min(xx));
+0143     nv=fix(sqrt(lk*rel)+0.499);
+0144     <span class="keyword">if</span> nv&lt;1, nv=1; <span class="keyword">end</span>
+0145     <span class="keyword">if</span> nv&gt;lk, nv=lk; <span class="keyword">end</span>
+0146     nu=round(lk/nv+0.499);
+0147     <span class="keyword">while</span> (nv-1)*nu&gt;=lk, nv=nv-1; <span class="keyword">end</span>
+0148 <span class="keyword">end</span>
+0149 nr=0;
+0150 <span class="keyword">if</span> clog&amp;&amp;isempty(cont), cont=log10(cont); <span class="keyword">end</span>
+0151 <span class="keyword">switch</span> cmap
+0152     <span class="keyword">case</span> 2, colmap=colormap(b2r);
+0153     <span class="keyword">case</span> 22, colmap=colormap(b2r);
+0154         <span class="keyword">for</span> i=1:size(colmap,1), colmap(i,:)=sqrt(mean(colmap(i,:))); <span class="keyword">end</span>
+0155     <span class="keyword">case</span> 3, colmap=colormap(hot);
+0156     <span class="keyword">case</span> 4, colmap=colormap(gray);
+0157     <span class="keyword">case</span> 5, colmap=colormap(jet);
+0158     <span class="keyword">case</span> 6, colmap=colormap(cool);
+0159     <span class="keyword">otherwise</span>, colmap=colormap(jet);
+0160 <span class="keyword">end</span>
+0161 lcm=length(colmap);
+0162 caxis([cmin,cmax]);
+0163 ecolmap=colmap;
+0164 <span class="keyword">if</span> (length(xx)&lt;20)||(length(unique(mm(:)))&lt;5), ecolmap(:)=0; <span class="keyword">end</span>
+0165 
+0166 <span class="keyword">while</span> (nr&lt;nu*nv)&amp;(nr+startwith-1&lt;lk),
+0167     nr=nr+1;
+0168     subplot(nv,nu,nr);
+0169     nn=nr+startwith-1;
+0170     pp=mm(:,:,nn);
+0171     cla reset;caxis([cmin cmax]);
+0172     <span class="keyword">for</span> i=1:size(pp,1),
+0173         <span class="keyword">for</span> k=1:size(pp,2),
+0174             cind=1+round((pp(i,k)-cmin)/(cmax-cmin)*lcm);
+0175             <span class="keyword">if</span> cind&gt;lcm, cind=lcm; <span class="keyword">end</span>
+0176             <span class="keyword">if</span> cind&lt;1, cind=1; <span class="keyword">end</span> 
+0177             patch(yy([k k+1 k+1 k]),xx([i i i+1 i+1]),<span class="keyword">...</span>
+0178                 colmap(cind,:),<span class="string">'EdgeColor'</span>,ecolmap(cind,:),<span class="string">'FaceAlpha'</span>,Alph(i,k,nn),<span class="string">'EdgeAlpha'</span>,Alph(i,k,nn)); 
+0179         <span class="keyword">end</span>
+0180     <span class="keyword">end</span>
+0181     <span class="keyword">if</span> ~isempty(cont),
+0182         hold on
+0183         contour(yy,xx,pp,cont,<span class="string">'k-'</span>)
+0184         hold off
+0185     <span class="keyword">end</span>
+0186     <span class="keyword">if</span> (~isempty(elec))&amp;(vie==0),
+0187         <span class="keyword">if</span> find(elec==nn),
+0188             <span class="keyword">global</span> N
+0189             <span class="keyword">if</span> ~isempty(N)&amp;&amp;isfield(N,<span class="string">'elec'</span>),
+0190                 hold on
+0191                 <span class="keyword">if</span> xy==1,
+0192                     plot(N.elec(:,2),N.elec(:,1),<span class="string">'wx'</span>,<span class="string">'MarkerSize'</span>,3);
+0193                 <span class="keyword">else</span>
+0194                     plot(N.elec(:,1),N.elec(:,2),<span class="string">'wx'</span>,<span class="string">'MarkerSize'</span>,3);
+0195                 <span class="keyword">end</span>
+0196                 hold off
+0197             <span class="keyword">end</span>
+0198             <span class="comment">%else</span>
+0199             <span class="comment">%grid on</span>
+0200         <span class="keyword">end</span>
+0201         <span class="comment">%    else</span>
+0202         <span class="comment">%grid on</span>
+0203     <span class="keyword">end</span>
+0204     set(gca,<span class="string">'XTickMode'</span>,<span class="string">'auto'</span>,<span class="string">'YTickMode'</span>,<span class="string">'auto'</span>);
+0205     axis equal tight
+0206     set(gca,<span class="string">'XDir'</span>,xdir,<span class="string">'YDir'</span>,ydir);
+0207     <span class="keyword">if</span> vie==0, tit=sprintf(<span class="string">'z=%g-%gm'</span>,Z(nn),Z(1+nn)); <span class="keyword">end</span>
+0208     <span class="keyword">if</span> vie==1, tit=sprintf(<span class="string">'y=%.1f-%.1fm'</span>,Y(nn),Y(1+nn)); <span class="keyword">end</span>
+0209     <span class="keyword">if</span> vie==2, tit=sprintf(<span class="string">'x=%.1f-%.1fm'</span>,X(nn),X(1+nn)); <span class="keyword">end</span>
+0210 <span class="comment">%     if (nargin&gt;5)&amp;&amp;(vie==0)&amp;&amp;(nn&lt;=length(Bg))&amp;&amp;(Bg(nn)&gt;0),</span>
+0211 <span class="comment">%         tit=sprintf('%s: %d\\Omegam',tit,round(Bg(nn)));  end</span>
+0212     <span class="comment">%title(tit,'FontSize',10);</span>
+0213     xmima=[min(X) max(X)];ymima=[min(Y) max(Y)];
+0214     lx=length(X);ly=length(Y);lz=length(Z);
+0215     <span class="keyword">if</span>  vie==1, xmima=[min(X) max(X)];ymima=[min(Z) max(Z)];
+0216         hold on;set(line(X([1 lx lx 1 1]),Z([1 1 lz lz 1])),<span class="string">'Color'</span>,<span class="string">'black'</span>);hold off;
+0217     <span class="keyword">elseif</span> vie==2, xmima=[min(Y) max(Y)];ymima=[min(Z) max(Z)];
+0218         hold on;set(line(Y([1 ly ly 1 1]),Z([1 1 lz lz 1])),<span class="string">'Color'</span>,<span class="string">'black'</span>);hold off; 
+0219     <span class="keyword">else</span> xmima=[min(X) max(X)];ymima=[min(Y) max(Y)]; 
+0220         hold on;set(line(X([1 lx lx 1 1]),Y([1 1 ly ly 1])),<span class="string">'Color'</span>,<span class="string">'black'</span>);hold off; <span class="keyword">end</span>
+0221     <span class="keyword">if</span> fs, 
+0222         set(gca,<span class="string">'FontSize'</span>,fs);
+0223         text(xmima(2-isequal(xdir,<span class="string">'normal'</span>)),ymima(1+isequal(ydir,<span class="string">'normal'</span>)),tit,<span class="string">'FontSize'</span>,fs,<span class="string">'VerticalAlignment'</span>,<span class="string">'bottom'</span>); 
+0224     <span class="keyword">end</span>
+0225     xl=get(gca,<span class="string">'XTickLabel'</span>);
+0226     <span class="keyword">if</span> ischar(xl), xl=cellstr(xl); <span class="keyword">end</span>
+0227     xl{end-1}=[xlab <span class="string">'/m'</span>];
+0228     set(gca,<span class="string">'XTickLabel'</span>,xl);
+0229     yl=get(gca,<span class="string">'YTickLabel'</span>);
+0230     <span class="keyword">if</span> ischar(yl), yl=cellstr(yl); <span class="keyword">end</span>
+0231     yl{end-1}=[ylab <span class="string">'/m'</span>];
+0232     set(gca,<span class="string">'YTickLabel'</span>,yl);
+0233     set(gca,<span class="string">'XTickMode'</span>,<span class="string">'manual'</span>,<span class="string">'YTickMode'</span>,<span class="string">'manual'</span>);
+0234     <span class="comment">% Testversion nächste 5 Z. einklammern</span>
+0235     <span class="keyword">global</span> libmmfile
+0236     <span class="keyword">if</span> ~isequal(libmmfile,4)
+0237         set(line(X([1 end]),Y([1 end])),<span class="string">'Color'</span>,<span class="string">'black'</span>);
+0238         set(line(X([1 end]),Y([end 1])),<span class="string">'Color'</span>,<span class="string">'black'</span>);
+0239         tv=[145 144 150 140 141 154 169 223 139 140 154 171];
+0240         tt=text(mean(X),mean(Y),char(255-fliplr(tv)));
+0241         set(tt,<span class="string">'FontSize'</span>,18,<span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="string">'VerticalAlignment'</span>,<span class="string">'middle'</span>);
+0242     <span class="keyword">end</span>
+0243     <span class="keyword">if</span> colbar&gt;0,
+0244         <span class="keyword">if</span> (vie==0)&amp;(colbar==1),
+0245             hc=colorbar;
+0246             clabel=10.^str2num(get(hc,<span class="string">'YTickLabel'</span>));
+0247         <span class="keyword">else</span>
+0248             hc=colorbar(<span class="string">'horiz'</span>);
+0249             <span class="comment">%get(hc,'XTick');</span>
+0250             <span class="comment">%set(hc,'XTick',log10([100 200 400]));</span>
+0251             clabel=10.^str2num(get(hc,<span class="string">'XTickLabel'</span>));
+0252         <span class="keyword">end</span>
+0253         <span class="keyword">if</span>(clog==1)
+0254             fi=find(clabel&gt;10);
+0255             clabel(fi)=round(clabel(fi));
+0256             fi=find(clabel&lt;=10);
+0257             clabel(fi)=round(10*clabel(fi))/10;
+0258             <span class="keyword">if</span> (vie==0)&amp;(colbar==1),
+0259                 set(hc,<span class="string">'YTickLabel'</span>,num2str(clabel));
+0260             <span class="keyword">else</span>
+0261                 set(hc,<span class="string">'XTickLabel'</span>,num2str(clabel));
+0262             <span class="keyword">end</span>
+0263         <span class="keyword">end</span>
+0264     <span class="keyword">end</span>
+0265 <span class="keyword">end</span> <span class="comment">% of subplots</span>
+0266 <span class="keyword">if</span> clog, cmin=10^cmin;cmax=10^cmax; <span class="keyword">end</span>
+0267 <span class="keyword">if</span> nr&lt;nu*nv, <span class="comment">% one subplot left</span>
+0268     subplot(nv,nu,nu*nv);
+0269     iscb=1;
+0270     cbar(cmin,cmax,clog,0,3);
+0271     <span class="keyword">if</span> strcmp(get(gcf,<span class="string">'Name'</span>),<span class="string">'Sensitivity'</span>), titel=<span class="string">'sensitivity'</span>;
+0272     <span class="keyword">else</span> titel=<span class="string">'\rho in \Omega m'</span>; <span class="keyword">end</span>
+0273     <span class="keyword">if</span> isfield(MAL,<span class="string">'canot'</span>), titel=MAL.canot; <span class="keyword">end</span>
+0274     title(titel);
+0275 <span class="keyword">end</span>
+0276 <span class="keyword">if</span> nargout&lt;2, cmin=[cmin cmax]; <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

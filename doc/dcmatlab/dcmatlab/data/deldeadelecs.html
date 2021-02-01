@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of deldeadelecs</title>
+  <meta name="keywords" content="deldeadelecs">
+  <meta name="description" content="DELDEADELECS - Delete dead electrodes">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; deldeadelecs.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>deldeadelecs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>DELDEADELECS - Delete dead electrodes</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function NN=deldeadelecs(N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> DELDEADELECS - Delete dead electrodes
+ Nnew = deldeadelecs(N)
+ N, Nnew - data structure</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="dcintersect.html" class="code" title="function [Data,fi1,fi2,Data2a]=dcintersect(Data1,Data2,sortdata,delelecs)">dcintersect</a>	DCINTERSECT - Find intersecting data from 2 data sets</li><li><a href="delelectrode.html" class="code" title="function [Data1,fim]=delelectrode(Data,fi)">delelectrode</a>	DELELECTRODE - Delete measurements with specific electrode</li><li><a href="reads2dfile.html" class="code" title="function N=readsnd2d(filename)">reads2dfile</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="readsnd2d.html" class="code" title="function N=readsnd2d(filename)">readsnd2d</a>	READSND2D - Read 2d file by use of soundings</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function NN=deldeadelecs(N)</a>
+0002 
+0003 <span class="comment">% DELDEADELECS - Delete dead electrodes</span>
+0004 <span class="comment">% Nnew = deldeadelecs(N)</span>
+0005 <span class="comment">% N, Nnew - data structure</span>
+0006 
+0007 map=zeros(size(N.elec,1),1);
+0008 used=unique([N.a;N.b;N.m;N.n]);
+0009 <span class="keyword">if</span> used(1)==0, used(1)=[]; <span class="keyword">end</span>
+0010 <span class="comment">% notused=setxor(used,1:size(N.elec,1));</span>
+0011 <span class="comment">% N.elec(notused,:)=[];</span>
+0012 NN=N;
+0013 NN.elec=N.elec(used,:);
+0014 <span class="keyword">if</span> isfield(N,<span class="string">'x'</span>), NN.x=N.x(used); <span class="keyword">end</span>
+0015 <span class="keyword">if</span> isfield(N,<span class="string">'y'</span>), NN.y=N.y(used); <span class="keyword">end</span>
+0016 <span class="keyword">if</span> isfield(N,<span class="string">'z'</span>), NN.z=N.z(used); <span class="keyword">end</span>    
+0017 map(used)=1:length(used);
+0018 map=[0;map(:)];
+0019 NN.a=map(N.a+1);
+0020 NN.b=map(N.b+1);
+0021 NN.m=map(N.m+1);
+0022 NN.n=map(N.n+1);
+0023 <span class="keyword">if</span> isfield(N,<span class="string">'r'</span>), NN.r=N.r; <span class="keyword">end</span>
+0024 <span class="keyword">if</span> isfield(N,<span class="string">'k'</span>), NN.k=N.k; <span class="keyword">end</span>
+0025 <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>), NN.err=N.err; <span class="keyword">end</span>
+0026 <span class="keyword">if</span> isfield(N,<span class="string">'ip'</span>), NN.ip=N.ip; <span class="keyword">end</span>
+0027 <span class="keyword">if</span> isfield(N,<span class="string">'i'</span>), NN.i=N.i; <span class="keyword">end</span>
+0028 <span class="keyword">if</span> isfield(N,<span class="string">'u'</span>), NN.u=N.u; <span class="keyword">end</span>
+0029 <span class="keyword">if</span> isfield(N,<span class="string">'rez'</span>), NN.rez=N.rez; <span class="keyword">end</span>
+0030 <span class="keyword">if</span> isfield(N,<span class="string">'rho'</span>), NN.rho=N.rho; <span class="keyword">end</span>
+0031 <span class="keyword">if</span> isfield(N,<span class="string">'zweid'</span>), NN.zweid=N.zweid; <span class="keyword">end</span>
+0032 <span class="keyword">if</span> isfield(N,<span class="string">'nr'</span>), NN.nr=N.nr; <span class="keyword">end</span>
+0033 <span class="keyword">if</span> isfield(N,<span class="string">'names'</span>), NN.names=N.names; <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

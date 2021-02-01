@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of linesearch1</title>
+  <meta name="keywords" content="linesearch1">
+  <meta name="description" content="LINESEARCH - Applies line-search procedure">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; linesearch1.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>linesearch1
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>LINESEARCH - Applies line-search procedure</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [tauopt,appR]=linesearch(N,oldR,R,islog) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> LINESEARCH - Applies line-search procedure
+ tauopt = linesearch(N,oldR,newR)
+ [tauopt,appR] = ...</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [tauopt,appR]=linesearch(N,oldR,R,islog)</a>
+0002 
+0003 <span class="comment">% LINESEARCH - Applies line-search procedure</span>
+0004 <span class="comment">% tauopt = linesearch(N,oldR,newR)</span>
+0005 <span class="comment">% [tauopt,appR] = ...</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;4, islog=0; <span class="keyword">end</span>
+0008 <span class="keyword">for</span> i=1:20,
+0009     tau=i*0.05;
+0010     <span class="keyword">if</span> islog, appR=oldR.*exp(tau*(log(R)-log(oldR))); 
+0011     <span class="keyword">else</span> appR=oldR+tau*(R-oldR); <span class="keyword">end</span>
+0012     ch(i)=chi2(N.r,appR,N.err,1);
+0013     <span class="comment">%if nargin&gt;3, %+ model functional</span>
+0014 <span class="keyword">end</span>
+0015 [xx,nn]=min(ch);
+0016 tauopt=nn*0.05;    
+0017 appR=oldR+tauopt*(R-oldR);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

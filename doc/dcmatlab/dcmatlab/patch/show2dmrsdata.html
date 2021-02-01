@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of show2dmrsdata</title>
+  <meta name="keywords" content="show2dmrsdata">
+  <meta name="description" content="SHOW2DMRSDATA - Show 2d MRS data as subplot curves">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; show2dmrsdata.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>show2dmrsdata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SHOW2DMRSDATA - Show 2d MRS data as subplot curves</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function show2dmrsdata(data,meas,field,field2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SHOW2DMRSDATA - Show 2d MRS data as subplot curves
+ show2smrsdata(data,meas[,field[,field2]])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function show2dmrsdata(data,meas,field,field2)</a>
+0002 
+0003 <span class="comment">% SHOW2DMRSDATA - Show 2d MRS data as subplot curves</span>
+0004 <span class="comment">% show2smrsdata(data,meas[,field[,field2]])</span>
+0005 
+0006 <span class="keyword">if</span> (nargin&lt;3)||isempty(field), 
+0007     field=abs(data.V_mes);
+0008 <span class="keyword">end</span>
+0009 Ntx=max(meas.ntx);
+0010 Nrx=max(meas.nrx);
+0011 qmi=min(data.q_val);
+0012 qmi=min(qmi,rndig(qmi,1)); <span class="comment">% not too much zeros</span>
+0013 qma=max(data.q_val);
+0014 fmi=min(field);
+0015 fma=max(field);
+0016 clf;
+0017 <span class="keyword">for</span> i=1:data.N_cfg,
+0018    subplot(Ntx,Nrx,data.mes_idx(i));
+0019    idx=data.idx_q(i):data.idx_q(i+1)-1;
+0020    semilogy(field(idx),data.q_val(idx),<span class="string">'bx-'</span>);
+0021    <span class="keyword">if</span> nargin&gt;3,
+0022        hold on;
+0023        semilogy(field2(idx),data.q_val(idx),<span class="string">'r+-'</span>);
+0024        hold off;
+0025    <span class="keyword">end</span>
+0026    axis ij;grid on;
+0027    xlim([fmi fma]);ylim([qmi qma]);
+0028    yt=get(gca,<span class="string">'YTick'</span>);
+0029    <span class="keyword">if</span> length(yt)&lt;3,
+0030       yt=[rndig(qmi,1);yt(:);qma];      
+0031       ytl=num2strcell(rndig(yt,2));
+0032       set(gca,<span class="string">'YTick'</span>,yt,<span class="string">'YTickLabel'</span>,ytl);
+0033    <span class="keyword">end</span>
+0034    
+0035    text(fmi,qmi,[<span class="string">'Tx'</span> num2str(meas.ntx(i)) <span class="string">'Rx'</span> num2str(meas.nrx(i))],<span class="keyword">...</span>
+0036         <span class="string">'HorizontalAlignment'</span>,<span class="string">'left'</span>,<span class="string">'VerticalAlignment'</span>,<span class="string">'bottom'</span>);
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

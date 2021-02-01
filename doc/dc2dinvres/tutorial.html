@@ -1,0 +1,69 @@
+<html>
+<head>
+<title>DC2DInvRes - Tutorial</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC2DInvRes - Tutorial</h2>
+<h4>Standard data inversion procedure</h4>
+(&quot;Load Data&quot; and &quot;Full inversion&quot; works but learn by playing) 
+<ol>
+  <li>Load a data file (File&gt;&gt;Open Data File)</li>
+  <li>Estimate data errors by configuration factor and electrode variations</li>
+  <li>Add other files to the data (and save all as separate data file) <br>
+  </li>
+  <li>Display apparent resistivities, IP, voltages and eliminate apparently bad 
+    data by clicking</li>
+  <li>Display model and edit model parameters (type in resistivity and click on 
+    cells) </li>
+  <li>If a-priori information (e.g. layering) is known, enter resistivity values or draw 
+    model<br>
+    (save starting model by Model&gt;&gt;Export Model)</li>
+  <li>If not and layering is to be seen in the data, choose Inversion&gt;&gt;Layered 
+    Model</li>
+  <li>Create Sensitivities (Inversion&gt;&gt;Sensitivities) and explore them (Display&gt;&gt;Sensitivities)<br>
+    (if necessary, change model parameterization and check sensitivities again)</li>
+  <li>Inversion options: Gauss-Newton method, Smoothness Constraints, Combine Cells, global&line search on<br>
+      (1st order Smoothness for broad structures, 2nd for bounded bodies)</li>
+  <li>Choose fixed lambda value (10-30) or manual choosing</li>
+  <li>Click Inversion&gt;&gt;One Inversion step</li>
+  <li>experiment with different lambdas by hand or with slider (go back every 
+    time) <br>
+    (if resistivities get too low, try &quot;lower resistivity bound&quot; in 
+    Options&gt;&gt;Inversion <br>
+  </li>
+  <li>Full inversion, watch forward accuracy and chi^2 (below 10 is acceptable)<br>
+    (if forward accuracy becomes too large, increase z-refining<br>
+    (if chi^2 stays large, increase error estimates or decrease lambda and start 
+    over) </li>
+  <li>Watch data misfit during inversion, should ideally represent randoms at 
+    the end<br>
+    (practical using the &quot;Show&gt;&gt;Compare Data&quot; option once)<br>
+  </li>
+  <li>check other inversion options, if necessary</li>
+  <li>Watch resolution measures, esp. resolution radius and Model Cell resolution</li>
+  <li>Save model (Model&gt;&gt;Export) or workspace(File&gt;&gt;Save Workspace)</li>
+  <li>Visualize model, data, ... and export into graphics files</li>
+</ol>
+<h4>Synthetic data modelling / experimental design</h4>
+<ol>
+  <li>Make new data using Data&gt;&gt;Create Data Set and watch error estimates</li>
+  <li>Edit model by Model&gt;&gt;Parameter and draw model</li>
+  <li>Calculate forward response using Data&gt;&gt;Forward, add noise with Data&gt;&gt;Add 
+    noise</li>
+  <li>Data&gt;&gt;Set response as data</li>
+  <li>Inversion&gt;&gt;Homogeneous model or starting model</li>
+  <li>Inversion and resolution (see 9.-16. above)</li>
+</ol>
+</body>
+</html>

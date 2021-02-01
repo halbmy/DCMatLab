@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getgrfile</title>
+  <meta name="keywords" content="getgrfile">
+  <meta name="description" content="GETGRFILE - get graphics file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; getgrfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>getgrfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GETGRFILE - get graphics file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [outfile,iseps,ispdf]=getgrfile(infile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GETGRFILE - get graphics file
+ calls UIGETFILE to determine file name and type (eps or png)
+ outfile = getgrfile(basefilename);
+ [outfile,iseps] = getgrfile(basefilename);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [outfile,iseps,ispdf]=getgrfile(infile)</a>
+0002 
+0003 <span class="comment">% GETGRFILE - get graphics file</span>
+0004 <span class="comment">% calls UIGETFILE to determine file name and type (eps or png)</span>
+0005 <span class="comment">% outfile = getgrfile(basefilename);</span>
+0006 <span class="comment">% [outfile,iseps] = getgrfile(basefilename);</span>
+0007 
+0008 [path,name,ext]=fileparts(infile); 
+0009 outfile=strrep(infile,ext,<span class="string">'.png'</span>);
+0010 [fname,pname]=uiputfile({<span class="string">'*.png '</span>;<span class="string">'*.eps '</span>;<span class="string">'*.pdf '</span>},<span class="string">'Save Figure as'</span>,outfile);
+0011 ispdf=any(strfind(fname,<span class="string">'.pdf'</span>));
+0012 iseps=any(strfind(fname,<span class="string">'.eps'</span>))|ispdf;
+0013 <span class="keyword">if</span> fname==0,
+0014     outfile=<span class="string">''</span>;
+0015 <span class="keyword">else</span>
+0016     <span class="keyword">if</span> ispdf, 
+0017         ext=<span class="string">'.eps'</span>; 
+0018         fname=strrep(fname,<span class="string">'.pdf'</span>,<span class="string">'.eps'</span>);
+0019     <span class="keyword">end</span>
+0020     outfile=fullfile(pname,fname);
+0021     [ff,pp,ee]=fileparts(outfile);
+0022     <span class="keyword">if</span> strcmp(ee,<span class="string">''</span>), 
+0023         ext=<span class="string">'.png'</span>;
+0024         <span class="keyword">if</span> iseps, ext=<span class="string">'.eps'</span>; <span class="keyword">end</span>
+0025         outfile=[outfile ext]; 
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

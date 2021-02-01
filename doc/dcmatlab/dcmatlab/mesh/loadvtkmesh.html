@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of loadvtkmesh</title>
+  <meta name="keywords" content="loadvtkmesh">
+  <meta name="description" content="LOADVTKMESH - Load mesh from VTK format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; loadvtkmesh.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>loadvtkmesh
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>LOADVTKMESH - Load mesh from VTK format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Mesh=loadvtkmesh(filename,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> LOADVTKMESH - Load mesh from VTK format
+ loadvtkmesh(filename)
+ loadvtkmesh(filename,dim)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Mesh=loadvtkmesh(filename,dim)</a>
+0002 
+0003 <span class="comment">% LOADVTKMESH - Load mesh from VTK format</span>
+0004 <span class="comment">% loadvtkmesh(filename)</span>
+0005 <span class="comment">% loadvtkmesh(filename,dim)</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;2, dim=2; <span class="keyword">end</span>
+0008 Mesh=[];
+0009 <span class="keyword">if</span> nargin&lt;1, filename=<span class="string">'showmodel.vtk'</span>; <span class="keyword">end</span>
+0010 fid=fopen(filename,<span class="string">'r'</span>);
+0011 <span class="keyword">for</span> i=1:5, zeile=fgetl(fid); <span class="keyword">end</span>
+0012 Mesh.nnodes=sscanf(zeile,<span class="string">'%*s%d*%s'</span>);
+0013 Mesh.node=fscanf(fid,<span class="string">'%f'</span>,[3 Mesh.nnodes])';
+0014 zeile=<span class="string">''</span>;
+0015 <span class="keyword">while</span> length(zeile)&lt;4, zeile=fgetl(fid); <span class="keyword">end</span>
+0016 Mesh.ncells=sscanf(zeile,<span class="string">'%*s%d*%s'</span>);
+0017 <span class="keyword">if</span> nargin&gt;1, <span class="comment">% dim given</span>
+0018     frow=dim+2;
+0019 <span class="keyword">else</span>
+0020     fpos=ftell(fid);
+0021     zeile=fgetl(fid);
+0022     nn=str2num(zeile);
+0023     frow=length(nn);
+0024     dim=frow-2;
+0025     fseek(fid,fpos,<span class="string">'bof'</span>);
+0026 <span class="keyword">end</span>
+0027 Mesh.cell=fscanf(fid,<span class="string">'%f'</span>,[frow Mesh.ncells])'+1;
+0028 Mesh.cell(:,1)=[]; <span class="comment">% node number</span>
+0029 zeile=<span class="string">''</span>;
+0030 <span class="keyword">while</span> length(zeile)&lt;2, zeile=fgetl(fid); <span class="keyword">end</span>
+0031 nctypes=sscanf(zeile,<span class="string">'%*s%d'</span>);
+0032 ntypes=fscanf(fid,<span class="string">'%d'</span>,nctypes);
+0033 zeile=<span class="string">''</span>;
+0034 <span class="keyword">while</span> length(zeile)&lt;2, zeile=fgetl(fid); <span class="keyword">end</span>
+0035 zeile=<span class="string">''</span>;<span class="keyword">while</span> isempty(strfind(zeile,<span class="string">'LOOKUP'</span>)), zeile=fgetl(fid); <span class="keyword">end</span>
+0036 Mesh.cellattr=fscanf(fid,<span class="string">'%f'</span>,Mesh.ncells);
+0037 zeile=<span class="string">''</span>;
+0038 <span class="keyword">while</span> isstr(zeile)&amp;&amp;(length(zeile)&lt;2), zeile=fgetl(fid); <span class="keyword">end</span>
+0039 zeile=fgetl(fid);
+0040 Mesh.cellattr2=fscanf(fid,<span class="string">'%f'</span>,Mesh.ncells);
+0041 zeile=<span class="string">''</span>;
+0042 <span class="keyword">while</span> isstr(zeile)&amp;&amp;(length(zeile)&lt;2), zeile=fgetl(fid); <span class="keyword">end</span>
+0043 zeile=fgetl(fid);
+0044 Mesh.cellattr3=fscanf(fid,<span class="string">'%f'</span>,Mesh.ncells);
+0045 zeile=<span class="string">''</span>;
+0046 <span class="keyword">while</span> isstr(zeile)&amp;&amp;(length(zeile)&lt;2), zeile=fgetl(fid); <span class="keyword">end</span>
+0047 zeile=fgetl(fid);
+0048 Mesh.cellattr4=fscanf(fid,<span class="string">'%f'</span>,Mesh.ncells);
+0049 zeile=<span class="string">''</span>;
+0050 <span class="keyword">while</span> isstr(zeile)&amp;&amp;(length(zeile)&lt;2), zeile=fgetl(fid); <span class="keyword">end</span>
+0051 zeile=fgetl(fid);
+0052 Mesh.cellattr5=fscanf(fid,<span class="string">'%f'</span>,Mesh.ncells);
+0053 fclose(fid);
+0054 Mesh.dim=dim;
+0055 Mesh.cellnodes=ones(Mesh.ncells,1)*(dim+1);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

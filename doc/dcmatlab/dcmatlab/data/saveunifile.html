@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of saveunifile</title>
+  <meta name="keywords" content="saveunifile">
+  <meta name="description" content="SAVEUNIFILE - Save unified data format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; saveunifile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>saveunifile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVEUNIFILE - Save unified data format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function saveunifile(fname,N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVEUNIFILE - Save unified data format
+ saveunifile(filename,Data)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function saveunifile(fname,N)</a>
+0002 
+0003 <span class="comment">% SAVEUNIFILE - Save unified data format</span>
+0004 <span class="comment">% saveunifile(filename,Data)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'saveunifile(filename,Data)'</span>); <span class="keyword">end</span>
+0007 <span class="keyword">if</span> (nargin&gt;1)&amp;&amp;isstruct(fname)&amp;&amp;ischar(N), <span class="comment">%reversed order</span>
+0008     dummy=N;N=fname;fname=dummy;    
+0009 <span class="keyword">end</span>
+0010 newline=<span class="string">'\r\n'</span>;
+0011 fid=fopen(fname,<span class="string">'w'</span>);
+0012 <span class="keyword">if</span> fid&lt;0,
+0013     error(<span class="string">'File not found!'</span>);
+0014 <span class="keyword">end</span>
+0015 <span class="comment">%% positions</span>
+0016 ss=<span class="string">'#'</span>;
+0017 <span class="keyword">if</span> isfield(N,<span class="string">'x'</span>)|isfield(N,<span class="string">'y'</span>),
+0018     elec=[];
+0019     <span class="keyword">if</span> isfield(N,<span class="string">'x'</span>), elec=[elec N.x];ss=[ss <span class="string">'\tx'</span>]; <span class="keyword">end</span>
+0020     <span class="keyword">if</span> isfield(N,<span class="string">'y'</span>), elec=[elec N.y];ss=[ss <span class="string">'\ty'</span>]; <span class="keyword">end</span>
+0021     <span class="keyword">if</span> isfield(N,<span class="string">'z'</span>), elec=[elec N.z];ss=[ss <span class="string">'\tz'</span>]; <span class="keyword">end</span>    
+0022 <span class="keyword">elseif</span> isfield(N,<span class="string">'pos'</span>),
+0023     elec=N.pos;
+0024 <span class="keyword">else</span>
+0025     elec=N.elec;
+0026 <span class="keyword">end</span>
+0027 fprintf(fid,<span class="string">'%d'</span>,size(elec,1));
+0028 fprintf(fid,<span class="string">'# Number of sensors'</span>);
+0029 fprintf(fid,newline);
+0030 fs=<span class="string">''</span>;
+0031 <span class="keyword">for</span> i=1:size(elec,2), fs=[fs <span class="string">'\t%g'</span>]; <span class="keyword">end</span>
+0032 ndata=0;
+0033 <span class="keyword">if</span> length(ss)&gt;1,
+0034     ss(2:3)=<span class="string">''</span>;ss=[ss newline];
+0035     fprintf(fid,ss);
+0036 <span class="keyword">end</span>
+0037 fs(1:2)=<span class="string">''</span>;fs=[fs newline];
+0038 fprintf(fid,fs,elec');
+0039 <span class="comment">%% data</span>
+0040 <span class="keyword">if</span> isfield(N,<span class="string">'a'</span>), ndata=length(N.a); <span class="keyword">end</span>
+0041 <span class="keyword">if</span> isfield(N,<span class="string">'s'</span>), ndata=length(N.s); <span class="keyword">end</span>
+0042 fprintf(fid,<span class="string">'%d'</span>,ndata);
+0043 fprintf(fid,<span class="string">'# Number of data'</span>);
+0044 fprintf(fid,newline);
+0045 ss=<span class="string">'#'</span>;fs=<span class="string">''</span>;
+0046 fn=fieldnames(N);
+0047 DATA=[];
+0048 <span class="keyword">for</span> i=1:length(fn),    
+0049     ff=getfield(N,fn{i});
+0050     <span class="keyword">if</span> (min(size(ff))==1)&amp;(length(ff)==ndata),
+0051         DATA=[DATA ff(:)];
+0052         fni=fn{i};
+0053         <span class="keyword">if</span> strcmp(fni,<span class="string">'r'</span>), fni=<span class="string">'rhoa'</span>; <span class="keyword">end</span>
+0054         <span class="keyword">if</span> strcmp(fni,<span class="string">'rho'</span>), fni=<span class="string">'R'</span>; <span class="keyword">end</span>
+0055         <span class="keyword">if</span> strcmp(fni,<span class="string">'imp'</span>), fni=<span class="string">'R'</span>; <span class="keyword">end</span>
+0056         <span class="keyword">if</span> strcmp(fni,<span class="string">'konf'</span>), fni=<span class="string">'k'</span>; <span class="keyword">end</span>
+0057         ss=[ss <span class="string">'\t'</span> fni];
+0058         fs=[fs <span class="string">'\t%g'</span>];
+0059     <span class="keyword">end</span>
+0060 <span class="keyword">end</span>
+0061 ss(2:3)=<span class="string">''</span>;ss=[ss newline];
+0062 fs(1:2)=<span class="string">''</span>;fs=[fs newline];
+0063 fprintf(fid,ss);
+0064 fprintf(fid,fs,DATA');
+0065 <span class="keyword">if</span> isfield(N,<span class="string">'topo'</span>),
+0066     fprintf(fid,[<span class="string">'%d # topo points'</span> newline],size(N.topo,1));
+0067     tdim=size(N.topo,2);
+0068     <span class="keyword">if</span> tdim==2, 
+0069         fprintf(fid,[<span class="string">'#x z'</span> newline]); 
+0070         fprintf(fid,[<span class="string">'%g\t%g'</span> newline],N.topo');
+0071     <span class="keyword">end</span>
+0072     <span class="keyword">if</span> tdim==3, 
+0073         fprintf(fid,[<span class="string">'#x y z'</span> newline]); 
+0074         fprintf(fid,[<span class="string">'%g\t%g\t%g'</span> newline],N.topo');
+0075     <span class="keyword">end</span>    
+0076 <span class="keyword">end</span>
+0077 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

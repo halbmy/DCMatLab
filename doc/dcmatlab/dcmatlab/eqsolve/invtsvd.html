@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of invtsvd</title>
+  <meta name="keywords" content="invtsvd">
+  <meta name="description" content="% INVTSVD - Solve Inverse subproblem with Truncated SVD">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; invtsvd.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>invtsvd
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% INVTSVD - Solve Inverse subproblem with Truncated SVD</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [x,warten] = invtsvd(A,b,D) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% INVTSVD - Solve Inverse subproblem with Truncated SVD
+% [x,r] = invsvd(A,b,D)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,warten] = invtsvd(A,b,D)</a>
+0002 
+0003 <span class="comment">%% INVTSVD - Solve Inverse subproblem with Truncated SVD</span>
+0004 <span class="comment">%% [x,r] = invsvd(A,b,D)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;3, D=1; <span class="keyword">end</span>
+0007 message(<span class="string">'Computing singular value decomposition...'</span>);
+0008 t0=clock;
+0009 <span class="keyword">global</span> VD VM s
+0010 [VD,s,VM]=svd(D*A);  <span class="comment">% Model &amp; Data Vectors</span>
+0011 s=diag(s);
+0012 message(sprintf(<span class="string">'ready(%.2fs) min(sv)= %g, max(sv)= %g'</span>,<span class="keyword">...</span>
+0013     etime(clock,t0),min(s),max(s)));
+0014 
+0015 <span class="keyword">global</span> warten dR
+0016 dR=D*b;
+0017 warten=0;
+0018 i_svd;
+0019 <span class="keyword">while</span> warten==0, pause(1.0); <span class="keyword">end</span>
+0020 x=VM(:,1:warten)*diag(1./s(1:warten))*VD(:,1:warten)'*b;
+0021 clear <span class="keyword">global</span> warten 
+0022 <span class="comment">%clear global VD VM s</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

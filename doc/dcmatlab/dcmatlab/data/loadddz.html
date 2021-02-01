@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of loadddz</title>
+  <meta name="keywords" content="loadddz">
+  <meta name="description" content="LOADDDZO - Load ddz-file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; loadddz.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>loadddz
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>LOADDDZO - Load ddz-file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [N,radius]=loadddz(infile,ccw) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> LOADDDZO - Load ddz-file
+ N = loadddz(infile) or
+ [N,radius] = loadddz(infile)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="circles2cyl.html" class="code" title="function [N,Poly] = circles2cyl(Files,zs,ztop,zbottom,dd,dz)">circles2cyl</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [N,radius]=loadddz(infile,ccw)</a>
+0002 
+0003 <span class="comment">% LOADDDZO - Load ddz-file</span>
+0004 <span class="comment">% N = loadddz(infile) or</span>
+0005 <span class="comment">% [N,radius] = loadddz(infile)</span>
+0006 
+0007 <span class="keyword">if</span> nargin&lt;2, ccw=1; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;1, infile=<span class="string">'bla'</span>; <span class="keyword">end</span>
+0009 fid=fopen(infile,<span class="string">'r'</span>);
+0010 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'file could not be opened!'</span>); <span class="keyword">end</span>
+0011 
+0012 zeile=fgetl(fid);
+0013 <span class="keyword">while</span> ~isempty(zeile),
+0014     vor=<span class="string">''</span>;
+0015     dp=strfind(zeile,<span class="string">':'</span>);
+0016     <span class="keyword">if</span> dp, vor=zeile(1:dp-1);nach=zeile(dp+1:end); <span class="keyword">end</span>
+0017     <span class="keyword">switch</span> vor,
+0018         <span class="keyword">case</span> <span class="string">'Radius'</span>
+0019             rad=str2num(nach);N.rad=rad;
+0020         <span class="keyword">case</span> <span class="string">'First El'</span>
+0021             N.fel=str2num(nach);
+0022         <span class="keyword">case</span> <span class="string">'Nr of El'</span>
+0023             nel=str2num(nach);
+0024         <span class="keyword">case</span> <span class="string">'Nr of points'</span>
+0025             points=str2num(zeile(findstr(zeile,<span class="string">':'</span>)+1:end));
+0026         <span class="keyword">case</span> <span class="string">'IP present'</span>
+0027             ippresent=str2num(nach);
+0028     <span class="keyword">end</span>
+0029     zeile=fgetl(fid);
+0030 <span class="keyword">end</span>
+0031 ss=<span class="string">'%d%d%d%d%f%f%f%f'</span>;
+0032 <span class="keyword">if</span> ippresent, ss=[ss <span class="string">'%f%f'</span>]; <span class="keyword">end</span>
+0033 abmniure=mytextscan(fid,ss);
+0034 <span class="comment">% abmniure=fscanf(fid,'%f',[8+ippresent*2 Inf])';</span>
+0035 fclose(fid);
+0036 N.a=abmniure{1};<span class="comment">%(:,1);</span>
+0037 N.b=abmniure{2};<span class="comment">%(:,2);</span>
+0038 N.m=abmniure{3};<span class="comment">%(:,3);</span>
+0039 N.n=abmniure{4};<span class="comment">%(:,4);</span>
+0040 N.i=abmniure{5}/1000;<span class="comment">%(:,5)/1000; %mA</span>
+0041 N.u=abmniure{6}/1000;<span class="comment">%(:,6)/1000; %mA</span>
+0042 <span class="keyword">if</span> ippresent, <span class="comment">% convention: phases are negative</span>
+0043     N.ip=abmniure{8};<span class="comment">%(:,9);</span>
+0044     N.iperr=abmniure{9};<span class="comment">%(:,10);</span>
+0045 <span class="keyword">end</span>
+0046 N.rho=N.u./N.i; <span class="comment">% Ohmscher Widerstand</span>
+0047 umin=100e-6;
+0048 proz=0.03;
+0049 N.err=proz+abs(umin./N.u); <span class="comment">% wg. mV</span>
+0050 <span class="keyword">while</span> length(rad)&lt;nel, rad(end+1)=rad(1); <span class="keyword">end</span>
+0051 <span class="keyword">for</span> i=0:nel-1, <span class="comment">%Süden=1, dann Uhrzeigersinn</span>
+0052     N.elec(i+1,1)=-rad(i+1)*sin(i/nel*2*pi)*ccw;
+0053     N.elec(i+1,2)=-rad(i+1)*cos(i/nel*2*pi);
+0054 <span class="keyword">end</span>
+0055 N.r=abmniure{7};<span class="comment">%(:,7);</span>
+0056 <span class="comment">% fi=find((N.err&gt;0.15)|(N.rho&gt;-0.1));fi=[];</span>
+0057 <span class="comment">% N.a(fi)=[];N.b(fi)=[];N.m(fi)=[];N.n(fi)=[];</span>
+0058 <span class="comment">% N.rho(fi)=[];N.u(fi)=[];N.i(fi)=[];N.err(fi)=[];</span>
+0059 <span class="comment">% N.r(fi)=[];</span>
+0060 radius=rad(1);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

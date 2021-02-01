@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readunifile</title>
+  <meta name="keywords" content="readunifile">
+  <meta name="description" content="READUNIFILE - Read data file in unified data format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readunifile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readunifile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READUNIFILE - Read data file in unified data format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=readunifile(fname,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READUNIFILE - Read data file in unified data format
+ N = readunifile(filename)
+ Format: (# character can be used to comment)
+ number_of_Electrodes
+ # x y h d # token string for meaning of columns
+ x_el1 (y_el1) z_el1
+ ...
+ x_eln (y_eln) z_eln
+ number_of_datapoints
+ # a b m n u i # possible token string for meaning of columns
+ A_1 B_1 M_1 N_1 R_1 (Err_1)
+ ...
+ A_n B_n M_n N_n R_n (Err_n)
+ (= Electrode numbers, 0=infinity)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read3dfile.html" class="code" title="function N=read3dfile(datfile)">read3dfile</a>	READ3DFILE - Read 3d data file (all file types)</li><li><a href="readunishot.html" class="code" title="function Shot=readunishot(filename)">readunishot</a>	READUNISHOT - Read shot from unified data format</li><li><a href="writebjoernfile.html" class="code" title="">writebjoernfile</a>	SS=readunifile('sinkhole1_noise1ms.sgt');</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function zeile=destrip(zeile)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=readunifile(fname,dim)</a>
+0002 
+0003 <span class="comment">% READUNIFILE - Read data file in unified data format</span>
+0004 <span class="comment">% N = readunifile(filename)</span>
+0005 <span class="comment">% Format: (# character can be used to comment)</span>
+0006 <span class="comment">% number_of_Electrodes</span>
+0007 <span class="comment">% # x y h d # token string for meaning of columns</span>
+0008 <span class="comment">% x_el1 (y_el1) z_el1</span>
+0009 <span class="comment">% ...</span>
+0010 <span class="comment">% x_eln (y_eln) z_eln</span>
+0011 <span class="comment">% number_of_datapoints</span>
+0012 <span class="comment">% # a b m n u i # possible token string for meaning of columns</span>
+0013 <span class="comment">% A_1 B_1 M_1 N_1 R_1 (Err_1)</span>
+0014 <span class="comment">% ...</span>
+0015 <span class="comment">% A_n B_n M_n N_n R_n (Err_n)</span>
+0016 <span class="comment">% (= Electrode numbers, 0=infinity)</span>
+0017 
+0018 <span class="keyword">if</span> nargin&lt;2, dim=0; <span class="keyword">end</span>
+0019 N.elec=[];
+0020 fid=fopen(fname,<span class="string">'r'</span>);
+0021 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'File not found!'</span>); <span class="keyword">end</span>
+0022 zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(fgetl(fid));
+0023 ne=sscanf(zeile,<span class="string">'%d\n'</span>,1);
+0024 zeile=fgetl(fid);formstr=<span class="string">''</span>;
+0025 <span class="keyword">if</span> (zeile(1)==<span class="string">'#'</span>)&amp;&amp;(strfind(lower(zeile),<span class="string">'x'</span>)||strfind(lower(zeile),<span class="string">'y'</span>)),
+0026     ix=0;iy=0;iz=0;ih=0;id=0;xmul=1;ymul=1;zmul=1;hmul=1;dmul=1;
+0027     zeile(1)=<span class="string">''</span>;zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(zeile);i=0;formstr=<span class="string">''</span>;
+0028     <span class="keyword">while</span> ~isempty(zeile),
+0029         i=i+1;utok=<span class="string">''</span>;
+0030         [tok,zeile]=strtok(zeile);
+0031         <span class="keyword">if</span> isempty(tok)||isequal(tok,<span class="string">'position'</span>), <span class="keyword">break</span>; <span class="keyword">end</span>
+0032         fis=strfind(tok,<span class="string">'/'</span>);
+0033         <span class="keyword">if</span> ~isempty(fis), <span class="comment">% physical unit found</span>
+0034             fis=fis(1);utok=tok(fis+1:end);tok=tok(1:fis-1); 
+0035         <span class="keyword">end</span>
+0036         mul=1;
+0037         <span class="keyword">switch</span> utok,
+0038             <span class="keyword">case</span> <span class="string">'m'</span>, mul=1;
+0039             <span class="keyword">case</span> <span class="string">'cm'</span>, mul=0.01;
+0040             <span class="keyword">case</span> <span class="string">'in'</span>, mul=0.0254;
+0041             <span class="keyword">case</span> <span class="string">'mm'</span>, mul=1e-3;
+0042             <span class="keyword">case</span> <span class="string">'km'</span>, mul=1e3;
+0043             <span class="keyword">otherwise</span>, <span class="keyword">if</span> ~isempty(utok), fprintf(<span class="string">'Unit %s not recognized\n'</span>,utok); <span class="keyword">end</span>
+0044             <span class="keyword">end</span>
+0045             fprintf(<span class="string">'%s '</span>,tok);
+0046             <span class="keyword">switch</span> lower(tok),
+0047                 <span class="keyword">case</span> <span class="string">'x'</span>, ix=i;xmul=mul;formstr=[formstr <span class="string">'%f'</span>];
+0048                 <span class="keyword">case</span> <span class="string">'y'</span>, iy=i;ymul=mul;formstr=[formstr <span class="string">'%f'</span>];
+0049                 <span class="keyword">case</span> <span class="string">'z'</span>, iz=i;zmul=mul;formstr=[formstr <span class="string">'%f'</span>];
+0050                 <span class="keyword">case</span> <span class="string">'h'</span>, ih=i;hmul=mul;formstr=[formstr <span class="string">'%f'</span>];
+0051                 <span class="keyword">case</span> <span class="string">'d'</span>, id=i;dmul=mul;formstr=[formstr <span class="string">'%f'</span>];
+0052                 <span class="keyword">otherwise</span>, fprintf(<span class="string">'Token %s not recognized\n'</span>,tok);
+0053             <span class="keyword">end</span>
+0054         <span class="keyword">end</span>
+0055         A=mytextscan(fid,formstr,ne,<span class="string">'commentstyle'</span>,<span class="string">'#'</span>);
+0056         <span class="comment">% convention that h/d have to be used instead of z for future storage</span>
+0057         <span class="comment">% if (iz&gt;0)&amp;&amp;(ih==0)&amp;&amp;(id==0), id=iz;ih=iz;dmul=zmul;hmul=zmul;iz=0; end</span>
+0058         <span class="keyword">if</span> ix, N.x=A{ix}; <span class="keyword">end</span>
+0059         <span class="keyword">if</span> iy, N.y=A{iy}; <span class="keyword">end</span>
+0060         <span class="keyword">if</span> iz, N.z=A{iz}; <span class="keyword">end</span>
+0061         <span class="keyword">if</span> ih, N.h=A{ih}; <span class="keyword">end</span>
+0062         <span class="keyword">if</span> id, N.d=A{id}; <span class="keyword">end</span>
+0063         <span class="keyword">if</span> ix, N.elec=[N.elec N.x]; <span class="keyword">end</span>
+0064         <span class="keyword">if</span> iy, N.elec=[N.elec N.y]; <span class="keyword">end</span>
+0065         <span class="keyword">if</span> iz, N.elec=[N.elec N.z]; <span class="keyword">end</span>
+0066         <span class="keyword">if</span> dim==0, dim=max((ix&gt;0)+(iy&gt;0)+(iz&gt;0),2); <span class="keyword">end</span>
+0067         <span class="keyword">if</span> (dim==2)&amp;(size(N.elec,2)&gt;1), <span class="comment">% x and y present</span>
+0068             <span class="keyword">if</span> length(unique(N.elec(:,1)))==1, N.elec(:,1)=[];
+0069             <span class="keyword">elseif</span> length(unique(N.elec(:,2)))==1, N.elec(:,2)=[];
+0070             <span class="keyword">else</span> N.elec=(0:length(N.x)-1)'; 
+0071             <span class="keyword">end</span>
+0072         <span class="keyword">end</span>
+0073 <span class="comment">%         if (ih&gt;0)&amp;&amp;(iz&gt;0), N.elec=[N.elec N.h-abs(N.d)];</span>
+0074 <span class="comment">%         elseif (iz&gt;0), N.elec=[N.elec N.z];</span>
+0075 <span class="comment">%         elseif (id&gt;0), N.elec=[N.elec abs(N.d)];</span>
+0076 <span class="comment">%         else N.elec(:,dim)=0;</span>
+0077 <span class="comment">%         end</span>
+0078         <span class="keyword">if</span> (ih&gt;0)&amp;&amp;(iz&gt;0), N.elec(:,dim)=N.h-abs(N.d); 
+0079         <span class="keyword">elseif</span> (iz&gt;0), N.elec(:,dim)=N.z;
+0080         <span class="keyword">elseif</span> (id&gt;0), N.elec(:,dim)=abs(N.d);
+0081         <span class="keyword">else</span> N.elec(:,dim)=0; 
+0082         <span class="keyword">end</span>
+0083         <span class="keyword">if</span> size(N.elec,2)&gt;dim, N.elec(:,dim+1:end)=[]; <span class="keyword">end</span>
+0084     <span class="keyword">else</span>
+0085         <span class="keyword">for</span> n=1:ne,
+0086             <span class="keyword">if</span> n&gt;1, zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(fgetl(fid)); <span class="keyword">end</span>
+0087             <span class="keyword">while</span> isempty(zeile), zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(fgetl(fid)); <span class="keyword">end</span>
+0088             el=str2num(zeile);
+0089             N.elec(n,1:length(el))=el;
+0090         <span class="keyword">end</span>
+0091         <span class="keyword">if</span> size(N.elec,2)&lt;2, N.elec(:,2)=0; <span class="keyword">end</span>
+0092         <span class="keyword">if</span> size(N.elec,2)&lt;3, N.elec(:,3)=0; <span class="keyword">end</span>
+0093     <span class="keyword">end</span>
+0094     zeile=<span class="string">''</span>;
+0095     <span class="keyword">while</span> isempty(zeile), zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(fgetl(fid)); <span class="keyword">end</span>
+0096     nm=sscanf(zeile,<span class="string">'%d\n'</span>,1);
+0097     zeile=<span class="string">''</span>;
+0098     <span class="keyword">while</span> isempty(zeile), zeile=fgetl(fid); <span class="keyword">end</span>
+0099     lz=lower(zeile);
+0100     <span class="keyword">if</span> (zeile(1)==<span class="string">'#'</span>)&amp;&amp;(any(strfind(lz,<span class="string">'a'</span>))||<span class="keyword">...</span>
+0101             any(strfind(lz,<span class="string">'b'</span>))||any(strfind(lz,<span class="string">'s'</span>))),
+0102         ia=0;ib=0;im=0;in=0;ir=0; <span class="comment">% A B M N Rhoa</span>
+0103         ii=0;iu=0;ik=0; <span class="comment">% current voltage geometric factor</span>
+0104         it=0;ig=0;is=0; <span class="comment">% time geophone shot</span>
+0105         ierr=0;iip=0;ifr=0;ieip=0; <span class="comment">%err ip frequency iperror</span>
+0106         emul=1;imul=1;umul=1;tmul=1;irho=0;isp=0;
+0107         zeile(1)=<span class="string">''</span>;zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(zeile);i=0;formstr=<span class="string">''</span>;
+0108         <span class="keyword">while</span> ~isempty(zeile),
+0109             i=i+1;utok=<span class="string">''</span>;
+0110             [tok,zeile]=strtok(zeile);
+0111             fis=strfind(tok,<span class="string">'/'</span>);
+0112             <span class="keyword">if</span> ~isempty(fis), <span class="comment">% physical unit found</span>
+0113                 fis=fis(1);utok=tok(fis+1:end);tok=tok(1:fis-1); 
+0114             <span class="keyword">end</span>
+0115             <span class="keyword">if</span> ~isempty(tok),
+0116                 fprintf(<span class="string">'%s '</span>,tok)
+0117                 <span class="keyword">switch</span> lower(tok),
+0118                     <span class="keyword">case</span> {<span class="string">'a'</span>,<span class="string">'c1'</span>}, ia=i;formstr=[formstr <span class="string">'%d'</span>];
+0119                     <span class="keyword">case</span> {<span class="string">'b'</span>,<span class="string">'c2'</span>}, ib=i;formstr=[formstr <span class="string">'%d'</span>];
+0120                     <span class="keyword">case</span> {<span class="string">'m'</span>,<span class="string">'p1'</span>}, im=i;formstr=[formstr <span class="string">'%d'</span>];
+0121                     <span class="keyword">case</span> {<span class="string">'n'</span>,<span class="string">'p2'</span>}, in=i;formstr=[formstr <span class="string">'%d'</span>];
+0122                     <span class="keyword">case</span> {<span class="string">'g'</span>,<span class="string">'geophone'</span>}, ig=i;formstr=[formstr <span class="string">'%d'</span>];
+0123                     <span class="keyword">case</span> {<span class="string">'s'</span>,<span class="string">'shot'</span>}, is=i;formstr=[formstr <span class="string">'%d'</span>];
+0124                     <span class="keyword">case</span> {<span class="string">'rhoa'</span>,<span class="string">'ra'</span>,<span class="string">'rho_a'</span>}, ir=i;formstr=[formstr <span class="string">'%f'</span>];
+0125                     <span class="keyword">case</span> {<span class="string">'rho'</span>,<span class="string">'r'</span>}, irho=i;formstr=[formstr <span class="string">'%f'</span>];
+0126                     <span class="keyword">case</span> {<span class="string">'err'</span>,<span class="string">'error'</span>,<span class="string">'std'</span>}, 
+0127                         ierr=i;formstr=[formstr <span class="string">'%f'</span>];
+0128                         <span class="keyword">if</span> isequal(utok,<span class="string">'%'</span>), emul=0.01; <span class="keyword">end</span>
+0129                     <span class="keyword">case</span> <span class="string">'ip'</span>, iip=i;formstr=[formstr <span class="string">'%f'</span>];
+0130                     <span class="keyword">case</span> <span class="string">'iperr'</span>, ieip=i;formstr=[formstr <span class="string">'%f'</span>];
+0131                     <span class="keyword">case</span> <span class="string">'sp'</span>, isp=i;formstr=[formstr <span class="string">'%f'</span>];
+0132                     <span class="keyword">case</span> <span class="string">'f'</span>, ifr=i;formstr=[formstr <span class="string">'%f'</span>];
+0133                     <span class="keyword">case</span> {<span class="string">'i'</span>,<span class="string">'cur'</span>,<span class="string">'current'</span>}, ii=i;formstr=[formstr <span class="string">'%f'</span>];
+0134                         <span class="keyword">if</span> isequal(utok,<span class="string">'mA'</span>), imul=1e-3; <span class="keyword">end</span>
+0135                         <span class="keyword">if</span> isequal(utok,<span class="string">'uA'</span>), imul=1e-6; <span class="keyword">end</span>
+0136                         <span class="keyword">if</span> isequal(utok,<span class="string">'nA'</span>), imul=1e-9; <span class="keyword">end</span>
+0137                         <span class="keyword">if</span> isequal(utok,<span class="string">'kA'</span>), imul=1e+3; <span class="keyword">end</span>
+0138                     <span class="keyword">case</span> {<span class="string">'u'</span>,<span class="string">'v'</span>,<span class="string">'volt'</span>,<span class="string">'voltage'</span>}, iu=i;formstr=[formstr <span class="string">'%f'</span>];
+0139                         <span class="keyword">if</span> isequal(utok,<span class="string">'mV'</span>), umul=1e-3; <span class="keyword">end</span>
+0140                         <span class="keyword">if</span> isequal(utok,<span class="string">'uV'</span>), umul=1e-6; <span class="keyword">end</span>
+0141                         <span class="keyword">if</span> isequal(utok,<span class="string">'nV'</span>), umul=1e-9; <span class="keyword">end</span>
+0142                         <span class="keyword">if</span> isequal(utok,<span class="string">'kV'</span>), umul=1e+3; <span class="keyword">end</span>
+0143                     <span class="keyword">case</span> {<span class="string">'k'</span>,<span class="string">'g'</span>}, ik=i;formstr=[formstr <span class="string">'%f'</span>];
+0144                     <span class="keyword">case</span> {<span class="string">'t'</span>,<span class="string">'topo'</span>,<span class="string">'tt'</span>,<span class="string">'traveltime'</span>}, it=i;formstr=[formstr <span class="string">'%f'</span>];
+0145                         <span class="keyword">if</span> isequal(utok,<span class="string">'ms'</span>), tmul=1e-3; <span class="keyword">end</span>
+0146                         <span class="keyword">if</span> isequal(utok,<span class="string">'us'</span>), tmul=1e-6; <span class="keyword">end</span>
+0147                         <span class="keyword">if</span> isequal(utok,<span class="string">'ns'</span>), tmul=1e-9; <span class="keyword">end</span>                    
+0148                     <span class="keyword">otherwise</span>, <span class="comment">%unknown token</span>
+0149                         formstr=[formstr <span class="string">'%*s'</span>];
+0150                         i=i-1;
+0151                         fprintf(<span class="string">'(%s not found) '</span>,tok);
+0152                     <span class="keyword">end</span>
+0153                 <span class="keyword">end</span>
+0154             <span class="keyword">end</span>
+0155             fprintf(<span class="string">'found\n'</span>);
+0156             <span class="comment">%     [ia ib im in ir ierr iip ii iu],formstr</span>
+0157             A=mytextscan(fid,formstr,nm,<span class="string">'commentstyle'</span>,<span class="string">'#'</span>);
+0158             <span class="keyword">if</span> ia, N.a=A{ia}; <span class="keyword">end</span>
+0159             <span class="keyword">if</span> ib, N.b=A{ib}; <span class="keyword">end</span>
+0160             <span class="keyword">if</span> im, N.m=A{im}; <span class="keyword">end</span>
+0161             <span class="keyword">if</span> in, N.n=A{in}; <span class="keyword">end</span>
+0162             <span class="keyword">if</span> ig, N.g=A{ig}; <span class="keyword">end</span>
+0163             <span class="keyword">if</span> is, N.s=A{is}; <span class="keyword">end</span>
+0164             <span class="keyword">if</span> ifr, N.f=A{ifr}; <span class="keyword">end</span>
+0165             <span class="keyword">if</span> ir, N.r=A{ir}; <span class="keyword">end</span>
+0166             <span class="keyword">if</span> irho, N.rho=A{irho}; <span class="keyword">end</span>
+0167             <span class="keyword">if</span> iip, N.ip=A{iip}; <span class="keyword">end</span>
+0168             <span class="keyword">if</span> ieip, N.iperr=A{ieip}; <span class="keyword">end</span>
+0169             <span class="keyword">if</span> isp, N.sp=A{isp}; <span class="keyword">end</span>
+0170             <span class="keyword">if</span> ierr, N.err=A{ierr}*emul; <span class="keyword">end</span>
+0171             <span class="keyword">if</span> ii, N.i=A{ii}*imul; <span class="keyword">end</span>
+0172             <span class="keyword">if</span> iu, N.u=A{iu}*umul; <span class="keyword">end</span>
+0173             <span class="keyword">if</span> ik, N.k=A{ik}; <span class="keyword">end</span>
+0174             <span class="keyword">if</span> it, N.t=A{it}*tmul; <span class="keyword">end</span>
+0175             <span class="keyword">if</span> isfield(N,<span class="string">'a'</span>)|isfield(N,<span class="string">'b'</span>)|isfield(N,<span class="string">'m'</span>)|isfield(N,<span class="string">'n'</span>), <span class="comment">% DC files</span>
+0176                 <span class="keyword">if</span> ~isfield(N,<span class="string">'b'</span>), N.b=zeros(size(N.a)); <span class="keyword">end</span>
+0177                 <span class="keyword">if</span> ~isfield(N,<span class="string">'n'</span>), N.n=zeros(size(N.m)); <span class="keyword">end</span>
+0178             <span class="keyword">end</span>
+0179         <span class="keyword">else</span>
+0180             N.a=zeros(nm,1);N.b=N.a;N.m=N.a;N.n=N.a;N.r=N.a;N.err=N.a;N.ip=N.a;
+0181             zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(zeile);
+0182             <span class="keyword">for</span> n=1:nm,
+0183                 <span class="keyword">if</span> n&gt;1, zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(fgetl(fid)); <span class="keyword">end</span>
+0184                 <span class="keyword">while</span> isempty(zeile), zeile=<a href="#_sub1" class="code" title="subfunction zeile=destrip(zeile)">destrip</a>(fgetl(fid)); <span class="keyword">end</span>
+0185                 mess=str2num(zeile);
+0186                 <span class="keyword">if</span> length(mess)&lt;5, <span class="keyword">break</span>; <span class="keyword">end</span>
+0187                 N.a(n)=mess(1);N.b(n)=mess(2);N.m(n)=mess(3);N.n(n)=mess(4);
+0188                 <span class="keyword">if</span> length(mess)&gt;4, N.r(n)=mess(5); <span class="keyword">end</span>
+0189                 <span class="keyword">if</span> length(mess)&gt;5, N.err(n)=mess(6); <span class="keyword">end</span>
+0190                 <span class="keyword">if</span> length(mess)&gt;6, N.ip(n)=mess(7); <span class="keyword">end</span>
+0191             <span class="keyword">end</span>
+0192             <span class="keyword">if</span> max(N.ip)&lt;=0, N=rmfield(N,<span class="string">'ip'</span>); <span class="keyword">end</span>
+0193         <span class="keyword">end</span>
+0194         fclose(fid);
+0195         <span class="keyword">if</span> isfield(N,<span class="string">'a'</span>),
+0196             nm=min([length(N.a) length(N.b) length(N.m) length(N.n)]);
+0197         <span class="keyword">end</span>
+0198         fn=fieldnames(N);
+0199         <span class="keyword">for</span> i=1:length(fn),
+0200             fie=getfield(N,fn{i});
+0201 <span class="comment">%             if (min(size(fie))==1)&amp;&amp;(length(fie)&gt;nm), fie(nm+1:end)=[];N=setfield(N,fn{i},fie); end</span>
+0202             <span class="keyword">if</span> ~ismember(fn{i},{<span class="string">'x'</span>,<span class="string">'y'</span>,<span class="string">'z'</span>})&amp;&amp;(min(size(fie))==1)&amp;&amp;(length(fie)&gt;nm),
+0203                 fie(nm+1:end)=[];N=setfield(N,fn{i},fie); <span class="keyword">end</span>
+0204         <span class="keyword">end</span>
+0205         <span class="comment">% if isfield(N,'err')&amp;&amp;(min(N.err)&lt;=0),</span>
+0206         <span class="comment">%     message('Found nonpositive errors. Discarding error values.');</span>
+0207         <span class="comment">%     N=rmfield(N,'err');</span>
+0208         <span class="comment">% end</span>
+0209         
+0210         <span class="comment">% if ~isfield(N,'k')||(length(N.k)&lt;length(N.a)), N.k=getkonf(N); end</span>
+0211         
+0212         <span class="comment">% if ~isfield(N,'r'), % no apparent resistivities</span>
+0213         <span class="comment">%     if ~isfield(N,'rho')&amp;&amp;isfield(N,'u')&amp;&amp;isfield(N,'i'), N.rho=N.u./N.i; end</span>
+0214         <span class="comment">%     if isfield(N,'rho'), N.r=N.rho.*N.k; end</span>
+0215         <span class="comment">% end</span>
+0216         message(sprintf(<span class="string">'%s: %d Measurements with %d Electrodes'</span>,fname,nm,ne));
+0217         
+0218         <a name="_sub1" href="#_subfunctions" class="code">function zeile=destrip(zeile)</a>
+0219         <span class="comment">% strip string from comments (with # character)</span>
+0220         aa=strfind(zeile,<span class="string">'#'</span>);
+0221         <span class="keyword">if</span> ~isempty(aa), zeile=zeile(1:aa(1)-1); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

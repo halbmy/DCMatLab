@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readfbpfile</title>
+  <meta name="keywords" content="readfbpfile">
+  <meta name="description" content="READFBPFILE - Read FBP (first break picks) file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readfbpfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readfbpfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READFBPFILE - Read FBP (first break picks) file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Shot = readfbpfile(filename,dx) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READFBPFILE - Read FBP (first break picks) file
+ Shot = readfbpfile(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Shot = readfbpfile(filename,dx)</a>
+0002 <span class="comment">% READFBPFILE - Read FBP (first break picks) file</span>
+0003 <span class="comment">% Shot = readfbpfile(filename)</span>
+0004 
+0005 <span class="comment">% filename='wuelf.fbp';</span>
+0006 <span class="keyword">if</span> nargin&lt;2, dx=0; <span class="keyword">end</span>
+0007 pp=fileparts(filename);
+0008 fid=fopen(filename,<span class="string">'r'</span>);
+0009 maxg=0;i=0;pos=[];
+0010 zeile=fgetl(fid);
+0011 <span class="keyword">while</span> isstr(zeile),
+0012     i=i+1;
+0013     <span class="comment">%%</span>
+0014     trfile=sscanf(zeile,<span class="string">'%s%*s%*s'</span>);
+0015     <span class="keyword">if</span> isempty(strfind(trfile,<span class="string">'.pick'</span>)), trfile=[trfile <span class="string">'.pick'</span>]; <span class="keyword">end</span>
+0016     pos(i)=sscanf(zeile,<span class="string">'%*s%f%*s'</span>);
+0017     add=sscanf(zeile,<span class="string">'%*s%*s%d'</span>);
+0018     <span class="keyword">if</span> isempty(add), add=0; <span class="keyword">end</span>
+0019     <span class="comment">%%</span>
+0020     A=load(fullfile(pp,trfile));
+0021     A(:,2)=A(:,2)+add;
+0022     maxg=max(maxg,max(A(:,2)));
+0023     A=flipud(A);
+0024     [U,I,J]=unique(A(:,2));<span class="comment">%,'last');</span>
+0025     TN{i}=A(I,:);
+0026     zeile=fgetl(fid);
+0027 <span class="keyword">end</span>
+0028 <span class="comment">%%</span>
+0029 fclose(fid);
+0030 <span class="comment">%%</span>
+0031 <span class="keyword">if</span> dx==0, dx=round((max(pos)-min(pos))/maxg); <span class="keyword">end</span>
+0032 allpos=[(0:maxg-1)'*dx;pos(:)];
+0033 Shot=[];Shot.t=[];
+0034 [Shot.pos,I,J]=unique(allpos);
+0035 Shot.pos(:,2)=0;
+0036 <span class="keyword">for</span> i=1:length(pos),
+0037     Shot.ns{i}=J(maxg+i);
+0038     Shot.nx{i}=J(TN{i}(:,2));
+0039     Shot.tt{i}=TN{i}(:,1)*1000;
+0040     Shot.t=[Shot.t;Shot.tt{i}/1000];
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

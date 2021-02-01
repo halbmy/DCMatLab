@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readusffile</title>
+  <meta name="keywords" content="readusffile">
+  <meta name="description" content="READUSFFILE - Read universal sounding file (usf)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readusffile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readusffile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READUSFFILE - Read universal sounding file (usf)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function ALLTEM = readusffile(filename,nr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READUSFFILE - Read universal sounding file (usf)
+ TEM = readusffile(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function ALLTEM = readusffile(filename,nr)</a>
+0002 
+0003 <span class="comment">% READUSFFILE - Read universal sounding file (usf)</span>
+0004 <span class="comment">% TEM = readusffile(filename)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, nr=0; <span class="keyword">end</span>
+0007 fid=fopen(filename,<span class="string">'r'</span>);
+0008 zeile=fgetl(fid);
+0009 <span class="keyword">if</span> strcmp(zeile(1:2),<span class="string">'//'</span>),
+0010     dpos=strfind(zeile,<span class="string">':'</span>);
+0011     tok=upper(zeile(3:dpos-1));
+0012     <span class="keyword">while</span> ~strcmp(tok,<span class="string">'SOUNDINGS'</span>),
+0013         zeile=fgetl(fid);
+0014         dpos=strfind(zeile,<span class="string">':'</span>);
+0015         tok=upper(zeile(3:dpos-1));
+0016     <span class="keyword">end</span>
+0017     ns=str2num(zeile(dpos+1:end));
+0018 <span class="keyword">end</span>
+0019 <span class="keyword">for</span> i=1:ns,
+0020     TEM=[];TEM.ndata=0;tok=<span class="string">''</span>;
+0021     <span class="keyword">while</span> isstr(zeile)&amp;&amp;(~isequal(zeile,<span class="string">'/END'</span>)),
+0022         <span class="keyword">if</span> (length(zeile)&gt;0)&amp;&amp;(zeile(1)==<span class="string">'/'</span>),
+0023             dpos=strfind(zeile,<span class="string">':'</span>);
+0024             <span class="keyword">if</span> isnumeric(dpos),
+0025                 tok=upper(zeile(2:dpos-1));
+0026                 <span class="keyword">if</span> isequal(tok,<span class="string">'POINTS'</span>), TEM.ndata=str2num(zeile(dpos+1:end)); <span class="keyword">end</span>
+0027                 <span class="keyword">if</span> isequal(tok,<span class="string">'CURRENT'</span>), TEM.current=str2num(zeile(dpos+1:end)); <span class="keyword">end</span>
+0028                 <span class="keyword">if</span> isequal(tok,<span class="string">'COIL_SIZE'</span>), TEM.coilsize=str2num(zeile(dpos+1:end)); <span class="keyword">end</span>
+0029                 <span class="keyword">if</span> isequal(tok,<span class="string">'LOOP_SIZE'</span>), TEM.loopsize=str2num(strrep(zeile(dpos+1:end),<span class="string">','</span>,<span class="string">' '</span>)); <span class="keyword">end</span>
+0030                 <span class="keyword">if</span> isequal(tok,<span class="string">'RAMP_TIME'</span>), TEM.ramptime=str2num(strrep(zeile(dpos+1:end),<span class="string">','</span>,<span class="string">' '</span>)); <span class="keyword">end</span>
+0031                 <span class="keyword">if</span> isequal(tok,<span class="string">'TIME_DELAY'</span>), TEM.timedelay=str2num(strrep(zeile(dpos+1:end),<span class="string">','</span>,<span class="string">' '</span>)); <span class="keyword">end</span>
+0032             <span class="keyword">end</span>
+0033         <span class="keyword">end</span>
+0034         zeile=fgetl(fid);
+0035     <span class="keyword">end</span>
+0036     <span class="keyword">if</span> TEM.ndata&gt;0,
+0037         fstr=<span class="string">'%d,%f,%f'</span>;
+0038         it=2;iv=3;
+0039         zeile=fgetl(fid);
+0040         <span class="comment">%% tokenzeile auswerten</span>
+0041         A=fscanf(fid,fstr,[3,TEM.ndata])';
+0042         <span class="keyword">if</span> it, TEM.t=A(:,it); <span class="keyword">end</span>
+0043         <span class="keyword">if</span> iv, TEM.v=A(:,iv); <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045     <span class="keyword">while</span> ~isequal(zeile,<span class="string">'/END'</span>), 
+0046         zeile=fgetl(fid); 
+0047     <span class="keyword">end</span>
+0048     zeile=fgetl(fid);
+0049     <span class="keyword">if</span> nr&gt;0,
+0050         <span class="keyword">if</span> i==nr, ALLTEM=TEM;<span class="keyword">break</span>; <span class="keyword">end</span>
+0051     <span class="keyword">else</span>
+0052         ALLTEM{i}=TEM;
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

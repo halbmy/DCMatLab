@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writetemfile</title>
+  <meta name="keywords" content="writetemfile">
+  <meta name="description" content="WRITETEMFILE - Write tem file for use in EM1dInv">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; writetemfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>writetemfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WRITETEMFILE - Write tem file for use in EM1dInv</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function writetemfile(filename,TEM) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WRITETEMFILE - Write tem file for use in EM1dInv
+ writetemfile(filename,TEM)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function writetemfile(filename,TEM)</a>
+0002 <span class="comment">% WRITETEMFILE - Write tem file for use in EM1dInv</span>
+0003 <span class="comment">% writetemfile(filename,TEM)</span>
+0004 
+0005 fid=fopen(filename,<span class="string">'w'</span>);
+0006 <span class="keyword">if</span> isfield(TEM,<span class="string">'comment'</span>), co=TEM.comment; <span class="keyword">else</span> co=<span class="string">'TEM file'</span>; <span class="keyword">end</span>
+0007 fprintf(fid,<span class="string">'%s\n'</span>,co);
+0008 lt=7; <span class="comment">% loop type rectangular</span>
+0009 fdir=3; <span class="comment">% vertical magnetic dipole</span>
+0010 fprintf(fid,<span class="string">'%d %d       !rectangular loop,vertical dipole\n'</span>,lt,fdir);
+0011 txpos=[0 0 0];rxpos=[0 0 0]; <span class="comment">% Tx pos</span>
+0012 <span class="keyword">if</span> isfield(TEM,<span class="string">'txpos'</span>), txpos=TEM.txpos; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> isfield(TEM,<span class="string">'rxpos'</span>), rxpos=TEM.rxpos; <span class="keyword">end</span>
+0014 fprintf(fid,<span class="string">'%g %g %g %g %g %g    !Tx position Rx position\n'</span>,txpos,rxpos);
+0015 fprintf(fid,<span class="string">'%d %d   ! loop dimension\n'</span>,TEM.loopsize);
+0016 fprintf(fid,<span class="string">'%d %d %d   ! dB/dt for input, output and inversion\n'</span>,3,3,3);
+0017 wft=0;ntwf=0; <span class="comment">% step</span>
+0018 fprintf(fid,<span class="string">'%d %d  ! waveform (0-step,1-impulse,3-user-def.\n'</span>,wft,ntwf);
+0019 <span class="keyword">if</span> wft&gt;1, <span class="comment">% step</span>
+0020     <span class="keyword">for</span> i=1:ntwf, fprintf(fid,<span class="string">'...'</span>); <span class="keyword">end</span>    
+0021 <span class="keyword">end</span>
+0022 fprintf(fid,<span class="string">'%d %d 0 ! no filters, no frontgate\n'</span>,0,0);
+0023 A=zeros(TEM.ndata,5);
+0024 A(:,1)=TEM.t;
+0025 <span class="comment">% A(:,2)=TEM.v;</span>
+0026 A(:,2)=TEM.v/TEM.coilsize; <span class="comment">% dB/dt</span>
+0027 <span class="keyword">if</span> isfield(TEM,<span class="string">'err'</span>), A(:,3)=TEM.err; <span class="keyword">else</span> A(:,3)=0.05; <span class="keyword">end</span>
+0028 fprintf(fid,<span class="string">'%g\t%g\t%g\t%d\t%d\n'</span>,A');
+0029 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

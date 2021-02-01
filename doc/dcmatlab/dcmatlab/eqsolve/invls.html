@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of invls</title>
+  <meta name="keywords" content="invls">
+  <meta name="description" content="% INVLS - Solve Inverse subsystem by Least Squares">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; invls.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>invls
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% INVLS - Solve Inverse subsystem by Least Squares</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function x=invls(A,b) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% INVLS - Solve Inverse subsystem by Least Squares
+%         by L-Curve Tradeoff (minimum curvature)
+%   x = invls(A,b) solves equations A*x=b</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="regcgls.html" class="code" title="function [x,rho,eta,j,X] = regcgls(A,b,lambda,acc,jmax,x0)">regcgls</a>	REGCGLS - Regularized CG-based Least Squares</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function x=invls(A,b)</a>
+0002 
+0003 <span class="comment">%% INVLS - Solve Inverse subsystem by Least Squares</span>
+0004 <span class="comment">%%         by L-Curve Tradeoff (minimum curvature)</span>
+0005 <span class="comment">%%   x = invls(A,b) solves equations A*x=b</span>
+0006 <span class="keyword">global</span> hinv
+0007 message(sprintf(<span class="string">'Solving least squares equations...'</span>));
+0008 t0=clock;
+0009 <span class="comment">%[DM,rho,eta]=cgls(S,dR,20);</span>
+0010 <span class="keyword">global</span> DM
+0011 <span class="comment">%[DM,rho,eta]=lsqr(A,b,20,2); % LS by QR-bidiagonilization</span>
+0012 [dm,rho,eta,iter,DM]=<a href="regcgls.html" class="code" title="function [x,rho,eta,j,X] = regcgls(A,b,lambda,acc,jmax,x0)">regcgls</a>(A,b,0.001,1e-6,30);
+0013 save(<span class="string">'rhoeta.mat'</span>,<span class="string">'rho'</span>,<span class="string">'eta'</span>);
+0014 message(sprintf(<span class="string">'ready(%.2fs)'</span>,etime(clock,t0)));
+0015 
+0016 <span class="keyword">global</span> INV
+0017 <span class="keyword">if</span> INV.auto==1,  <span class="comment">% automatic choosing</span>
+0018   warten=lkurv(rho,eta,[],1);
+0019   x=DM(:,warten);
+0020 <span class="keyword">elseif</span> INV.auto==2,  <span class="comment">% choose for every layer</span>
+0021   <span class="keyword">global</span> Xm Ym Zm
+0022   Im=length(Xm);Jm=length(Ym);Km=length(Zm);
+0023   <span class="keyword">for</span> k = 1:Km,
+0024     k1=(k-1)*Im*Jm+1;
+0025     k2=k*Im*Jm;
+0026     etak=[];
+0027     <span class="keyword">for</span> j = 1:iter, etak=[etak norm(DM(k1:k2,j))]; <span class="keyword">end</span>
+0028     jopt=lkurv(rho,etak,[],1);
+0029     fprintf(<span class="string">'%d '</span>,jopt);
+0030     dm(k1:k2)=DM(k1:k2,jopt);
+0031   <span class="keyword">end</span>
+0032   fprintf(<span class="string">'\n'</span>);
+0033   x=dm;
+0034 <span class="keyword">else</span>
+0035   fig=figure(9);
+0036   <span class="keyword">global</span> warten
+0037   warten=0;
+0038   i_choose;
+0039   <span class="keyword">while</span>(warten==0),
+0040     pause(1.0);
+0041   <span class="keyword">end</span>,
+0042   close(fig)
+0043   x=DM(:,warten);
+0044 <span class="keyword">end</span>
+0045 clear <span class="keyword">global</span> warten</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

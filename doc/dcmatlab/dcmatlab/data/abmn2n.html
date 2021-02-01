@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of abmn2n</title>
+  <meta name="keywords" content="abmn2n">
+  <meta name="description" content="ABMN2N - Converts position arrays for A,B,M and N into data struct">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; abmn2n.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>abmn2n
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ABMN2N - Converts position arrays for A,B,M and N into data struct</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=abmn2n(AA,BB,MM,NN) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ABMN2N - Converts position arrays for A,B,M and N into data struct
+ N = abmn2n(apos,bpos,mpos,npos);
+ apos etc. is array (number of data, dimension)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>	GETKONF - Get configuration factor (calls getkonf2d/3d)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="loadradiccyl.html" class="code" title="function Data = loadradiccyl(filename,rad)">loadradiccyl</a>	</li><li><a href="reads2dfile.html" class="code" title="function N=readsnd2d(filename)">reads2dfile</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="reads3dfile.html" class="code" title="function N=readsnd3d(filename)">reads3dfile</a>	READSND3D - Read 3d file by use of soundings</li><li><a href="readsnd2d.html" class="code" title="function N=readsnd2d(filename)">readsnd2d</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="readsnd3d.html" class="code" title="function N=readsnd3d(filename)">readsnd3d</a>	READSND3D - Read 3d file by use of soundings</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=abmn2n(AA,BB,MM,NN)</a>
+0002 
+0003 <span class="comment">% ABMN2N - Converts position arrays for A,B,M and N into data struct</span>
+0004 <span class="comment">% N = abmn2n(apos,bpos,mpos,npos);</span>
+0005 <span class="comment">% apos etc. is array (number of data, dimension)</span>
+0006 
+0007 <span class="comment">% [N.elec,SI,SJ]=unique([AA;BB;MM;NN],'rows');</span>
+0008 N.elec=unique([AA;BB;MM;NN],<span class="string">'rows'</span>);
+0009 [TF,LOC]=ismember(AA,N.elec,<span class="string">'rows'</span>);
+0010 N.a=LOC;
+0011 [TF,LOC]=ismember(BB,N.elec,<span class="string">'rows'</span>);
+0012 N.b=LOC;
+0013 [TF,LOC]=ismember(MM,N.elec,<span class="string">'rows'</span>);
+0014 N.m=LOC;
+0015 [TF,LOC]=ismember(NN,N.elec,<span class="string">'rows'</span>);
+0016 N.n=LOC;
+0017 <span class="comment">% [N.elec(N.a,1) N.elec(N.b,1) N.elec(N.m,1) N.elec(N.n,1)]</span>
+0018 <span class="keyword">if</span> size(N.elec,2)&lt;2, N.elec(:,2)=0; <span class="keyword">end</span>
+0019 N.k=<a href="getkonf.html" class="code" title="function konf=getkonf(varargin)">getkonf</a>(N);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

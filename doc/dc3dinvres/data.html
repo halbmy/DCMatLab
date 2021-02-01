@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>DC3DInvRes - Data Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC3DInvRes - Model Menu</h2>
+<hr>
+<h3><a name="visit"></a>Visit Data</h3>
+Often the data are collected in form of 2d profiles or the profiles can be extracted from the 3d data file.
+Then it is useful to process the data in form of pseudosections.
+<div align="center"><img src="pic/visitprofiles.png" width="696" height="303"></div>
+In the GUI the user can browse through the profiles by Previous/Next and the popup menu.
+On the right hand side the location of the profiles are shown, the point denotes the first electrode.
+The current profile is marked red.
+Also, the model response, error or misfit can be viewed this way.
+By the checkbox "fix" the colortable is forced to be identical for all profiles.
+<h3><a name="edit"></a>Edit Data</h3>
+<p>The Edit Data GUI can be used for prepocessing data. The data can be selected 
+  according the relations &gt;,&lt; and = to a defined quantity of the following 
+  fields: </p>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td> 
+      <ul>
+        <li>apparent resistivity</li>
+        <li>error estimate</li>
+        <li>electrode positions in x or y</li>
+        <li>configuration factor k</li>
+        <li>IP data (if present)</li>
+        <li>current I (if present)</li>
+        <li>voltage U (if present)</li>
+	<li>data misfit</li>
+      </ul>
+    </td>
+    <td>
+      <div align="center"><img src="pic/editdata.png" width="384" height="160"></div>
+    </td>
+  </tr>
+</table>
+<p>The button &quot;find&amp;show&quot; shows the found data with red, the others 
+  are blue.<br>
+  The &quot;Statistics&quot; button provides a histogram of the selected field.<br>
+  By clicking on &quot;Delete&quot; the selected (red) data points are deleted 
+  from the data set.<br>
+  &quot;Show&quot; displays the selected field, and &quot;Close&quot; exits the 
+  GUI. </p>
+<h3><a name="showel"></a>Show Electrodes</h3>
+All used electrodes are plotted as a plan view. It is useful to check the positioning 
+particularly for non-grid profile data.
+<h3><a name="deldead"></a>Delete Dead Electrodes</h3>
+Sometimes it happens that electrodes exist in memory, which are not used anymore, e.g. after
+data deletion. By this option the can be removed saving forward calculation time.
+<hr>
+<h3><a name="for"></a>Forward Calculation</h3>
+Sometimes (e.g. when interactively modelling) it is useful to call forward calculation 
+manually. The resulting forward response is displayed. 
+<h3><a name="noise"></a>Noisify response</h3>
+When creating synthetic data, it is realistic to add random errors to the data 
+(using standard deviations). 
+<h3><a name="setasdata"></a>Set response as data</h3>
+This options sets the data to the values of the forward response.
+<hr>
+<h3><a name="write"></a>Write Data</h3>
+The data are saved in the above described format (including errors). 
+<p align="right"><a href="hotkeys.html">Hotkey</a> for Write data: Shift+W</p>
+<h3></h3>
+<h3><a name="export"></a>Export Res2DInv Format</h3>
+The data are exported in <a href="http://www.geoelectrical.com">RES3DINV</a> format 
+using the arbitrary electrode position feature (type=11). 
+<h3><a name="savepro"></a>Save PRO-File</h3>
+The data are saved in form of 2D files and a PRO-file containing starting and 
+ending points. 
+<hr>
+<h3></h3>
+</body>
+</html>

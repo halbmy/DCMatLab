@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cluster2dmodel</title>
+  <meta name="keywords" content="cluster2dmodel">
+  <meta name="description" content="CLUSTER2DMODEL - Cluster 2d model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; cluster2dmodel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cluster2dmodel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CLUSTER2DMODEL - Cluster 2d model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function nM=cluster2dmodel(M,M2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CLUSTER2DMODEL - Cluster 2d model
+ clustered_model = cluster2dmodel(M1[,M2]);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function nM=cluster2dmodel(M,M2)</a>
+0002 
+0003 <span class="comment">% CLUSTER2DMODEL - Cluster 2d model</span>
+0004 <span class="comment">% clustered_model = cluster2dmodel(M1[,M2]);</span>
+0005 
+0006 xm=(1:size(M,1))';zm=(1:size(M,2))';
+0007 [X,Z]=ndgrid(xm,zm);
+0008 A=[X(:) Z(:) log10(M(:))];
+0009 <span class="keyword">if</span> (nargin&gt;1)&amp;&amp;isequal(size(M),size(M2)), A=[A M2(:)]; <span class="keyword">end</span>
+0010 <span class="keyword">for</span> i=1:size(A,2),
+0011     mi=min(A(:,i));ma=max(A(:,i));
+0012     A(:,i)=(A(:,i)-mi)/(ma-mi);
+0013 <span class="keyword">end</span>
+0014 A(:,3)=A(:,3)*2;
+0015 distA = pdist(A,<span class="string">'euclid'</span>);
+0016 linkA = linkage(distA,<span class="string">'complete'</span>);
+0017 [mx,my] = size(linkA);
+0018 plot(flipud(linkA(mx-20:mx,3)),<span class="string">'o-'</span>);
+0019 grid on
+0020 snum=inputdlg(<span class="string">'Number of clusters?'</span>);
+0021 numclust=str2double(snum{1});
+0022 CM = cluster(linkA,numclust);
+0023 nM=M;cl=[];
+0024 <span class="keyword">for</span> i=1:numclust,
+0025     fi=find(CM==i);
+0026     cl(i)=median(M(fi));
+0027     nM(fi)=cl(i);
+0028 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

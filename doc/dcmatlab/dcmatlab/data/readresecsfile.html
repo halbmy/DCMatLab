@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readresecsfile</title>
+  <meta name="keywords" content="readresecsfile">
+  <meta name="description" content="READRESECSFILE - Read RESECS ascii export file (*.TXT)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readresecsfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readresecsfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READRESECSFILE - Read RESECS ascii export file (*.TXT)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=readresecsfile(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READRESECSFILE - Read RESECS ascii export file (*.TXT)
+ Data = readresecsfile(filename)
+ Data..structure consisting of a,b,m,n,rhoa,U,I,...
+ the field names will be interpreted from the header line</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="delmeasurement.html" class="code" title="function N=delmeasurement(N,fi)">delmeasurement</a>	DELMEASUREMENT - Delete measurement from data struct</li><li><a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>	GETKONF - Get Configuration factor from electrode positions</li><li><a href="getkonf3d.html" class="code" title="function konf=getkonf3d(N,negz)">getkonf3d</a>	GETKONF - Get Configuration factor from electrode positions</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li><li><a href="read3dfile.html" class="code" title="function N=read3dfile(datfile)">read3dfile</a>	READ3DFILE - Read 3d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=readresecsfile(filename)</a>
+0002 
+0003 <span class="comment">% READRESECSFILE - Read RESECS ascii export file (*.TXT)</span>
+0004 <span class="comment">% Data = readresecsfile(filename)</span>
+0005 <span class="comment">% Data..structure consisting of a,b,m,n,rhoa,U,I,...</span>
+0006 <span class="comment">% the field names will be interpreted from the header line</span>
+0007 
+0008 fid=fopen(filename,<span class="string">'r'</span>);
+0009 zeile=fgetl(fid);
+0010 <span class="keyword">if</span> strcmp(lower(zeile(1:6)),<span class="string">'inject'</span>),
+0011     <span class="keyword">for</span> i=1:4, zeile=fgetl(fid); <span class="keyword">end</span>
+0012 <span class="keyword">end</span>
+0013 i=0;irhoa=0;iip=0;ierr=0;itype=0;
+0014 ii=0;iu=0;ir=0;ik=0;
+0015 c1x=0;c1y=0;c1z=0;c2x=0;c2y=0;c2z=0;
+0016 p1x=0;p1y=0;p1z=0;p2x=0;p2y=0;p2z=0;
+0017 formstr=<span class="string">''</span>;<span class="comment">%'%*s';</span>
+0018 <span class="keyword">while</span> ~isempty(zeile),
+0019     i=i+1;
+0020     [tok,zeile]=strtok(zeile);
+0021     <span class="keyword">switch</span> tok,
+0022         <span class="keyword">case</span> <span class="string">'Type'</span>, formstr=[formstr <span class="string">'%*s'</span>];i=i-1;
+0023         <span class="keyword">case</span> {<span class="string">'C1(x)'</span>,<span class="string">'C1_X'</span>}, c1x=i;
+0024         <span class="keyword">case</span> {<span class="string">'C1(y)'</span>,<span class="string">'C1_Y'</span>}, c1y=i;
+0025         <span class="keyword">case</span> {<span class="string">'C1(z)'</span>,<span class="string">'C1_Z'</span>}, c1z=i;
+0026         <span class="keyword">case</span> {<span class="string">'C2(x)'</span>,<span class="string">'C2_X'</span>}, c2x=i;
+0027         <span class="keyword">case</span> {<span class="string">'C2(y)'</span>,<span class="string">'C2_Y'</span>}, c2y=i;
+0028         <span class="keyword">case</span> {<span class="string">'C2(z)'</span>,<span class="string">'C2_Z'</span>}, c2z=i;
+0029         <span class="keyword">case</span> {<span class="string">'P1(x)'</span>,<span class="string">'P1_X'</span>}, p1x=i;
+0030         <span class="keyword">case</span> {<span class="string">'P1(y)'</span>,<span class="string">'P1_Y'</span>}, p1y=i;
+0031         <span class="keyword">case</span> {<span class="string">'P1(z)'</span>,<span class="string">'P1_Z'</span>}, p1z=i;
+0032         <span class="keyword">case</span> {<span class="string">'P2(x)'</span>,<span class="string">'P2_X'</span>}, p2x=i;
+0033         <span class="keyword">case</span> {<span class="string">'P2(y)'</span>,<span class="string">'P2_Y'</span>}, p2y=i;
+0034         <span class="keyword">case</span> {<span class="string">'P2(z)'</span>,<span class="string">'P2_Z'</span>}, p2z=i;
+0035         <span class="keyword">case</span> <span class="string">'Rho'</span>, irho=i;
+0036         <span class="keyword">case</span> <span class="string">'I'</span>, ii=i;
+0037         <span class="keyword">case</span> <span class="string">'U'</span>, iu=i;
+0038         <span class="keyword">case</span> {<span class="string">'M'</span>,<span class="string">'P'</span>}, iip=i;
+0039         <span class="keyword">case</span> <span class="string">'D'</span>, ierr=i;
+0040     <span class="keyword">end</span>
+0041     <span class="keyword">if</span> ~isempty(tok)
+0042         <span class="keyword">if</span> ~isequal(tok,<span class="string">'Type'</span>), formstr=[formstr <span class="string">'%f'</span>]; <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 A=mytextscan(fid,formstr);
+0046 <span class="comment">% zeile=fgetl(fid);</span>
+0047 <span class="comment">% while ~isempty(zeile),</span>
+0048 <span class="comment">%     while</span>
+0049 <span class="comment">%     zeile=fgetl(fid);</span>
+0050 <span class="comment">% end</span>
+0051 fclose(fid);
+0052 <span class="comment">% [c1x c1y c1z c2x c2y c2z p1x p1y p1z p2x p2y p2z]</span>
+0053 <span class="keyword">if</span> c1x==0, error(<span class="string">'C1x missing'</span>); <span class="keyword">end</span>
+0054 AA=A{c1x};
+0055 <span class="keyword">if</span> (c1y&gt;0), AA=[AA A{c1y}]; <span class="keyword">else</span> AA(:,2)=0; <span class="keyword">end</span>
+0056 <span class="keyword">if</span> c1z, AA(:,3)=A{c1z}; <span class="keyword">end</span>
+0057 <span class="keyword">if</span> c2x, 
+0058     BB=A{c2x}; 
+0059     <span class="keyword">if</span> c2y, BB=[BB A{c2y}]; <span class="keyword">else</span> BB(:,2)=0; <span class="keyword">end</span>
+0060 <span class="keyword">else</span> BB=[]; <span class="keyword">end</span>
+0061 <span class="comment">% if c2x*c2y&gt;0, BB=[A{c2x} A{c2y}]; else BB=[]; end</span>
+0062 <span class="keyword">if</span> c2z, BB(:,3)=A{c1z}; <span class="keyword">end</span>
+0063 <span class="keyword">if</span> c1x==0, error(<span class="string">'C1x missing'</span>); <span class="keyword">end</span>
+0064 MM=A{p1x};
+0065 <span class="keyword">if</span>(p1y&gt;0), MM=[MM A{p1y}]; <span class="keyword">else</span> MM(:,2)=0; <span class="keyword">end</span>
+0066 <span class="keyword">if</span> p1z, MM(:,3)=A{c1z}; <span class="keyword">end</span>
+0067 <span class="keyword">if</span> p2x,
+0068     NN=A{p2x};
+0069     <span class="keyword">if</span> p2y, NN=[NN A{p2y}]; <span class="keyword">else</span> NN(:,2)=0; <span class="keyword">end</span>
+0070 <span class="keyword">else</span> NN=[]; <span class="keyword">end</span>
+0071 <span class="comment">% if p2x*p2y&gt;0, NN=[A{p2x} A{p2y}]; else NN=[]; end</span>
+0072 <span class="keyword">if</span> p2z, NN(:,3)=A{c1z}; <span class="keyword">end</span>
+0073 N.elec=unique(sortrows([AA;BB;MM;NN]),<span class="string">'rows'</span>);
+0074 data=length(A{1});
+0075 N.b=zeros(data,1);N.n=zeros(data,1);
+0076 [tf,N.a]=ismember(AA,N.elec,<span class="string">'rows'</span>);
+0077 <span class="keyword">if</span> ~isempty(BB), [tf,N.b]=ismember(BB,N.elec,<span class="string">'rows'</span>); <span class="keyword">end</span>
+0078 [tf,N.m]=ismember(MM,N.elec,<span class="string">'rows'</span>);
+0079 <span class="keyword">if</span> ~isempty(NN), [tf,N.n]=ismember(NN,N.elec,<span class="string">'rows'</span>); <span class="keyword">end</span>
+0080 <span class="keyword">if</span> irho, N.r=A{irho}; <span class="keyword">end</span>
+0081 <span class="keyword">if</span> ii&gt;0, N.i=A{ii}/1000; <span class="keyword">end</span>
+0082 <span class="keyword">if</span> iu&gt;0, N.u=A{iu}/1000; <span class="keyword">end</span>
+0083 <span class="keyword">if</span> iip&gt;0, N.ip=A{iip}; <span class="keyword">end</span>
+0084 <span class="keyword">if</span> ierr&gt;0, N.err=A{ierr}*0.01; <span class="keyword">end</span>
+0085 <span class="keyword">if</span> ir&gt;0, N.rho=A{ir}; <span class="keyword">else</span>
+0086     <span class="keyword">if</span> ii*iu&gt;0, 
+0087         <span class="keyword">if</span> any(N.i==0), 
+0088             N=<a href="delmeasurement.html" class="code" title="function N=delmeasurement(N,fi)">delmeasurement</a>(N,N.i==0);
+0089             display(<span class="string">'deleted zero current data!'</span>);
+0090         <span class="keyword">end</span>        
+0091         N.rho=N.u./N.i; 
+0092     <span class="keyword">end</span>
+0093 <span class="keyword">end</span>
+0094 <span class="keyword">if</span> (iu&gt;0)&amp;&amp;any(N.u==0), 
+0095     N=<a href="delmeasurement.html" class="code" title="function N=delmeasurement(N,fi)">delmeasurement</a>(N,N.u==0);
+0096     display(<span class="string">'deleted zero voltage data!'</span>);
+0097 <span class="keyword">end</span>        
+0098 <span class="keyword">if</span> iip&amp;iu,
+0099    fi=find(N.u&lt;0);
+0100    N.ip(fi)=pi*1000-N.ip(fi);
+0101 <span class="keyword">end</span>
+0102 <span class="keyword">if</span> ik&gt;0, N.k=A{ik}; <span class="keyword">else</span> 
+0103     <span class="keyword">if</span> size(N.elec,2)&gt;2, N.k=<a href="getkonf3d.html" class="code" title="function konf=getkonf3d(N,negz)">getkonf3d</a>(N); <span class="keyword">else</span> N.k=<a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>(N); <span class="keyword">end</span>
+0104 <span class="keyword">end</span>
+0105 <span class="keyword">if</span> irhoa&gt;0, N.r=A{irhoa}; <span class="keyword">else</span>
+0106     <span class="keyword">if</span> isfield(N,<span class="string">'rho'</span>)&amp;isfield(N,<span class="string">'k'</span>), N.r=N.rho.*N.k; <span class="keyword">end</span>
+0107 <span class="keyword">end</span>
+0108 <span class="comment">% if any(N.r&lt;=0),</span>
+0109 <span class="comment">%     N=delmeasurement(N,N.r&lt;=0);</span>
+0110 <span class="comment">%     display('deleted negative/zero apparent resistivities!');</span>
+0111 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

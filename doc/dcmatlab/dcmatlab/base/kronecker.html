@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of kronecker</title>
+  <meta name="keywords" content="kronecker">
+  <meta name="description" content="KRONECKER   Kronecker tensor product.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; kronecker.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>kronecker
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>KRONECKER   Kronecker tensor product.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function K = kronecker(A,B) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">KRONECKER   Kronecker tensor product.
+   KRONECKER(X,Y) is the Kronecker tensor product of X and Y.
+   The result is a large matrix formed by taking all possible
+   products between the elements of X and those of Y. For
+   example, if X is 2 by 3, then KRONECKER(X,Y) is
+
+      [ X(1,1)*Y  X(1,2)*Y  X(1,3)*Y
+        X(2,1)*Y  X(2,2)*Y  X(2,3)*Y ]
+
+   If either X or Y is sparse, only nonzero elements are multiplied
+   in the computation, and the result is sparse.
+
+   Class support for inputs X,Y:
+      float: double, single
+
+   NOTE: This function does exactly what Matlab KRON does, but for large
+      full matrices, the engine uses BSXFUN to accelerate the calculation.   
+      Another advantage is no intermediates large matrices is generated
+      (four temporary arrays in case of KRON)
+
+   Benchmark on Intel Core2 Duo T7250 @2GHz and 2Go RAM
+   Size A/B  Speed gain
+      10       1.17    
+      20       3.48    
+      30       3.78    
+      40       3.73    
+      50       3.68    
+      60       4.22    
+      70       3.81
+
+   Restriction: MATLAB 2007A or later is required
+
+   See also: KRON
+
+   Author: Bruno Luong &lt;brunoluong@yahoo.com&gt;
+   History:
+       Original 21-Jun-2009</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function K = kronecker(A,B)</a>
+0002 <span class="comment">%KRONECKER   Kronecker tensor product.</span>
+0003 <span class="comment">%   KRONECKER(X,Y) is the Kronecker tensor product of X and Y.</span>
+0004 <span class="comment">%   The result is a large matrix formed by taking all possible</span>
+0005 <span class="comment">%   products between the elements of X and those of Y. For</span>
+0006 <span class="comment">%   example, if X is 2 by 3, then KRONECKER(X,Y) is</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%      [ X(1,1)*Y  X(1,2)*Y  X(1,3)*Y</span>
+0009 <span class="comment">%        X(2,1)*Y  X(2,2)*Y  X(2,3)*Y ]</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   If either X or Y is sparse, only nonzero elements are multiplied</span>
+0012 <span class="comment">%   in the computation, and the result is sparse.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   Class support for inputs X,Y:</span>
+0015 <span class="comment">%      float: double, single</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   NOTE: This function does exactly what Matlab KRON does, but for large</span>
+0018 <span class="comment">%      full matrices, the engine uses BSXFUN to accelerate the calculation.</span>
+0019 <span class="comment">%      Another advantage is no intermediates large matrices is generated</span>
+0020 <span class="comment">%      (four temporary arrays in case of KRON)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   Benchmark on Intel Core2 Duo T7250 @2GHz and 2Go RAM</span>
+0023 <span class="comment">%   Size A/B  Speed gain</span>
+0024 <span class="comment">%      10       1.17</span>
+0025 <span class="comment">%      20       3.48</span>
+0026 <span class="comment">%      30       3.78</span>
+0027 <span class="comment">%      40       3.73</span>
+0028 <span class="comment">%      50       3.68</span>
+0029 <span class="comment">%      60       4.22</span>
+0030 <span class="comment">%      70       3.81</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">%   Restriction: MATLAB 2007A or later is required</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%   See also: KRON</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">%   Author: Bruno Luong &lt;brunoluong@yahoo.com&gt;</span>
+0037 <span class="comment">%   History:</span>
+0038 <span class="comment">%       Original 21-Jun-2009</span>
+0039 
+0040 
+0041 
+0042 <span class="keyword">if</span> ~issparse(A) &amp;&amp; ~issparse(B)
+0043     <span class="keyword">if</span> ndims(A) &gt; 2 || ndims(B) &gt; 2
+0044         error(<span class="string">'kronecker:TwoDInput'</span>,<span class="string">'Inputs must be 2-D.'</span>);
+0045     <span class="keyword">end</span>
+0046     <span class="comment">% Both inputs are full, result is full. This is faster than</span>
+0047     <span class="comment">% MATLAB stock kron (indexing based)</span>
+0048     [ma na] = size(A);
+0049     [mb nb] = size(B);
+0050     A = reshape(A,[1 ma 1 na]);
+0051     B = reshape(B,[mb 1 nb 1]);
+0052     K = bsxfun(@times,A,B);
+0053     K = reshape(K,[ma*mb na*nb]);
+0054     
+0055 <span class="keyword">else</span> <span class="comment">% One of the input matrix is sparse</span>
+0056     
+0057     <span class="comment">% Call MATLAB stock KRON</span>
+0058     K = kron(A,B);
+0059     
+0060 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

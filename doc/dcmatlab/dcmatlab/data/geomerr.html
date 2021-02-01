@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of geomerr</title>
+  <meta name="keywords" content="geomerr">
+  <meta name="description" content="GEOMERR - get geometrical error">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; geomerr.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>geomerr
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GEOMERR - get geometrical error</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Gerr=geomerr(N,dx) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GEOMERR - get geometrical error
+ Gerr = geomerr(N,dx)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="showdata.html" class="code" title="function showdata(Data)">showdata</a>	SHOWDATA - Show data of any kind or dimension</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function k=getk(xa,xm,xn,xb)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Gerr=geomerr(N,dx)</a>
+0002 
+0003 <span class="comment">% GEOMERR - get geometrical error</span>
+0004 <span class="comment">% Gerr = geomerr(N,dx)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, dx=0.01; <span class="keyword">end</span>
+0007 xa=N.elec(N.a,1);
+0008 xm=N.elec(N.m,1);
+0009 dk=abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa+dx,xm)-N.k)+abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa,xm+dx)-N.k);
+0010 fn=find(N.n);
+0011 <span class="keyword">if</span> ~isempty(fn),
+0012     xn=N.elec(N.n(fn),1);
+0013     dk(fn)=abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa(fn)+dx,xm(fn),xn)-N.k)+<span class="keyword">...</span>
+0014         abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa(fn),xm(fn)+dx,xn)-N.k)+<span class="keyword">...</span>
+0015         abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa(fn),xm(fn),xn+dx)-N.k);
+0016 <span class="keyword">end</span>
+0017 fb=find(N.n.*N.b);
+0018 <span class="keyword">if</span> ~isempty(fb),
+0019     xn=N.elec(N.n(fb),1);
+0020     xb=N.elec(N.b(fb),1);
+0021     dk(fb)=abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa(fb)+dx,xm(fb),xn,xb)-N.k)+<span class="keyword">...</span>
+0022         abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa(fb),xm(fb)+dx,xn,xb)-N.k)+<span class="keyword">...</span>
+0023         abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa(fb),xm(fb),xn+dx,xb)-N.k)+<span class="keyword">...</span>
+0024         abs(<a href="#_sub1" class="code" title="subfunction k=getk(xa,xm,xn,xb)">getk</a>(xa(fb),xm(fb),xn,xb+dx)-N.k);
+0025 <span class="keyword">end</span>
+0026 Gerr=dk./abs(N.k);
+0027 <a href="showdata.html" class="code" title="function showdata(Data)">showdata</a>(N,Gerr*100);
+0028 
+0029 <a name="_sub1" href="#_subfunctions" class="code">function k=getk(xa,xm,xn,xb)</a>
+0030 kk=1./abs(xa-xm);
+0031 <span class="keyword">if</span> nargin&gt;2, kk=kk-1./abs(xa-xn); <span class="keyword">end</span>
+0032 <span class="keyword">if</span> nargin&gt;3, kk=kk-1./abs(xb-xm)+1./abs(xb-xn); <span class="keyword">end</span>
+0033 k=2*pi./kk;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

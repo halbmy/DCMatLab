@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cglscdp</title>
+  <meta name="keywords" content="cglscdp">
+  <meta name="description" content="CGLSCDP - least squares normal equations solver">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; cglscdp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cglscdp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CGLSCDP - least squares normal equations solver</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function x = cglscdp(A,b,lam,C,D,P,dx,x0,maxiter,silent) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CGLSCDP - least squares normal equations solver
+ x = cglscdp(A,y,lam,C,D,P[,dx,x0,maxiter,silent])
+ solves implicitly the equation
+ ( (DS)'*DS + lam*C'C ) x = (DS)'*D*y (-lam*C'C dx)
+ C can both be given as unsymmetric or symmetrized matrix
+ all but the first three can be neglected
+ C (model constraints)-&gt; 1
+ D (data weighting)   -&gt; 1
+ P (reparameter)      -&gt; 1
+ dx (global residual) -&gt; 0
+ optional parameters:
+ x0 (starting vector) -&gt; zero vector
+ maxiter              -&gt; 1000
+ silent (no output)   -&gt;0</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="cglssercdp.html" class="code" title="function [X,rho,eta,j] = cglssercdp(A,b,L,D,P,lambda)">cglssercdp</a>	CGLSSERCDP - Least squares basing on conjugate gradients</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function x = cglscdp(A,b,lam,C,D,P,dx,x0,maxiter,silent)</a>
+0002 
+0003 <span class="comment">% CGLSCDP - least squares normal equations solver</span>
+0004 <span class="comment">% x = cglscdp(A,y,lam,C,D,P[,dx,x0,maxiter,silent])</span>
+0005 <span class="comment">% solves implicitly the equation</span>
+0006 <span class="comment">% ( (DS)'*DS + lam*C'C ) x = (DS)'*D*y (-lam*C'C dx)</span>
+0007 <span class="comment">% C can both be given as unsymmetric or symmetrized matrix</span>
+0008 <span class="comment">% all but the first three can be neglected</span>
+0009 <span class="comment">% C (model constraints)-&gt; 1</span>
+0010 <span class="comment">% D (data weighting)   -&gt; 1</span>
+0011 <span class="comment">% P (reparameter)      -&gt; 1</span>
+0012 <span class="comment">% dx (global residual) -&gt; 0</span>
+0013 <span class="comment">% optional parameters:</span>
+0014 <span class="comment">% x0 (starting vector) -&gt; zero vector</span>
+0015 <span class="comment">% maxiter              -&gt; 1000</span>
+0016 <span class="comment">% silent (no output)   -&gt;0</span>
+0017 
+0018 <span class="keyword">if</span> nargin&lt;3, error(<span class="string">'Too less input arguments!'</span>); <span class="keyword">end</span>
+0019 [m,n] = size(A); 
+0020 <span class="keyword">if</span> nargin&lt;3, lam=1; <span class="keyword">end</span>
+0021 <span class="keyword">if</span> nargin&lt;4, C=1; <span class="keyword">end</span> <span class="comment">%speye(n); end</span>
+0022 <span class="keyword">if</span> nargin&lt;5, D=1; <span class="keyword">end</span> <span class="comment">%ones(m,1); end</span>
+0023 <span class="keyword">if</span> nargin&lt;6, P=1; <span class="keyword">end</span>
+0024 <span class="keyword">if</span> (nargin&lt;7)||(isequal(dx,0)), dx=zeros(n,1); <span class="keyword">end</span>
+0025 <span class="keyword">if</span> (nargin&lt;8)||(isequal(x0,0)), x0=zeros(n,1); <span class="keyword">end</span>
+0026 <span class="keyword">if</span> nargin&lt;9, maxiter=1000; <span class="keyword">end</span>
+0027 <span class="keyword">if</span> nargin&lt;10, silent=0; <span class="keyword">end</span>
+0028 <span class="keyword">if</span> min(size(D))==1, D=spdiags(D(:),0,length(D)); <span class="keyword">end</span>
+0029 <span class="keyword">if</span> diff(size(C))==0, <span class="comment">% symmetric matrix</span>
+0030     L=C;    
+0031 <span class="keyword">else</span>
+0032     L=C'*C;
+0033 <span class="keyword">end</span>
+0034 <span class="comment">% Prepare for CG iteration.</span>
+0035 <span class="comment">%     PI = P\speye(size(P,1));</span>
+0036 PI=P';
+0037 su=sum(P,1);
+0038 we=ones(size(su));
+0039 fi=find(su);we(fi)=1./su(fi);
+0040 PI=spdiags(we(:),0,length(we),length(we))*PI;
+0041 <span class="comment">% for i=1:length(su),</span>
+0042 <span class="comment">%     if su(i)&gt;0, PI(i,:)=PI(i,:)/su(i); end</span>
+0043 <span class="comment">% end</span>
+0044 x = PI*x0;
+0045 z = D*(b - A*(P*x)); <span class="comment">% residuum of unregularized equation</span>
+0046 p = (z'*D*A*P)';
+0047 acc=1e-8;
+0048 abbr = p'*p*acc; <span class="comment">% goal for norm(r)^2</span>
+0049 p=p-PI*(L*(x0+dx))*lam; <span class="comment">% residuum of normal equation</span>
+0050 r = p;
+0051 normr2 = r'*r;
+0052 <span class="comment">% Iterate.</span>
+0053 j=0;
+0054 <span class="keyword">if</span> ~silent, wb=waitbar(0,<span class="string">'CGLS CDP'</span>); <span class="keyword">end</span>
+0055 fort=0;oldf=0;
+0056 t0=clock;
+0057 <span class="keyword">while</span>(normr2&gt;abbr)
+0058   j=j+1;  
+0059   <span class="keyword">if</span> j&gt;maxiter, <span class="keyword">break</span>; <span class="keyword">end</span>
+0060   q = D*(A*(P*p));
+0061   normr2old=normr2;
+0062   Pp=P*p;
+0063   alpha = normr2/(q'*q+Pp'*(L*Pp)*lam);
+0064   x  = x + alpha*p;
+0065   z  = z - alpha*q;
+0066   r = (z'*D*A*P)'-PI*(L*(P*x+dx))*lam;
+0067   normr2 = r'*r;
+0068   beta = normr2/normr2old;
+0069   p = r + beta*p;
+0070   fort=1+log10(normr2/abbr)/log10(acc);
+0071   <span class="keyword">if</span> ~silent&amp;&amp;(fort&gt;oldf+0.05),
+0072     waitbar(fort,wb);
+0073     oldf=fort;
+0074   <span class="keyword">end</span>
+0075 <span class="keyword">end</span>
+0076 <span class="keyword">if</span> ~silent, close(wb); <span class="keyword">end</span>
+0077 x=P*x;
+0078 <span class="keyword">if</span> ~silent, message(sprintf(<span class="string">'Solved weighted normal equations in %.1fs, %d iterations,lam=%.1f'</span>,<span class="keyword">...</span>
+0079     etime(clock,t0),j,lam)); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

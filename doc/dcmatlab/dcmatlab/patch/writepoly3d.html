@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writepoly3d</title>
+  <meta name="keywords" content="writepoly3d">
+  <meta name="description" content="WRITEPOLY3D - Write poly file for 3d mesher (tetgen)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; writepoly3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>writepoly3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WRITEPOLY3D - Write poly file for 3d mesher (tetgen)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function writepoly3d(filename,Poly) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WRITEPOLY3D - Write poly file for 3d mesher (tetgen)
+ writepoly3d(filename,Poly)
+ Poly...structure of 
+     .node (n by 4 array) x,y,z and marker (-99 electrodes)
+     .face cell array of index vectors into Poly.node
+     (note that .face must be 1-based while the file is 0-based)
+     .region (n by 4 array) x,y,z (optional marker and maximum cell size)
+     .hole (n by 4 array) x,y,z</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function writepoly3d(filename,Poly)</a>
+0002 
+0003 <span class="comment">% WRITEPOLY3D - Write poly file for 3d mesher (tetgen)</span>
+0004 <span class="comment">% writepoly3d(filename,Poly)</span>
+0005 <span class="comment">% Poly...structure of</span>
+0006 <span class="comment">%     .node (n by 4 array) x,y,z and marker (-99 electrodes)</span>
+0007 <span class="comment">%     .face cell array of index vectors into Poly.node</span>
+0008 <span class="comment">%     (note that .face must be 1-based while the file is 0-based)</span>
+0009 <span class="comment">%     .region (n by 4 array) x,y,z (optional marker and maximum cell size)</span>
+0010 <span class="comment">%     .hole (n by 4 array) x,y,z</span>
+0011 
+0012 <span class="comment">% if size(Poly.node,2)&lt;4, Poly.node(:,4)=0; end</span>
+0013 nn=size(Poly.node,1);
+0014 fid=fopen(filename,<span class="string">'w'</span>);
+0015 fprintf(fid,<span class="string">'%d\t%d\t%d\t%d\n'</span>,nn,3,0,1);
+0016 node=ones(nn,5);
+0017 node(:,1)=(0:nn-1)';
+0018 node(:,2:size(Poly.node,2)+1)=Poly.node;
+0019 <span class="keyword">if</span> isfield(Poly,<span class="string">'nodemarker'</span>), node(:,5)=Poly.nodemarker; <span class="keyword">end</span>
+0020 fprintf(fid,<span class="string">'%d\t%5f\t%5f\t%5f\t%d\n'</span>,node');
+0021 fprintf(fid,<span class="string">'%d\t%d\n'</span>,length(Poly.face),1);
+0022 facemarker=zeros(length(Poly.face));
+0023 <span class="keyword">if</span> isfield(Poly,<span class="string">'facemarker'</span>)&amp;&amp;(length(Poly.facemarker)==length(facemarker)),
+0024     facemarker=Poly.facemarker; <span class="keyword">end</span>
+0025 <span class="keyword">for</span> i=1:length(Poly.face),
+0026    fprintf(fid,<span class="string">'1\t0\t%d\n'</span>,facemarker(i));
+0027    fprintf(fid,<span class="string">'%d'</span>,length(Poly.face{i}));
+0028    fprintf(fid,<span class="string">'\t%d'</span>,Poly.face{i}-1);
+0029    fprintf(fid,<span class="string">'\n'</span>);
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">if</span> isfield(Poly,<span class="string">'hole'</span>)&amp;&amp;(size(Poly.hole,1)&gt;0),    
+0032     fprintf(fid,<span class="string">'%d\n'</span>,size(Poly.hole,1)); <span class="comment">%region marker</span>
+0033     hole=(0:size(Poly.hole,1)-1)';
+0034     hole(:,2:4)=Poly.hole(:,1:3);
+0035     fprintf(fid,<span class="string">'%d\t%10f\t%10f\t%10f\n'</span>,hole');
+0036 <span class="keyword">else</span>
+0037     fprintf(fid,<span class="string">'0\n'</span>); <span class="comment">%hole marker</span>
+0038 <span class="keyword">end</span>
+0039 <span class="keyword">if</span> isfield(Poly,<span class="string">'region'</span>)&amp;&amp;(size(Poly.region,1)&gt;0),    
+0040     fprintf(fid,<span class="string">'%d\n'</span>,size(Poly.region,1)); <span class="comment">%region marker</span>
+0041     region=(0:size(Poly.region,1)-1)';
+0042     region(:,2:4)=Poly.region(:,1:3);
+0043     region(1,6)=0;<span class="comment">%default marker and attribute</span>
+0044     <span class="keyword">if</span> size(Poly.region,2)&gt;3, region(:,5)=Poly.region(:,4); <span class="keyword">end</span>
+0045     <span class="keyword">if</span> size(Poly.region,2)&gt;4, region(:,6)=Poly.region(:,5); <span class="keyword">end</span>    
+0046     fprintf(fid,<span class="string">'%d\t%10f\t%10f\t%10f\t%d\t%e\n'</span>,region');
+0047 <span class="keyword">else</span>
+0048     fprintf(fid,<span class="string">'0\n'</span>); <span class="comment">%region marker</span>
+0049 <span class="keyword">end</span>
+0050 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

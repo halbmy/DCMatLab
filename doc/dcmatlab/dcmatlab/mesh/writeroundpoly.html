@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writeroundpoly</title>
+  <meta name="keywords" content="writeroundpoly">
+  <meta name="description" content="WRITEPOLY - Creatte poly file from Shot positions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; writeroundpoly.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>writeroundpoly
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WRITEPOLY - Creatte poly file from Shot positions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function writeroundpoly(Shotpos,filename,dd,iseasy) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WRITEPOLY - Creatte poly file from Shot positions
+ writepoly(Shotpos,filename[,refine,easymesh])
+ Shotpos ... Nx2 matrix of positions
+ filename .. File name for poly output
+ refine  ... relative refinement near positions
+ iseasy  ... write easy mesh instead of triangle</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function writeroundpoly(Shotpos,filename,dd,iseasy)</a>
+0002 
+0003 <span class="comment">% WRITEPOLY - Creatte poly file from Shot positions</span>
+0004 <span class="comment">% writepoly(Shotpos,filename[,refine,easymesh])</span>
+0005 <span class="comment">% Shotpos ... Nx2 matrix of positions</span>
+0006 <span class="comment">% filename .. File name for poly output</span>
+0007 <span class="comment">% refine  ... relative refinement near positions</span>
+0008 <span class="comment">% iseasy  ... write easy mesh instead of triangle</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'No shot provided'</span>); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;2, filename=<span class="string">'test.poly'</span>; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;3, dd=0.3; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;4, iseasy=0; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> size(Shotpos,2)&lt;2, Shotpos(:,2)=0; <span class="keyword">end</span>
+0015 
+0016 np=size(Shotpos,1);
+0017 mid=mean(Shotpos);
+0018 relpos=Shotpos-repmat(mean(Shotpos),np,1);
+0019 rad=sqrt(sum(relpos.^2,2));
+0020 ang=atan2(relpos(:,2),relpos(:,1));
+0021 sang=sort(ang);
+0022 dpos=1;
+0023 <span class="comment">% if iseasy||(dd&lt;=0)||(dd&gt;=1), % no refinement</span>
+0024 <span class="keyword">if</span> (dd&lt;=0)||(dd&gt;=1), <span class="comment">% no refinement</span>
+0025     newang=sang;
+0026 <span class="keyword">elseif</span> dd&gt;0.33, <span class="comment">%treat as 0.5 (add one more)</span>
+0027     dang=mod([diff(sang);sang(1)-sang(end)],2*pi);
+0028     newang=reshape([sang sang+dang/2]',np*2,1);    
+0029     dpos=2;
+0030 <span class="keyword">else</span> <span class="comment">% real refinement</span>
+0031     dang=mod([diff(sang);sang(1)-sang(end)],2*pi);
+0032     newang=reshape([sang-dang*dd sang sang+dang*dd]',np*3,1);
+0033     dpos=3;
+0034 <span class="keyword">end</span>
+0035 newrad=interp1(ang,rad,newang,<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0036 <span class="comment">%spez. Behandlung von newrad(1) und newrad(end)?</span>
+0037 newpos=[newrad.*cos(newang) newrad.*sin(newang)]+repmat(mean(Shotpos),length(newang),1);
+0038 np=size(newpos,1);
+0039 <span class="comment">% nn=[(0:np-1)' newpos ones(np,1)*(-99)];</span>
+0040 nn=[(0:np-1)' newpos ones(np,1)*(0)];
+0041 <span class="comment">% nn(1+1:dpos:end,4) = -99;</span>
+0042 nn(1+(dpos&gt;2):dpos:<span class="keyword">end</span>,4) = -99;
+0043 ee=nn;
+0044 ee(:,2)=ee(:,1);ee(:,4)=-1;
+0045 ee(:,3)=ee(:,2)+1;ee(<span class="keyword">end</span>,3)=0;
+0046 <span class="keyword">if</span> iseasy,
+0047     fid=fopen(filename,<span class="string">'w'</span>);
+0048     fprintf(fid,<span class="string">'%d\n'</span>,np);    
+0049     nn(:,4)=dd;
+0050     nn(:,5)=1;
+0051     fprintf(fid,<span class="string">'%d:\t%f\t%f\t%f\t%d\n'</span>,nn');
+0052     fprintf(fid,<span class="string">'%d\n'</span>,np);
+0053     ee(:,4)=1;
+0054     fprintf(fid,<span class="string">'%d:\t%d\t%d\t%d\n'</span>,ee');
+0055     fclose(fid);
+0056 <span class="keyword">else</span>
+0057     fid=fopen(filename,<span class="string">'w'</span>);
+0058     fprintf(fid,<span class="string">'%d %d %d %d\n'</span>,np,2,0,1);
+0059     fprintf(fid,<span class="string">'%d\t%.3f\t%.3f\t%d\n'</span>,nn');
+0060     fprintf(fid,<span class="string">'%d %d\n'</span>,np,1);
+0061     fprintf(fid,<span class="string">'%d\t%d\t%d\t%d\n'</span>,ee');
+0062     fprintf(fid,<span class="string">'%d\n%d\n'</span>,0,0);
+0063     fclose(fid);
+0064 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

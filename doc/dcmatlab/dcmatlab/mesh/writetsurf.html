@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writetsurf</title>
+  <meta name="keywords" content="writetsurf">
+  <meta name="description" content="WRITETSURF - Write TSurf Mesh to file (*.ts)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; writetsurf.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>writetsurf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WRITETSURF - Write TSurf Mesh to file (*.ts)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function writetsurf(filename,Mesh,xy,varname) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WRITETSURF - Write TSurf Mesh to file (*.ts)
+ writetsurf(filename,Mesh)
+   Mesh.patt contains attributes for each point/node
+   alternatively Mesh.att (attributes for each cell) is used
+ writetsurf(filename,Mesh,xy) with xy=point list for 2d-&gt;3d
+ writetsurf(filename,Mesh,xy,varname) with variable name string</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function writetsurf(filename,Mesh,xy,varname)</a>
+0002 
+0003 <span class="comment">% WRITETSURF - Write TSurf Mesh to file (*.ts)</span>
+0004 <span class="comment">% writetsurf(filename,Mesh)</span>
+0005 <span class="comment">%   Mesh.patt contains attributes for each point/node</span>
+0006 <span class="comment">%   alternatively Mesh.att (attributes for each cell) is used</span>
+0007 <span class="comment">% writetsurf(filename,Mesh,xy) with xy=point list for 2d-&gt;3d</span>
+0008 <span class="comment">% writetsurf(filename,Mesh,xy,varname) with variable name string</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;1, filename=<span class="string">'test.ts'</span>; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Specify mesh!'</span>); <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;3, xy=[0 0;1 0]; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;4, varname=<span class="string">'resistivity'</span>; <span class="keyword">end</span>
+0014 
+0015 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'patt'</span>)&amp;&amp;isfield(Mesh,<span class="string">'cellattr'</span>), <span class="comment">% interpolate</span>
+0016     Mesh.patt=zeros(Mesh.nnodes,1);
+0017     <span class="keyword">for</span> i=1:Mesh.nnodes,
+0018        [row,col]=find(Mesh.cell==i);
+0019        Mesh.patt(i)=mean(Mesh.cellattr(row));
+0020     <span class="keyword">end</span>
+0021 <span class="keyword">end</span>
+0022 <span class="keyword">if</span> ~isfield(Mesh,<span class="string">'patt'</span>)&amp;&amp;isfield(Mesh,<span class="string">'att'</span>), <span class="comment">% interpolate</span>
+0023     Mesh.patt=zeros(Mesh.nnodes,1);
+0024     <span class="keyword">for</span> i=1:Mesh.nnodes,
+0025        [row,col]=find(Mesh.cell==i);
+0026        Mesh.patt(i)=mean(Mesh.att(row));
+0027     <span class="keyword">end</span>
+0028 <span class="keyword">end</span>
+0029 
+0030 
+0031 name=strrep(filename,<span class="string">'.ts'</span>,<span class="string">''</span>); <span class="comment">% comment</span>
+0032 
+0033 node3d=Mesh.node;
+0034 <span class="keyword">if</span> size(Mesh.node,2)==2, 
+0035     node3d(:,3)=Mesh.node(:,2);
+0036     node3d(:,2)=0;
+0037 <span class="keyword">end</span>
+0038 <span class="keyword">if</span> nargin&gt;2, <span class="comment">% xy points given</span>
+0039     mbm=[0;cumsum(sqrt(sum(diff(xy).^2,2)))];
+0040     node3d(:,1)=interp1(mbm,xy(:,1),Mesh.node(:,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0041     node3d(:,2)=interp1(mbm,xy(:,2),Mesh.node(:,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0042 <span class="keyword">end</span>
+0043 
+0044 fid=fopen(filename,<span class="string">'w'</span>);
+0045 fprintf(fid,<span class="string">'GOCAD TSURF 1\r\nHEADER {\r\n'</span>);
+0046 fprintf(fid,<span class="string">'name:%s\r\n'</span>,name);
+0047 fprintf(fid,<span class="string">'mesh:on\r\n*solid*color:1 0.447059 0.337255 1\r\n'</span>);
+0048 fprintf(fid,<span class="string">'ivolmap:false\r\nimap:false\r\n*painted:on\r\n'</span>);
+0049 fprintf(fid,<span class="string">'*painted*variable:%s\r\nlast_selected_folder:Texture\r\n'</span>,varname);
+0050 fprintf(fid,<span class="string">'}\r\n'</span>);
+0051 fprintf(fid,<span class="string">'PROPERTIES %s\r\nPROP_LEGAL_RANGES **none**  **none**\r\n'</span>,varname);
+0052 fprintf(fid,<span class="string">'NO_DATA_VALUES -99999\r\nPROPERTY_CLASSES test\r\nPROPERTY_KINDS Acoustic Impedance\r\n'</span>);
+0053 fprintf(fid,<span class="string">'PROPERTY_SUBCLASSES QUANTITY Float\r\nESIZES 1\r\nUNITS Ohmm'</span>);
+0054 fprintf(fid,<span class="string">'PROPERTY_CLASS_HEADER test {\r\n*low_clip:%f\r\n'</span>,interperc(Mesh.patt,5));
+0055 fprintf(fid,<span class="string">'*high_clip:%f\r\n*pclip:99\r\n}\r\n'</span>,interperc(Mesh.patt,95));
+0056 
+0057 fprintf(fid,<span class="string">'TFACE\r\n'</span>);
+0058 fmt=<span class="string">'PVRTX %d %f %f %f'</span>;
+0059 mat=[(1:Mesh.nnodes);node3d'];
+0060 <span class="keyword">if</span> isfield(Mesh,<span class="string">'patt'</span>), fmt=[fmt <span class="string">' %f'</span>];mat=[mat;Mesh.patt(:)']; <span class="keyword">end</span>
+0061 fprintf(fid,[fmt <span class="string">'\r\n'</span>],mat);
+0062 fprintf(fid,<span class="string">'TRGL %d %d %d\r\n'</span>,Mesh.cell');
+0063 <span class="comment">% fprintf(fid,'BSTONE 1\r\n');</span>
+0064 fprintf(fid,<span class="string">'END'</span>);
+0065 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

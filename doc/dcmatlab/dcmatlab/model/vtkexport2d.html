@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of vtkexport2d</title>
+  <meta name="keywords" content="vtkexport2d">
+  <meta name="description" content="VTKEXPORT2d - Export 3d model to VTK file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">model</a> &gt; vtkexport2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\model&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>vtkexport2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>VTKEXPORT2d - Export 3d model to VTK file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function vtkexport2d(outfile,M,x,z,topo,coverage) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> VTKEXPORT2d - Export 3d model to VTK file
+   visualization toolkit - rectilinear grid
+ vtkexport(modfile,M,x,z)
+ vtkexport(modfile,M,x,z,topography)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function vtkexport2d(outfile,M,x,z,topo,coverage)</a>
+0002 
+0003 <span class="comment">% VTKEXPORT2d - Export 3d model to VTK file</span>
+0004 <span class="comment">%   visualization toolkit - rectilinear grid</span>
+0005 <span class="comment">% vtkexport(modfile,M,x,z)</span>
+0006 <span class="comment">% vtkexport(modfile,M,x,z,topography)</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Filename and Model array must be specified!'</span>); <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;7, y=0; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;6, coverage=[]; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;5, topo=[]; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;4, z=0:size(M,2); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;3, x=0:size(M,1); <span class="keyword">end</span>
+0014 <span class="keyword">if</span> (nargin==5)&amp;&amp;(size(topo,2)~=2), coverage=topo;topo=[]; <span class="keyword">end</span>
+0015 lx=length(x);lz=length(z);ly=length(y);
+0016 z=-z;
+0017 <span class="keyword">if</span> (lx~=size(M,1)+1)||(lz~=size(M,2)+1),
+0018   error(<span class="string">'Array and Vector sizes do not match!'</span>); <span class="keyword">end</span>
+0019 <span class="comment">% y=z;z=0;ly=lz;lz=1;</span>
+0020 fid=fopen(outfile,<span class="string">'w'</span>); 
+0021 fprintf(fid,<span class="string">'# vtk DataFile Version 3.0\n'</span>);
+0022 fprintf(fid,<span class="string">'DC2dInvRes 2d grid model\n'</span>);
+0023 fprintf(fid,<span class="string">'ASCII\n'</span>);
+0024 <span class="keyword">if</span> isempty(topo)||(size(topo,2)&lt;2)||(length(unique(topo(:,2)))&lt;2), <span class="comment">% RECTILINEAR GRID</span>
+0025     <span class="keyword">if</span> (nargin&gt;4)&amp;&amp;(size(topo,2)&gt;1), z=z+topo(1,2); <span class="keyword">end</span> <span class="comment">%add constant topo</span>
+0026     fprintf(fid,<span class="string">'DATASET RECTILINEAR_GRID\n'</span>);
+0027     fprintf(fid,<span class="string">'DIMENSIONS %d %d %d\n'</span>,lx,ly,lz);
+0028     fprintf(fid,<span class="string">'X_COORDINATES %d double\n'</span>,lx);
+0029     fprintf(fid,<span class="string">'%g'</span>,x(1));
+0030     <span class="keyword">for</span> i=2:lx, fprintf(fid,<span class="string">' %g'</span>,x(i)); <span class="keyword">end</span>
+0031     fprintf(fid,<span class="string">'\n'</span>);
+0032     fprintf(fid,<span class="string">'Y_COORDINATES %d double\n'</span>,ly);
+0033     fprintf(fid,<span class="string">'%g'</span>,y(1));
+0034     <span class="keyword">for</span> i=2:ly, fprintf(fid,<span class="string">' %g'</span>,y(i)); <span class="keyword">end</span>
+0035     fprintf(fid,<span class="string">'\n'</span>);
+0036     fprintf(fid,<span class="string">'Z_COORDINATES %d double\n'</span>,lz);
+0037     fprintf(fid,<span class="string">'%g'</span>,z(1));
+0038     <span class="keyword">for</span> i=2:lz, fprintf(fid,<span class="string">' %g'</span>,z(i)); <span class="keyword">end</span>
+0039     fprintf(fid,<span class="string">'\n'</span>);
+0040     <span class="keyword">if</span> ly==1, ncells=(lx-1)*(lz-1); <span class="keyword">else</span> ncells=(lx-1)*(ly-1)*(lz-1); <span class="keyword">end</span>
+0041 <span class="keyword">else</span> <span class="comment">%topography-&gt;unstructured grid</span>
+0042     ncells=numel(M);npoints=lx*lz;
+0043     fprintf(fid,<span class="string">'DATASET UNSTRUCTURED_GRID\n'</span>);
+0044     fprintf(fid,<span class="string">'POINTS %d double\n'</span>,npoints);
+0045     xz=interp1(topo(:,1),topo(:,2),x,<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0046     <span class="keyword">for</span> k=1:lz,
+0047         <span class="keyword">for</span> i=1:lx,
+0048             fprintf(fid,<span class="string">'%g %g %g\n'</span>,x(i),0,xz(i)+z(k));
+0049         <span class="keyword">end</span>
+0050     <span class="keyword">end</span>
+0051     fprintf(fid,<span class="string">'CELLS %d %d\n'</span>,ncells,ncells*5);
+0052     <span class="keyword">for</span> k=1:lz-1,
+0053         <span class="keyword">for</span> i=1:lx-1,
+0054             ii=(k-1)*lx+i-1;
+0055             fprintf(fid,<span class="string">'4 %d %d %d %d\n'</span>,ii,ii+1,ii+lx+1,ii+lx);
+0056         <span class="keyword">end</span>
+0057     <span class="keyword">end</span>
+0058     fprintf(fid,<span class="string">'CELL_TYPES %d\n'</span>,ncells);
+0059     fprintf(fid,<span class="string">'%d '</span>,ones(1,ncells)*9); <span class="comment">% VTK QUADS</span>
+0060 <span class="keyword">end</span>
+0061 fprintf(fid,<span class="string">'CELL_DATA %d\n'</span>,ncells);
+0062 fprintf(fid,<span class="string">'SCALARS Resistivity(log10) double 1\n'</span>);
+0063 fprintf(fid,<span class="string">'LOOKUP_TABLE default\n'</span>);
+0064 fprintf(fid,<span class="string">'%g '</span>,log10(M(:)));
+0065 fprintf(fid,<span class="string">'\n'</span>);
+0066 <span class="keyword">if</span> ~isempty(coverage)&amp;&amp;(numel(coverage)==numel(M)),
+0067     fprintf(fid,<span class="string">'SCALARS Coverage double 1\n'</span>);
+0068     fprintf(fid,<span class="string">'LOOKUP_TABLE default\n'</span>);
+0069     fprintf(fid,<span class="string">'%g '</span>,coverage(:));
+0070     fprintf(fid,<span class="string">'\n'</span>);
+0071 <span class="keyword">end</span>
+0072 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

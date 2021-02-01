@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mytextscan</title>
+  <meta name="keywords" content="mytextscan">
+  <meta name="description" content="MYTEXTSCAN - Version of textscan for Matlab&lt;R14">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; mytextscan.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>mytextscan
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>MYTEXTSCAN - Version of textscan for Matlab&lt;R14</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function A = mytextscan(fid,formstr,ndata,iscomment,commstr) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MYTEXTSCAN - Version of textscan for Matlab&lt;R14
+ A = mytextscan(fid,formstr,ndata)
+ fid - file identifier of an opened file
+ formstr - format string for each line (before # sign)
+ ndata - number of lines to read, may be neglected</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="destrip.html" class="code" title="function [stringline,comment]=destrip(stringline,commentchar)">destrip</a>	DESTRIP - STRIPS comment from string</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function zeile=destrip(zeile)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A = mytextscan(fid,formstr,ndata,iscomment,commstr)</a>
+0002 
+0003 <span class="comment">% MYTEXTSCAN - Version of textscan for Matlab&lt;R14</span>
+0004 <span class="comment">% A = mytextscan(fid,formstr,ndata)</span>
+0005 <span class="comment">% fid - file identifier of an opened file</span>
+0006 <span class="comment">% formstr - format string for each line (before # sign)</span>
+0007 <span class="comment">% ndata - number of lines to read, may be neglected</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;4, iscomment=0; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;3, ndata=200000; <span class="keyword">end</span>
+0011 
+0012 cols=sort([strfind(formstr,<span class="string">'%d'</span>) strfind(formstr,<span class="string">'%f'</span>)]);
+0013 scols=strfind(formstr,<span class="string">'%s'</span>);
+0014 ncols=length(cols);
+0015 <span class="keyword">for</span> i=1:ncols, A{i}=zeros(ndata,1); <span class="keyword">end</span>
+0016 <span class="comment">% if iscomment, zeile=fgetl(fid); end</span>
+0017 <span class="keyword">for</span> i=1:ndata,
+0018     zeile=fgetl(fid);
+0019     <span class="keyword">if</span> isequal(zeile,-1), <span class="comment">%premature end</span>
+0020         <span class="keyword">for</span> j=1:length(A), A{j}(i:end)=[]; <span class="keyword">end</span>
+0021         <span class="keyword">return</span>;
+0022     <span class="keyword">end</span>
+0023     zeile=strrep(<a href="destrip.html" class="code" title="function [stringline,comment]=destrip(stringline,commentchar)">destrip</a>(zeile),<span class="string">','</span>,<span class="string">'.'</span>);
+0024     zeile=strrep(zeile,<span class="string">'na'</span>,<span class="string">'NaN'</span>);
+0025     <span class="keyword">while</span> isempty(zeile), zeile=<a href="destrip.html" class="code" title="function [stringline,comment]=destrip(stringline,commentchar)">destrip</a>(fgetl(fid)); <span class="keyword">end</span>
+0026     <span class="keyword">if</span> ~ischar(zeile), 
+0027         <span class="keyword">for</span> j=1:length(A), A{j}(i:end)=[]; <span class="keyword">end</span>
+0028         <span class="keyword">break</span>; 
+0029     <span class="keyword">end</span>    
+0030     mess=sscanf(zeile,formstr);
+0031     <span class="keyword">if</span> length(mess)&lt;ncols, ncols=length(mess); <span class="keyword">end</span>
+0032     <span class="keyword">for</span> j=1:ncols, A{j}(i)=mess(j); <span class="keyword">end</span>    
+0033 <span class="keyword">end</span>
+0034 
+0035 <a name="_sub1" href="#_subfunctions" class="code">function zeile=destrip(zeile)</a>
+0036 <span class="comment">% strip string from comments (with # character)</span>
+0037 aa=strfind(zeile,<span class="string">'#'</span>);
+0038 <span class="keyword">if</span> ~isempty(aa), zeile=zeile(1:aa(1)-1); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

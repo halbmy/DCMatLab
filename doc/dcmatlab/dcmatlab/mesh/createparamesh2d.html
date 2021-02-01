@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of createparamesh2d</title>
+  <meta name="keywords" content="createparamesh2d">
+  <meta name="description" content="CREATEPARAMESH - Create para mesh (outer space=1,para=2) from positions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; createparamesh2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>createparamesh2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CREATEPARAMESH - Create para mesh (outer space=1,para=2) from positions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Mesh,Poly]=createparamesh2d(pos,basename,quality,pdep,pbou,bou,dep,dd) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CREATEPARAMESH - Create para mesh (outer space=1,para=2) from positions
+ createparamesh2d(pos,basename,pdep,pbou,bou,dep);
+ pdep..paradepth
+ pbou..paraboundary (in m (&gt;0), in % (&lt;0), automatic (==0)
+ bou..boundary on the whole domain
+ dep..depth of the whole domain</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="loadmesh.html" class="code" title="function Mesh=loadmesh(meshname,dobound)">loadmesh</a>	LOADMESH - Loads DCFEMLIB mesh from file(s)</li><li><a href="writepoly2d.html" class="code" title="function writepoly2d(filename,Poly)">writepoly2d</a>	WRITEPOLY2d - Create poly file from Poly struct</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Mesh,Poly]=createparamesh2d(pos,basename,quality,pdep,pbou,bou,dep,dd)</a>
+0002 
+0003 <span class="comment">% CREATEPARAMESH - Create para mesh (outer space=1,para=2) from positions</span>
+0004 <span class="comment">% createparamesh2d(pos,basename,pdep,pbou,bou,dep);</span>
+0005 <span class="comment">% pdep..paradepth</span>
+0006 <span class="comment">% pbou..paraboundary (in m (&gt;0), in % (&lt;0), automatic (==0)</span>
+0007 <span class="comment">% bou..boundary on the whole domain</span>
+0008 <span class="comment">% dep..depth of the whole domain</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;2, basename=<span class="string">'mesh'</span>; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;3, quality=33.8; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;4, pdep=0; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;5, pbou=0; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&lt;6, bou=0; <span class="keyword">end</span>
+0015 <span class="keyword">if</span> nargin&lt;7, dep=bou; <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;8, dd=1; <span class="keyword">end</span>
+0017 
+0018 <span class="comment">%automatic</span>
+0019 ext=(max(pos(:,1))-min(pos(:,1)));
+0020 <span class="keyword">if</span> pdep==0, pdep=ext/4; <span class="keyword">end</span>
+0021 <span class="keyword">if</span> pbou==0, pbou=ext*0.1; <span class="keyword">end</span>
+0022 <span class="keyword">if</span> pbou&lt;0, pbou=exp*abs(pbou)/100; <span class="keyword">end</span>
+0023 
+0024 <span class="comment">%% create nodes</span>
+0025 Poly.node=pos;Poly.node(:,3)=-99;
+0026 di=sqrt(sum(diff(pos).^2,2));
+0027 <span class="keyword">if</span> dd&gt;0, 
+0028     fi=find(di&lt;dd*2);
+0029     newnode=pos(1:end-1,1)+dd;newnode(:,3)=0;
+0030     newnode(:,2)=interp1(pos(:,1),pos(:,2),newnode(:,1));
+0031     Poly.node=sortrows([Poly.node;newnode]);
+0032 <span class="keyword">end</span>
+0033 Poly.node(end+1,1:2)=Poly.node(<span class="keyword">end</span>,1:2)+[pbou 0];
+0034 Poly.node(<span class="keyword">end</span>,2)=interp1(pos(:,1),pos(:,2),Poly.node(<span class="keyword">end</span>,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0035 Poly.node(end+1,1:2)=Poly.node(<span class="keyword">end</span>,1:2)-[0 pdep];
+0036 Poly.node(end+1,1:2)=Poly.node(1,1:2)-[pbou pdep];
+0037 Poly.node(end+1,1:2)=Poly.node(1,1:2)-[pbou 0];
+0038 Poly.node(<span class="keyword">end</span>,2)=interp1(pos(:,1),pos(:,2),Poly.node(<span class="keyword">end</span>,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0039 Poly.edge=(1:size(Poly.node,1))';
+0040 Poly.edge(:,2)=Poly.edge(:,1)+1;Poly.edge(<span class="keyword">end</span>,2)=1;
+0041 nn=size(Poly.node,1);
+0042 Poly.node(end+1,1:2)=Poly.node(nn-3,1:2)+[bou 0];
+0043 Poly.node(<span class="keyword">end</span>,2)=interp1(pos(:,1),pos(:,2),Poly.node(<span class="keyword">end</span>,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0044 Poly.node(end+1,1:2)=Poly.node(<span class="keyword">end</span>,1:2)-[0 dep];
+0045 Poly.node(end+1,1:2)=Poly.node(nn,1:2)-[bou dep];
+0046 Poly.node(end+1,1:2)=Poly.node(nn,1:2)-[bou 0];
+0047 Poly.node(<span class="keyword">end</span>,2)=interp1(pos(:,1),pos(:,2),Poly.node(<span class="keyword">end</span>,1),<span class="string">'linear'</span>,<span class="string">'extrap'</span>);
+0048 Poly.node(end-1,2)=Poly.node(<span class="keyword">end</span>,2)-dep;
+0049 <span class="comment">%% create edged</span>
+0050 Poly.edge=[Poly.edge;nn-3 nn+1;nn+1 nn+2;nn+2 nn+3;nn+3 nn+4;nn+4 nn];
+0051 Poly.region=[Poly.node(<span class="keyword">end</span>,1:2)+[1 -1] 1;Poly.node(1,1:2)-[0 0.1] 2];
+0052 <a href="writepoly2d.html" class="code" title="function writepoly2d(filename,Poly)">writepoly2d</a>([basename <span class="string">'.poly'</span>],Poly)
+0053 dos([<span class="string">'dctriangle -v -q'</span> num2str(quality) <span class="string">' '</span> basename <span class="string">'.poly'</span>]);
+0054 Mesh=<a href="loadmesh.html" class="code" title="function Mesh=loadmesh(meshname,dobound)">loadmesh</a>([basename <span class="string">'.bms'</span>]);
+0055 fprintf(<span class="string">'Found mesh with %d parameters (total %d cells)'</span>,<span class="keyword">...</span>
+0056     length(find(Mesh.cellattr==2)),Mesh.ncells);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

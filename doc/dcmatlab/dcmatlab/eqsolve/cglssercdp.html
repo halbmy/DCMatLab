@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cglssercdp</title>
+  <meta name="keywords" content="cglssercdp">
+  <meta name="description" content="CGLSSERCDP - Least squares basing on conjugate gradients">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">eqsolve</a> &gt; cglssercdp.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\eqsolve&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cglssercdp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CGLSSERCDP - Least squares basing on conjugate gradients</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [X,rho,eta,j] = cglssercdp(A,b,L,D,P,lambda) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CGLSSERCDP - Least squares basing on conjugate gradients
+              for serial solutions for different lambda
+ solves (A'D'DA + lam*C) (P\x) = A'D'D b
+  = cglsparcdp(A,b,C,D,P,lam)
+     C .. constraint matrix
+     D .. data weighting matrix
+     P .. parameter mapping matrix
+   lam .. regularization parameters
+     X .. solution matrix (columns correspond to lams)
+ [X,rho,eta] = ... yields (inexact) model and data norms
+               which can be used for L-curve criterion</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="cglscdp.html" class="code" title="function x = cglscdp(A,b,lam,C,D,P,dx,x0,maxiter,silent)">cglscdp</a>	CGLSCDP - least squares normal equations solver</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [x,j] = cglscdp(A,b,lam,C,D,P,dx,x0)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [X,rho,eta,j] = cglssercdp(A,b,L,D,P,lambda)</a>
+0002 
+0003 <span class="comment">% CGLSSERCDP - Least squares basing on conjugate gradients</span>
+0004 <span class="comment">%              for serial solutions for different lambda</span>
+0005 <span class="comment">% solves (A'D'DA + lam*C) (P\x) = A'D'D b</span>
+0006 <span class="comment">%  = cglsparcdp(A,b,C,D,P,lam)</span>
+0007 <span class="comment">%     C .. constraint matrix</span>
+0008 <span class="comment">%     D .. data weighting matrix</span>
+0009 <span class="comment">%     P .. parameter mapping matrix</span>
+0010 <span class="comment">%   lam .. regularization parameters</span>
+0011 <span class="comment">%     X .. solution matrix (columns correspond to lams)</span>
+0012 <span class="comment">% [X,rho,eta] = ... yields (inexact) model and data norms</span>
+0013 <span class="comment">%               which can be used for L-curve criterion</span>
+0014 
+0015 kmax=length(lambda);
+0016 [m,n] = size(A); 
+0017 x=zeros(n,1);
+0018 X=zeros(length(x),kmax);
+0019 wb=waitbar(0,<span class="string">'CG Least Squares Serial CD...'</span>);
+0020 t0=clock;j=0;
+0021 <span class="keyword">for</span> k=1:kmax,
+0022    [x,iter]=<a href="cglscdp.html" class="code" title="function x = cglscdp(A,b,lam,C,D,P,dx,x0,maxiter,silent)">cglscdp</a>(A,b,lambda(k),L,D,P,0,x);
+0023 <span class="comment">%    fprintf('%d ',iter);</span>
+0024    j=j+iter;
+0025    X(:,k)=x;
+0026    waitbar(k/kmax,wb);
+0027 <span class="keyword">end</span>
+0028 close(wb);
+0029 message(sprintf(<span class="string">'Solved parallel weighted normal equations in %.1fs, %d iterations,%d lambdas'</span>,<span class="keyword">...</span>
+0030     etime(clock,t0),j,length(lambda)));
+0031 
+0032 rho=zeros(kmax,1);
+0033 eta=zeros(kmax,1);
+0034 <span class="keyword">if</span> nargout&gt;1, 
+0035     <span class="keyword">for</span> k=1:kmax,
+0036         rho(k)=norm(Z(:,k));
+0037         eta(k)=sqrt(X(:,k)'*(L*X(:,k)));
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 
+0041 <a name="_sub1" href="#_subfunctions" class="code">function [x,j] = cglscdp(A,b,lam,C,D,P,dx,x0)</a>
+0042 
+0043 <span class="comment">%% CGLSCDP - least squares normal equations solver</span>
+0044 <span class="comment">%% x = cglscdp(A,y,lam,C,D,P,dx)</span>
+0045 <span class="comment">%% solves implicitly the equation</span>
+0046 <span class="comment">%% ( (DS)'*DS + lam*C'C ) x = (DS)'*D*y (-lam*C'C dx)</span>
+0047 
+0048 <span class="keyword">if</span> nargin&lt;3, error(<span class="string">'Too less input arguments!'</span>); <span class="keyword">end</span>
+0049 [m,n] = size(A); 
+0050 <span class="keyword">if</span> nargin&lt;3, lam=1; <span class="keyword">end</span>
+0051 <span class="keyword">if</span> nargin&lt;4, C=1; <span class="keyword">end</span> <span class="comment">%speye(n); end</span>
+0052 <span class="keyword">if</span> nargin&lt;5, D=1; <span class="keyword">end</span> <span class="comment">%ones(m,1); end</span>
+0053 <span class="keyword">if</span> nargin&lt;6, P=1; <span class="keyword">end</span>
+0054 <span class="keyword">if</span> (nargin&lt;7)||(isequal(dx,0)), dx=zeros(n,1); <span class="keyword">end</span>
+0055 <span class="keyword">if</span> (nargin&lt;8)||(isequal(x0,0)), x0=zeros(n,1); <span class="keyword">end</span>
+0056 <span class="keyword">if</span> min(size(D))==1, D=spdiags(D(:),0,length(D)); <span class="keyword">end</span>
+0057 L=C;    
+0058 <span class="comment">% Prepare for CG iteration.</span>
+0059 nn=size(P,2);
+0060 PI=P';
+0061 su=sum(P,1);
+0062 we=ones(size(su));
+0063 fi=find(su);we(fi)=1./su(fi);
+0064 PI=spdiags(we(:),0,length(we),length(we))*PI;
+0065 x = PI*x0;
+0066 z = D*(b - A*(P*x)); <span class="comment">% residuum of unregularized equation</span>
+0067 p = (z'*D*A*P)';
+0068 acc=1e-7;
+0069 abbr = p'*p*acc; <span class="comment">% goal for norm(r)^2</span>
+0070 p=p-PI*(L*(x0+dx))*lam; <span class="comment">% residuum of normal equation</span>
+0071 r = p;
+0072 normr2 = r'*r;
+0073 <span class="comment">% Iterate.</span>
+0074 j=0;
+0075 t0=clock;
+0076 <span class="keyword">while</span>(normr2&gt;abbr)
+0077   j=j+1;  
+0078   q = D*(A*(P*p));
+0079   normr2old=normr2;
+0080   Pp=P*p;
+0081   alpha = normr2/(q'*q+Pp'*(L*Pp)*lam);
+0082   x  = x + alpha*p;
+0083   z  = z - alpha*q;
+0084   r = (z'*D*A*P)'-PI*(L*(P*x+dx))*lam;
+0085   normr2 = r'*r;
+0086   beta = normr2/normr2old;
+0087   p = r + beta*p;
+0088 <span class="keyword">end</span>
+0089 x=P*x;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

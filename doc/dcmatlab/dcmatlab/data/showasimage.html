@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showasimage</title>
+  <meta name="keywords" content="showasimage">
+  <meta name="description" content="SHOWASIMAGE(Data[,field[,indices])">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; showasimage.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>showasimage
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SHOWASIMAGE(Data[,field[,indices])</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function A=showasimage(Data,field,fi,pos,cbarvert) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SHOWASIMAGE(Data[,field[,indices])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="readdatafile.html" class="code" title="function N=readdatafile(datfile)">readdatafile</a>	READDATAFILE - tries to read any data file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A=showasimage(Data,field,fi,pos,cbarvert)</a>
+0002 
+0003 <span class="comment">% SHOWASIMAGE(Data[,field[,indices])</span>
+0004 
+0005 <span class="keyword">if</span> nargin&lt;5, cbarvert=0; <span class="keyword">end</span>
+0006 <span class="keyword">if</span> (nargin&lt;2)||isempty(field), 
+0007     <span class="keyword">if</span> isfield(Data,<span class="string">'t'</span>) field=Data.t; <span class="keyword">end</span>
+0008     <span class="keyword">if</span> isfield(Data,<span class="string">'r'</span>), field=Data.r; <span class="keyword">end</span>    
+0009 <span class="keyword">end</span>
+0010 <span class="keyword">if</span> (nargin&lt;3)||isempty(fi), fi=1:length(field); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;4, pos=[]; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> (nargin==3)&amp;&amp;any(fi-round(fi)),
+0013     pos=fi;
+0014     fi=1:length(field);
+0015 <span class="keyword">end</span>
+0016 <span class="keyword">if</span> isstr(Data), Data=<a href="readdatafile.html" class="code" title="function N=readdatafile(datfile)">readdatafile</a>(Data); <span class="keyword">end</span>
+0017 <span class="keyword">if</span> min(fi)&lt;1, fi=find(fi); <span class="keyword">end</span>
+0018 
+0019 nel=1;
+0020 <span class="keyword">if</span> isfield(Data,<span class="string">'elec'</span>), nel=size(Data.elec,1); <span class="keyword">end</span>
+0021 <span class="keyword">if</span> isfield(Data,<span class="string">'pos'</span>), nel=size(Data.pos,1); <span class="keyword">end</span>
+0022 isalpha=1;
+0023 <span class="keyword">if</span> isalpha, 
+0024     A=ones(nel,nel)*NaN; 
+0025 <span class="keyword">else</span> 
+0026     A=zeros(nel,nel); 
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">if</span> isfield(Data,<span class="string">'a'</span>)&amp;&amp;isfield(Data,<span class="string">'m'</span>), <span class="comment">%DC case</span>
+0029     <span class="keyword">for</span> j=1:length(fi), i=fi(j);
+0030         A(Data.a(i),Data.m(i))=field(i); <span class="keyword">end</span>
+0031     xl=<span class="string">'M electrode'</span>;yl=<span class="string">'A electrode'</span>;
+0032 <span class="keyword">else</span>
+0033     xl=<span class="string">''</span>;yl=<span class="string">''</span>;
+0034 <span class="keyword">end</span>
+0035 <span class="keyword">if</span> isfield(Data,<span class="string">'s'</span>)&amp;&amp;isfield(Data,<span class="string">'g'</span>), <span class="comment">%TT case</span>
+0036     <span class="keyword">for</span> j=1:length(fi), i=fi(j);
+0037         A(Data.s(i),Data.g(i))=field(i); <span class="keyword">end</span>
+0038     yl=<span class="string">'shot'</span>;xl=<span class="string">'geophone'</span>;
+0039 <span class="keyword">end</span>
+0040 x=1:size(A,2);y=1:size(A,1);
+0041 <span class="keyword">if</span> (nargin&lt;4)&amp;&amp;isfield(Data,<span class="string">'elec'</span>), pos=Data.elec; <span class="keyword">end</span>
+0042 <span class="keyword">if</span> (nargin&lt;4)&amp;&amp;isfield(Data,<span class="string">'pos'</span>), pos=Data.pos; <span class="keyword">end</span>
+0043 <span class="keyword">if</span> ~isempty(pos), <span class="comment">% position for plotting given or auto</span>
+0044     <span class="keyword">if</span> min(size(pos))&gt;1, <span class="comment">% x and z given</span>
+0045         fi0=find(pos(:,end)==0);
+0046         pos(:,end)=-abs(pos(:,end));
+0047         pos(fi0,end)=sum(pos(fi0,1:end-1),2);
+0048         pos(:,1:end-1)=[];
+0049     <span class="keyword">end</span>
+0050     x=pos(x);y=pos(y); 
+0051     xl=[xl <span class="string">' pos'</span>];yl=[yl <span class="string">' pos'</span>];
+0052 <span class="keyword">else</span>
+0053     xl=[xl <span class="string">' num'</span>];yl=[yl <span class="string">' num'</span>];
+0054 <span class="keyword">end</span>
+0055 fx=find(prod(double(isnan(A))));
+0056 fy=find(prod(double(isnan(A)),2));
+0057 A(fy,:)=[];A(:,fx)=[];x(fx)=[];y(fy)=[];
+0058 imagesc(A);axis ij equal tight;grid on
+0059 xt=get(gca,<span class="string">'XTick'</span>);yt=get(gca,<span class="string">'YTick'</span>);
+0060 set(gca,<span class="string">'XTickLabelMode'</span>,<span class="string">'manual'</span>,<span class="string">'YTickLabelMode'</span>,<span class="string">'manual'</span>,<span class="keyword">...</span>
+0061     <span class="string">'XTickLabel'</span>,num2strcell(rndig(x(xt),3)),<span class="string">'YTickLabel'</span>,num2strcell(rndig(y(yt),3)));
+0062 
+0063 xlabel(xl);ylabel(yl);
+0064 <span class="keyword">if</span> min(field(fi))&lt;0,
+0065    caxis([-1 1]*std(field(fi))*2);
+0066 <span class="keyword">else</span>
+0067    caxis(interperc(field(fi))); 
+0068 <span class="keyword">end</span>
+0069 <span class="comment">% colormap(b2r);</span>
+0070 <span class="keyword">if</span> cbarvert, colorbar; <span class="keyword">else</span> colorbar horiz; <span class="keyword">end</span>
+0071 <span class="keyword">if</span> isalpha, alpha(1-isnan(A)); <span class="keyword">end</span>
+0072 <span class="keyword">if</span> nargout==0, A=1; <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

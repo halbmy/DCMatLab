@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readgeos1dsounding</title>
+  <meta name="keywords" content="readgeos1dsounding">
+  <meta name="description" content="READGEOS1DSOUNDING - Read DC 1D sounding in GEOS format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readgeos1dsounding.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readgeos1dsounding
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READGEOS1DSOUNDING - Read DC 1D sounding in GEOS format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function All = readgeos1dsounding(file) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READGEOS1DSOUNDING - Read DC 1D sounding in GEOS format
+ Data = readgeos1dsounding(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function All = readgeos1dsounding(file)</a>
+0002 
+0003 <span class="comment">% READGEOS1DSOUNDING - Read DC 1D sounding in GEOS format</span>
+0004 <span class="comment">% Data = readgeos1dsounding(filename)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;1, file=<span class="string">'D:\Guenther.T\pro\hydro\borkum\dc1d\GGA-GGS-BORKUM-1991-001.txt'</span>; <span class="keyword">end</span>
+0007 All=[];
+0008 name=textread(file,<span class="string">'%*s:%s'</span>,1,<span class="string">'headerlines'</span>,5);
+0009 All.name=name{1};
+0010 A=textread(file,<span class="string">''</span>,<span class="string">'headerlines'</span>,27);
+0011 All.ab2=A(:,1);
+0012 All.mn2=A(:,2);
+0013 All.rhoa=A(:,3);
+0014 <span class="keyword">if</span> (size(A,2)&gt;3)&amp;&amp;(min(A(:,4))&gt;0), A.err=A(:,4); <span class="keyword">end</span>
+0015 All.xy=textread(file,<span class="string">'%*s:%f%*s%*s'</span>,2,<span class="string">'headerlines'</span>,16)';
+0016 All.rw=All.xy(1);
+0017 All.hw=All.xy(2);
+0018 sau=textread(file,<span class="string">'%*s:%s'</span>,1,<span class="string">'headerlines'</span>,23);
+0019 <span class="comment">% All.date=textread(file,'%*s:%s',1,'headerlines',9);</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

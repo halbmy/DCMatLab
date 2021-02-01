@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of grid4mesh</title>
+  <meta name="keywords" content="grid4mesh">
+  <meta name="description" content="GRID2MESH - Transform regular (2d) grid to triangle mesh">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; grid4mesh.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>grid4mesh
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GRID2MESH - Transform regular (2d) grid to triangle mesh</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Mesh = grid4mesh(x,z,M) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GRID2MESH - Transform regular (2d) grid to triangle mesh
+ [Mesh,T] = grid2mesh(x,z[,M])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Mesh = grid4mesh(x,z,M)</a>
+0002 
+0003 <span class="comment">% GRID2MESH - Transform regular (2d) grid to triangle mesh</span>
+0004 <span class="comment">% [Mesh,T] = grid2mesh(x,z[,M])</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Too less input arguments (x,y)!'</span>); <span class="keyword">end</span>
+0007 <span class="keyword">if</span> nargin&lt;3, M=ones(length(x)-1,length(z)-1); <span class="keyword">end</span>
+0008 Mesh=[];Mesh.dim=2;
+0009 nx=length(x);nz=length(z);
+0010 x=x(:);z=z(:);
+0011 dx=diff(x);dz=diff(z);
+0012 Mesh.nnodes=nx*nz;
+0013 Mesh.node=zeros(Mesh.nnodes,Mesh.dim);
+0014 <span class="keyword">for</span> i=1:nz,
+0015     Mesh.node((i-1)*nx+1:nx*i,1)=x(:);
+0016     Mesh.node((i-1)*nx+1:nx*i,2)=z(i);
+0017 <span class="keyword">end</span>
+0018 Mesh.nodemarker=zeros(Mesh.nnodes,1);
+0019 Mesh.ncells=(nx-1)*(nz-1);
+0020 Mesh.cell=zeros(Mesh.ncells,Mesh.dim*2);
+0021 Mesh.cellnodes=ones(Mesh.ncells,1)*(Mesh.dim*2);
+0022 Mesh.nbounds=(nx-1)*nz+(nz-1)*nx;
+0023 Mesh.boundnodes=ones(Mesh.nbounds,1)*2;
+0024 Mesh.boundmarker=zeros(Mesh.nbounds,1);
+0025 Mesh.bound=zeros(Mesh.nbounds,Mesh.dim);
+0026 Mesh.bound(1:nx-1,1)=(1:nx-1)';Mesh.bound(1:nx-1,2)=(2:nx)';
+0027 ic=0;ib=1;
+0028 iic=[0 1 nx+1 nx];
+0029 iib=[0 1;0 nx];
+0030 <span class="keyword">for</span> iz=1:nz-1,
+0031     <span class="keyword">for</span> ix=1:nx-1,
+0032         ic=ic+1;
+0033         offset=ix+(iz-1)*nx;
+0034         Mesh.cell(ic,:)=iic+offset;
+0035         Mesh.bound(ib:ib+1,1:2)=iib+offset;
+0036         ib=ib+2;
+0037     <span class="keyword">end</span>
+0038     Mesh.bound(ib,1:2)=[1 nx+1]+offset;
+0039     ib=ib+1;
+0040 <span class="keyword">end</span>
+0041 li=(1:nx-1)'+nx*(nz-1);
+0042 Mesh.bound(ib:ib+nx-2,1:2)=[li li+1];
+0043 
+0044 Mesh.boundleft=zeros(Mesh.nbounds,1);
+0045 Mesh.boundright=Mesh.boundleft;
+0046 <span class="keyword">for</span> i=1:Mesh.nbounds,
+0047     bb=Mesh.bound(i,:); <span class="comment">% edge nodes</span>
+0048     [fi,jj]=find(Mesh.cell==bb(1));
+0049     <span class="keyword">for</span> j=2:length(bb),
+0050         [ii,jj]=find(Mesh.cell==bb(j));
+0051         fi=intersect(fi,ii);
+0052     <span class="keyword">end</span>
+0053     Mesh.boundleft(i)=fi(1);
+0054     <span class="keyword">if</span> length(fi)&gt;1, Mesh.boundright(i)=fi(2); <span class="keyword">end</span>
+0055 <span class="keyword">end</span>
+0056 Mesh.boundmarker(Mesh.boundright==0)=-1;
+0057 <span class="keyword">if</span> nargin&gt;3, Mesh.cellattr=M(:); <span class="keyword">else</span> Mesh.cellattr=ones(Mesh.ncells,1)*2; <span class="keyword">end</span>
+0058 
+0059 <span class="comment">% tripatchmod(Mesh,rand(Mesh.ncells,1))</span>
+0060 <span class="keyword">if</span> nargout&lt;1, tripatchmod(Mesh); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

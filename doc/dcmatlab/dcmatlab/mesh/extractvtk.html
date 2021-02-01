@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of extractvtk</title>
+  <meta name="keywords" content="extractvtk">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; extractvtk.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>extractvtk
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [newMesh,sumvol]=extractvtk(Mesh,att,xl,yl,zl) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="savevtkmesh.html" class="code" title="function savevtkmesh(Mesh,filename,ipvalue)">savevtkmesh</a>	SAVEVTKMESH - Save Mesh in VTK format</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [newMesh,sumvol]=extractvtk(Mesh,att,xl,yl,zl)</a>
+0002 
+0003 <span class="keyword">if</span> nargin&lt;2, att=100; <span class="keyword">end</span>
+0004 <span class="keyword">if</span> nargin&lt;3, xl=-Inf; <span class="keyword">end</span>
+0005 <span class="keyword">if</span> nargin&lt;4, yl=-Inf; <span class="keyword">end</span>
+0006 <span class="keyword">if</span> nargin&lt;5, zl=-Inf; <span class="keyword">end</span>
+0007 newMesh=Mesh;
+0008 cellmids=zeros(Mesh.ncells,3);
+0009 <span class="keyword">for</span> i=1:Mesh.ncells, cellmids(i,:)=mean(Mesh.node(Mesh.cell(i,:),:)); <span class="keyword">end</span>
+0010 lala=(Mesh.cellattr&gt;att)&amp;(cellmids(:,1)&gt;xl)&amp;(cellmids(:,2)&gt;zl)&amp;(cellmids(:,3)&gt;zl);
+0011 <span class="keyword">if</span> length(att)&gt;1, lala=lala&amp;(Mesh.cellattr&lt;att(2)); <span class="keyword">end</span>
+0012 <span class="keyword">if</span> length(xl)&gt;1, lala=lala&amp;(cellmids(:,1)&lt;xl(2)); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> length(yl)&gt;1, lala=lala&amp;(cellmids(:,2)&lt;yl(2)); <span class="keyword">end</span>
+0014 <span class="keyword">if</span> length(zl)&gt;1, lala=lala&amp;(cellmids(:,3)&lt;zl(2)); <span class="keyword">end</span>
+0015 fi=find(lala);    
+0016 A=zeros(3);
+0017 <span class="keyword">for</span> i=1:Mesh.ncells,
+0018     nodes=Mesh.cell(i,:);
+0019     A(1,:)=diff(Mesh.node(nodes([1 2]),:));
+0020     A(2,:)=diff(Mesh.node(nodes([1 3]),:));
+0021     A(3,:)=diff(Mesh.node(nodes([1 4]),:));
+0022     volume(i)=det(A)/6;
+0023 <span class="keyword">end</span>
+0024 sumvol=sum(volume(fi));
+0025 newMesh.cell=Mesh.cell(fi,:);
+0026 newMesh.cellattr=log10(Mesh.cellattr(fi,:));
+0027 newMesh.ncells=size(newMesh.cell,1);
+0028 <a href="savevtkmesh.html" class="code" title="function savevtkmesh(Mesh,filename,ipvalue)">savevtkmesh</a>(newMesh,<span class="string">'test.vtk'</span>);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

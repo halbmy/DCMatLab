@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readflwfile</title>
+  <meta name="keywords" content="readflwfile">
+  <meta name="description" content="READ FLW (geotom flow) file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readflwfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readflwfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READ FLW (geotom flow) file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N = readflwfile(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READ FLW (geotom flow) file
+ N = readflwfile(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>	GETKONF - Get Configuration factor from electrode positions</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N = readflwfile(filename)</a>
+0002 
+0003 <span class="comment">% READ FLW (geotom flow) file</span>
+0004 <span class="comment">% N = readflwfile(filename)</span>
+0005 
+0006 fid=fopen(filename,<span class="string">'r'</span>);
+0007 <span class="keyword">if</span> fid&lt;0, error(<span class="string">'file could not be opened!'</span>); <span class="keyword">end</span>
+0008 firstel=0;spacing=1;ippresent=0;
+0009 zeile=fgetl(fid);
+0010 <span class="keyword">while</span> ~isempty(zeile),
+0011     vor=<span class="string">''</span>;
+0012     dp=strfind(zeile,<span class="string">':'</span>);
+0013     <span class="keyword">if</span> dp, vor=zeile(1:dp-1);nach=zeile(dp+1:end); <span class="keyword">end</span>
+0014     <span class="keyword">switch</span> vor,
+0015         <span class="keyword">case</span> <span class="string">'Name'</span>,
+0016             name=nach;
+0017         <span class="keyword">case</span> <span class="string">'Spacing'</span>
+0018             spacing=str2num(nach);
+0019         <span class="keyword">case</span> <span class="string">'First El'</span>
+0020             firstel=str2num(nach);
+0021         <span class="keyword">case</span> <span class="string">'Nr of El'</span>
+0022             nel=str2num(nach);
+0023         <span class="keyword">case</span> <span class="string">'Nr of points'</span>
+0024             points=str2num(nach);
+0025         <span class="keyword">case</span> <span class="string">'IP present'</span>
+0026             ippresent=str2num(nach);
+0027     <span class="keyword">end</span>
+0028     zeile=fgetl(fid);
+0029 <span class="keyword">end</span>
+0030 zeile=fgetl(fid);
+0031 fclose(fid);
+0032 ss=<span class="string">'%d%d%d%d%f%f%f%f'</span>;<span class="comment">%a b m n freq I/mA U/mV rhoa err/%</span>
+0033 <span class="keyword">if</span> ~isempty(strfind(zeile,<span class="string">';'</span>))|~isempty(strfind(zeile,<span class="string">'$'</span>)), 
+0034     ss=<span class="string">'%d%d%d%d%*s%f%f%f%f'</span>; <span class="keyword">end</span>
+0035 <span class="keyword">if</span> ippresent, 
+0036     ss=[ss <span class="string">'%f'</span>]; 
+0037     <span class="keyword">while</span> length(sscanf(strrep(zeile,<span class="string">';'</span>,<span class="string">''</span>),<span class="string">'%f'</span>))&gt;length(strfind(ss,<span class="string">'%f'</span>))+4, ss=[ss <span class="string">'%f'</span>]; <span class="keyword">end</span>
+0038 <span class="keyword">end</span> <span class="comment">% IP/mRad IPerr/%</span>
+0039 fid=fopen(filename,<span class="string">'r'</span>);
+0040 zeile=<span class="string">'a'</span>;<span class="keyword">while</span> ~isempty(zeile), zeile=fgetl(fid); <span class="keyword">end</span>
+0041 abmniure=mytextscan(fid,ss);
+0042 <span class="comment">% abmniure=fscanf(fid,'%f',[8+ippresent*2 Inf])';</span>
+0043 fclose(fid);
+0044 nc=length(abmniure);
+0045 ma=find(abmniure{6});
+0046 N.a=abmniure{1}(ma);<span class="comment">%(:,1);</span>
+0047 N.b=abmniure{2}(ma);<span class="comment">%(:,2);</span>
+0048 N.m=abmniure{3}(ma);<span class="comment">%(:,3);</span>
+0049 N.n=abmniure{4}(ma);<span class="comment">%(:,4);</span>
+0050 N.i=abmniure{5}(ma)/1000;<span class="comment">%(:,5)/1000; %mA</span>
+0051 N.u=abmniure{6}(ma)/1000;<span class="comment">%(:,6)/1000; %mV</span>
+0052 <span class="keyword">if</span> nc&gt;7, N.err=abmniure{8}(ma)/100; <span class="keyword">end</span> <span class="comment">%(:,6)/1000; % %</span>
+0053 <span class="keyword">if</span> ippresent, <span class="comment">% convention: phases are negative</span>
+0054     <span class="keyword">if</span> nc&gt;8, N.ip=abmniure{9}(ma); <span class="keyword">end</span>
+0055     <span class="keyword">if</span> nc&gt;9, N.iperr=abmniure{10}(ma)/100; <span class="keyword">end</span> <span class="comment">%(:,10);</span>
+0056 <span class="keyword">end</span>
+0057 iinf=65536;
+0058 N.a(N.a==iinf)=0;
+0059 N.b(N.b==iinf)=0;
+0060 N.m(N.m==iinf)=0;
+0061 N.n(N.n==iinf)=0;
+0062 
+0063 nel=max([max(N.a) max(N.b) max(N.m) max(N.n)]);
+0064 N.elec=(0:nel-1)'*spacing+firstel;N.elec(:,2)=0;
+0065 N.r=abmniure{7}(ma);<span class="comment">%(:,7);</span>
+0066 N.k=<a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>(N);
+0067 <span class="comment">% N.rho=N.u./N.i; % Ohmscher Widerstand</span>
+0068 <span class="comment">% umin=100e-6;</span>
+0069 <span class="comment">% proz=0.03;</span>
+0070 <span class="comment">% N.err=proz+abs(umin./N.u); % wg. mV</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

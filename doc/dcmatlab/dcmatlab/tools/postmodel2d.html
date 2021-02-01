@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of postmodel2d</title>
+  <meta name="keywords" content="postmodel2d">
+  <meta name="description" content="POSTMODEL2D - postprocessor for 2d BERT inversion">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">tools</a> &gt; postmodel2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\tools&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>postmodel2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>POSTMODEL2D - postprocessor for 2d BERT inversion</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [Mesh,N]=postmodel2d(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> POSTMODEL2D - postprocessor for 2d BERT inversion
+ postmodel(filename) 
+ filename is either a cfg file (e.g. in a result directory) or a zip file
+ sent back from web inversion</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="bert2dpost.html" class="code" title="function varargout = bert2dpost(varargin)">bert2dpost</a>	BERT2DPOST M-file for bert2dpost.fig</li><li><a href="post2d.html" class="code" title="function [Mesh,N]=post2d()">post2d</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Mesh,N]=postmodel2d(filename)</a>
+0002 
+0003 <span class="comment">% POSTMODEL2D - postprocessor for 2d BERT inversion</span>
+0004 <span class="comment">% postmodel(filename)</span>
+0005 <span class="comment">% filename is either a cfg file (e.g. in a result directory) or a zip file</span>
+0006 <span class="comment">% sent back from web inversion</span>
+0007 
+0008 [fpath,fname,fext]=fileparts(filename);
+0009 <span class="keyword">if</span> isequal(fext,<span class="string">'.zip'</span>),
+0010     tdir=tempname;
+0011     fi=strfind(tdir,filesep);    
+0012     mkdir(tdir(1:fi(end)-1),tdir(fi(end)+1:end));
+0013 <span class="comment">%     mkdir(tdir);</span>
+0014     unzip(filename,tdir);
+0015     aa=dir(tdir);
+0016     <span class="keyword">if</span> length(aa)&lt;4, <span class="comment">% result dir in zip file</span>
+0017       tdir=[tdir filesep aa(end).name];
+0018       aa=dir(tdir);
+0019     <span class="keyword">end</span>
+0020     <span class="keyword">for</span> i=1:length(aa), <span class="keyword">if</span> strfind(aa(i).name,<span class="string">'.cfg'</span>);<span class="keyword">break</span>; <span class="keyword">end</span>; <span class="keyword">end</span>
+0021     filename=[tdir filesep aa(i).name];
+0022 <span class="keyword">end</span>
+0023 fpath=fileparts(filename);<span class="keyword">if</span> isempty(fpath), fpath=<span class="string">'.'</span>; <span class="keyword">end</span>
+0024 meshname=[fpath filesep <span class="string">'mesh'</span> filesep <span class="string">'meshParaDomain'</span>];
+0025 fid=fopen(filename,<span class="string">'r'</span>);zeile=fgetl(fid);istopo=0;
+0026 <span class="keyword">while</span> ischar(zeile),
+0027    fi=strfind(zeile,<span class="string">'='</span>);first=zeile(1:fi-1);last=zeile(fi+1:end);zeile=fgetl(fid); 
+0028    <span class="keyword">if</span> strcmp(first,<span class="string">'DATAFILE'</span>), datfile=last; <span class="keyword">end</span>
+0029    <span class="keyword">if</span> strcmp(first,<span class="string">'TOPOGRAPHY'</span>), istopo=(str2num(last)&gt;0); <span class="keyword">end</span>
+0030 <span class="keyword">end</span>
+0031 fclose(fid);
+0032 [dpath,dname,dext]=fileparts(datfile);
+0033 datafile=[fpath filesep strrep(datfile,dext,<span class="string">'.data'</span>)];
+0034 N=readinv2dfile(datafile);
+0035 <span class="keyword">if</span> isfield(N,<span class="string">'topo'</span>),
+0036     di=rndig(sqrt(sum(diff(N.topo).^2,2)));
+0037     <span class="keyword">if</span> length(unique(di))&gt;5, N.elec(:,1)=(0:size(N.elec,1)-1)'*round(median(di)); <span class="keyword">end</span>
+0038     N.elec(:,2)=0;
+0039 <span class="keyword">end</span>
+0040 Mesh=loadmesh(meshname);
+0041 isbert2=exist(fullfile(fpath,<span class="string">'bert.log'</span>),<span class="string">'file'</span>);
+0042 <span class="keyword">if</span> isbert2,
+0043     aa=dir([fpath filesep <span class="string">'model_1*.vector'</span>]);
+0044     <span class="keyword">if</span> length(aa)&lt;2, aa=dir([fpath filesep <span class="string">'model_*.vector'</span>]); <span class="keyword">end</span>
+0045     fp=strfind(aa(end).name,<span class="string">'.'</span>);fs=strfind(aa(end).name,<span class="string">'_'</span>);
+0046     Mesh.iter=str2num(aa(end).name(fs(1)+1:fp(1)-1));
+0047 <span class="keyword">else</span>
+0048     aa=dir([fpath filesep <span class="string">'model_iter.1*.vector'</span>]);
+0049     <span class="keyword">if</span> length(aa)&lt;2, aa=dir([fpath filesep <span class="string">'model_iter.*.vector'</span>]); <span class="keyword">end</span>
+0050     fp=strfind(aa(end).name,<span class="string">'.'</span>);
+0051     Mesh.iter=str2num(aa(end).name(fp(1)+1:fp(2)-1));
+0052 <span class="keyword">end</span>
+0053 <span class="keyword">if</span> isempty(aa),
+0054     display(<span class="string">'No model file found!'</span>);<span class="keyword">return</span>;
+0055 <span class="keyword">else</span>
+0056     modname=aa(end).name;
+0057     fid=fopen([fpath filesep modname],<span class="string">'r'</span>);model=mytextscan(fid,<span class="string">'%f'</span>);fclose(fid);
+0058     Mesh.model=model{1};
+0059 <span class="keyword">end</span>
+0060 covfile=fullfile(fpath,<span class="string">'sensCov.vector'</span>);
+0061 <span class="keyword">if</span> isbert2, covfile=fullfile(fpath,<span class="string">'coverage.vector'</span>); <span class="keyword">end</span>
+0062 <span class="keyword">if</span> exist(covfile,<span class="string">'file'</span>),
+0063     fidcov=fopen(covfile,<span class="string">'r'</span>);
+0064     senscov=fscanf(fidcov,<span class="string">'%f'</span>,Inf);
+0065     fclose(fidcov);
+0066     <span class="keyword">if</span> ~isbert2, senscov=log(senscov); <span class="keyword">end</span>
+0067     [nn,hh]=hist(senscov,50);
+0068     nnn=cumsum(nn)/length(senscov);
+0069     mi=hh(min(find(nnn&gt;0.02)));
+0070     ma=hh(max(find(nnn&lt;0.5)));
+0071     alfa=(senscov-mi)/(ma-mi);
+0072     alfa(alfa&lt;0)=0;
+0073     alfa(alfa&gt;1)=1;
+0074 <span class="keyword">else</span>
+0075     alfa=ones(size(Mesh.model));
+0076 <span class="keyword">end</span>
+0077 Mesh.alfa=alfa;
+0078 <span class="keyword">if</span> isempty(aa),
+0079     display(<span class="string">'No model response file found!'</span>);<span class="keyword">return</span>;
+0080 <span class="keyword">else</span>
+0081     <span class="keyword">if</span> isbert2,
+0082         morname=<span class="string">'response.vector'</span>;
+0083     <span class="keyword">else</span>
+0084         aa=dir([fpath filesep <span class="string">'modelResponse.1*.vector'</span>]);
+0085         <span class="keyword">if</span> length(aa)&lt;2, aa=dir([fpath filesep <span class="string">'modelResponse.*.vector'</span>]); <span class="keyword">end</span>
+0086         morname=aa(end).name;
+0087     <span class="keyword">end</span>
+0088     morfile=fullfile(fpath,morname);
+0089     <span class="keyword">if</span> exist(morfile,<span class="string">'file'</span>),
+0090         fid=fopen(morfile,<span class="string">'r'</span>);response=mytextscan(fid,<span class="string">'%f'</span>);fclose(fid);
+0091         response=response{1};misfit=(response./N.r-1)*100;
+0092         N.response=response;
+0093     <span class="keyword">end</span>
+0094 <span class="keyword">end</span>
+0095 ipfile=fullfile(fpath,<span class="string">'ip_model.vector'</span>);
+0096 <span class="keyword">if</span> isbert2, ipfile=<span class="string">'phase.vector'</span>; <span class="keyword">end</span>
+0097 <span class="keyword">if</span> exist(ipfile,<span class="string">'file'</span>),
+0098    fid=fopen(ipfile,<span class="string">'r'</span>);erg=mytextscan(fid,<span class="string">'%f'</span>);fclose(fid);
+0099    Mesh.ipmodel=erg{1};
+0100 <span class="keyword">end</span>
+0101 <span class="keyword">if</span> isequal(fext,<span class="string">'.zip'</span>),
+0102     rmdir(tdir,<span class="string">'s'</span>);
+0103 <span class="keyword">end</span>
+0104 di=max(Mesh.node)-min(Mesh.node); 
+0105 figure(1);clf;set(1,<span class="string">'Renderer'</span>,<span class="string">'zbuffer'</span>);
+0106 set(gcf,<span class="string">'MenuBar'</span>,<span class="string">'none'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="string">'Name'</span>,<span class="string">'Inversion result'</span>);
+0107 po=get(gcf,<span class="string">'Position'</span>);po(1)=20;po(2)=50;po(3)=800;po(4)=di(2)/di(1)*1.3*800+50;
+0108 <span class="keyword">while</span> po(4)&gt;800, po(3:4)=po(3:4)/2; <span class="keyword">end</span>
+0109 set(gcf,<span class="string">'Position'</span>,po); 
+0110 tripatchmod(Mesh,Mesh.model,alfa,struct(<span class="string">'canot'</span>,<span class="string">'Ohmm'</span>));
+0111 t=text(max(Mesh.node(:,1)),min(Mesh.node(:,2)),<span class="string">'BERT@resistivity.net'</span>);
+0112 set(t,<span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>,<span class="string">'VerticalAlignment'</span>,<span class="string">'bottom'</span>);
+0113 <span class="keyword">if</span> isfield(N,<span class="string">'response'</span>),
+0114     figure(2);clf;mal=struct(<span class="string">'cauto'</span>,0,<span class="string">'clog'</span>,1,<span class="string">'cmin'</span>,min(N.r),<span class="string">'cmax'</span>,max(N.r));
+0115     set(gcf,<span class="string">'MenuBar'</span>,<span class="string">'none'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="string">'Name'</span>,<span class="string">'Data and Misfit'</span>);
+0116     subplot(3,1,1);showdata2d(N,N.r,mal);
+0117     xl=get(gca,<span class="string">'XLim'</span>);xl=xl(1)+0.05*diff(xl);
+0118     yl=get(gca,<span class="string">'YLim'</span>);yl=yl(1)+0.9*diff(yl);
+0119     text(xl,yl,<span class="string">'Measured Data in \Omega m'</span>);
+0120     subplot(3,1,2);showdata2d(N,response,mal);
+0121     text(xl,yl,<span class="string">'Calculated Data in \Omega m'</span>);
+0122     subplot(3,1,3);showdata2d(N,misfit);
+0123     text(xl,yl,<span class="string">'Data Misfit in %'</span>);
+0124 <span class="keyword">end</span>
+0125 <span class="keyword">if</span> (istopo)&amp;isfield(N,<span class="string">'t'</span>),
+0126     <span class="keyword">if</span> max(N.t)==0, 
+0127         NN=N;NN.elec=[0;cumsum(sqrt(sum(diff(N.elec).^2,2)))];
+0128         NN.elec(:,2)=0;
+0129         NN.k=getkonf2d(NN);N.t=N.k./NN.k;
+0130     <span class="keyword">end</span>
+0131     figure(3);clf;rawdata=N.r.*N.t;
+0132     set(gcf,<span class="string">'MenuBar'</span>,<span class="string">'none'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="string">'Name'</span>,<span class="string">'Topography effect'</span>);
+0133     subplot(3,1,1);showdata2d(N,rawdata,mal);
+0134     xl=get(gca,<span class="string">'XLim'</span>);xl=xl(1)+0.05*diff(xl);
+0135     yl=get(gca,<span class="string">'YLim'</span>);yl=yl(1)+0.9*diff(yl);
+0136     text(xl,yl,<span class="string">'Raw Data in \Omega m'</span>);
+0137     subplot(3,1,2);showdata2d(N,N.t);
+0138     text(xl,yl,<span class="string">'Topography effect'</span>);
+0139     subplot(3,1,3);showdata2d(N,N.r,mal);
+0140     text(xl,yl,<span class="string">'Corrected Data in \Omega m'</span>);
+0141 <span class="keyword">end</span>
+0142 <span class="keyword">if</span> isfield(Mesh,<span class="string">'ipmodel'</span>)&amp;&amp;(length(Mesh.ipmodel)==length(Mesh.model)),
+0143     figure(4);clf;set(4,<span class="string">'Renderer'</span>,<span class="string">'OpenGL'</span>);
+0144     set(gcf,<span class="string">'MenuBar'</span>,<span class="string">'none'</span>,<span class="string">'NumberTitle'</span>,<span class="string">'off'</span>,<span class="string">'Name'</span>,<span class="string">'IP model'</span>);
+0145     po=get(gcf,<span class="string">'Position'</span>);po(1)=50;po(3)=800;po(4)=di(2)/di(1)*1.3*800+50;
+0146     <span class="keyword">while</span> po(4)&gt;800, po(3:4)=po(3:4)/2; <span class="keyword">end</span>
+0147     set(gcf,<span class="string">'Position'</span>,po);
+0148     tripatchmod(Mesh,Mesh.ipmodel,alfa);
+0149     t=text(max(Mesh.node(:,1)),min(Mesh.node(:,2)),<span class="string">'BERT@resistivity.net'</span>);
+0150     set(t,<span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>,<span class="string">'VerticalAlignment'</span>,<span class="string">'bottom'</span>);
+0151 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

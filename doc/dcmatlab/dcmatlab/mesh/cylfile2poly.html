@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cylfile2poly</title>
+  <meta name="keywords" content="cylfile2poly">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; cylfile2poly.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>cylfile2poly
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Poly = circles2cyl(N,ztop,zbottom,dd,dz) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Poly = circles2cyl(N,ztop,zbottom,dd,dz)</a>
+0002 
+0003 zs=unique(N.elec(:,3));
+0004 <span class="keyword">if</span> nargin&lt;2, ztop=max(zs)+(max(zs)-min(zs))/2; <span class="keyword">end</span>
+0005 <span class="keyword">if</span> nargin&lt;3, zbottom=min(zs)-(max(zs)-min(zs))/2; <span class="keyword">end</span>
+0006 <span class="keyword">if</span> nargin&lt;4, dd=1; <span class="keyword">end</span>
+0007 <span class="keyword">if</span> nargin&lt;5, dz=median(diff(zs)); <span class="keyword">end</span>
+0008 
+0009 <span class="comment">%%</span>
+0010 nodes=[];
+0011 <span class="keyword">for</span> i=1:length(zs),
+0012     elec=N.elec(N.elec(:,3)==zs(i),:);
+0013     nel=size(elec,1);
+0014     <span class="keyword">if</span> dd==2,
+0015        me=mean(elec);
+0016        rad=sqrt((elec(:,1)-me(1)).^2+(elec(:,2)-me(2)).^2);
+0017        wi=atan2(elec(:,2)-me(2),elec(:,1)-me(1));
+0018        dwi=mod(diff(wi([1:end 1])),pi)';
+0019        fi=find(abs(dwi)&gt;pi/2);dwi(fi)=dwi(fi)-pi*sign(dwi(fi));
+0020        newwi=wi'+dwi/2;
+0021        newrad=(rad+rad([2:end 1]))'/2;
+0022        newel=reshape([elec(:,1:2)';newrad.*cos(newwi)+me(1);newrad.*sin(newwi)+me(2)],2,nel*2)';
+0023     <span class="keyword">else</span>
+0024        newel=elec;
+0025     <span class="keyword">end</span>
+0026     elec(:,3)=zs(i);
+0027     newel(:,3)=zs(i);
+0028     l=size(N.elec,1);
+0029     nodes=[nodes;newel];
+0030 <span class="keyword">end</span>
+0031 <span class="comment">%%</span>
+0032 Poly=[];
+0033 nel=nel*dd;
+0034 nodes(1:dd:<span class="keyword">end</span>,4)=-99;
+0035 top=nodes(end-nel+1:<span class="keyword">end</span>,:);top(:,3)=ztop;top(:,4)=1;
+0036 bottom=nodes(1:nel,:);bottom(:,3)=zbottom;bottom(:,4)=1;
+0037 Poly.node=[bottom;nodes;top];
+0038 l=0;
+0039 Poly.face={};
+0040 <span class="keyword">for</span> j=1:length(zs)+1,
+0041     <span class="keyword">for</span> i=1:nel-1,
+0042         l=l+1;
+0043         Poly.face{l}=[1 2 nel+2 nel+1]+i-1+(j-1)*nel;
+0044     <span class="keyword">end</span>
+0045     l=l+1;
+0046     Poly.face{l}=[nel 1 nel+1 2*nel]+(j-1)*nel;
+0047 <span class="keyword">end</span>
+0048 Poly.face{end+1}=1:nel;
+0049 Poly.face{end+1}=(1:nel)+(length(zs)+1)*nel;
+0050 Poly.region=[mean(elec(:,1:2)) mean(zs) 2 1e-4]; <span class="comment">% parameter region</span>
+0051 Poly.node(end+1,:)=[mean(elec(:,1:2)) mean(zs)-dz/2 -999]; <span class="comment">% reference electrode (arbitrary)</span>
+0052 Poly.node(end+1,:)=[mean(elec(:,1:2)) mean(zs)+dz/2 -1000]; <span class="comment">% reference point for Neumann problem</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of circles2cyl</title>
+  <meta name="keywords" content="circles2cyl">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; circles2cyl.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>circles2cyl
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [N,Poly] = circles2cyl(Files,zs,ztop,zbottom,dd,dz) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="loadddz.html" class="code" title="function [N,radius]=loadddz(infile,ccw)">loadddz</a>	LOADDDZO - Load ddz-file</li><li><a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>	READINV2DFILE - Read INV2D data file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [N,Poly] = circles2cyl(Files,zs,ztop,zbottom,dd,dz)</a>
+0002 
+0003 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Specify Files and heights'</span>); <span class="keyword">end</span>
+0004 <span class="keyword">if</span> length(Files)~=length(zs), error(<span class="string">'Files and heights must have identical lengths'</span>); <span class="keyword">end</span>
+0005 <span class="keyword">if</span> nargin&lt;3, ztop=max(zs)+(max(zs)-min(zs))/2; <span class="keyword">end</span>
+0006 <span class="keyword">if</span> nargin&lt;4, zbottom=min(zs)-(max(zs)-min(zs))/2; <span class="keyword">end</span>
+0007 <span class="keyword">if</span> nargin&lt;5, dd=1; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;6, dz=median(diff(zs)); <span class="keyword">end</span>
+0009 Data={};
+0010 <span class="keyword">for</span> i=1:length(Files),
+0011     file=Files{i}
+0012     [pp,nn,ee]=fileparts(file);
+0013     <span class="keyword">if</span> strcmp(ee,<span class="string">'.ddz'</span>), Data{i}=<a href="loadddz.html" class="code" title="function [N,radius]=loadddz(infile,ccw)">loadddz</a>(file);
+0014     <span class="keyword">else</span> Data{i}=<a href="readinv2dfile.html" class="code" title="function N=readinv2dfile(fname,iscirc)">readinv2dfile</a>(file); <span class="keyword">end</span>
+0015 <span class="keyword">end</span>
+0016 nel=size(Data{1}.elec,1);
+0017 <span class="comment">%%</span>
+0018 N=[];N.elec=[];N.a=[];N.b=[];N.m=[];N.n=[];N.rho=[];N.i=[];N.u=[];
+0019 elec=Data{1}.elec;
+0020 nodes=[];
+0021 <span class="keyword">for</span> i=1:length(zs),
+0022     elec=Data{i}.elec;
+0023     <span class="keyword">if</span> dd==2,
+0024        me=mean(elec);
+0025        rad=sqrt((elec(:,1)-me(1)).^2+(elec(:,2)-me(2)).^2);
+0026        wi=atan2(elec(:,2)-me(2),elec(:,1)-me(1));
+0027        dwi=mod(diff(wi([1:end 1])),pi)';
+0028        fi=find(abs(dwi)&gt;pi/2);dwi(fi)=dwi(fi)-pi*sign(dwi(fi));
+0029        newwi=wi'+dwi/2;
+0030        newrad=(rad+rad([2:end 1]))'/2;
+0031        newel=reshape([elec';newrad.*cos(newwi)+me(1);newrad.*sin(newwi)+me(2)],2,nel*2)';
+0032     <span class="keyword">else</span>
+0033        newel=elec;
+0034     <span class="keyword">end</span>
+0035     elec(:,3)=zs(i);
+0036     newel(:,3)=zs(i);
+0037     l=size(N.elec,1);
+0038     N.elec=[N.elec;elec];
+0039     nodes=[nodes;newel];
+0040     N.a=[N.a;Data{i}.a+l];N.b=[N.b;Data{i}.b+l];
+0041     N.m=[N.m;Data{i}.m+l];N.n=[N.n;Data{i}.n+l];
+0042     <span class="keyword">if</span> isfield(Data{i},<span class="string">'rho'</span>), N.rho=[N.rho;Data{i}.rho]; <span class="keyword">end</span>
+0043     <span class="keyword">if</span> isfield(Data{i},<span class="string">'u'</span>), N.u=[N.u;Data{i}.u]; <span class="keyword">end</span>
+0044     <span class="keyword">if</span> isfield(Data{i},<span class="string">'i'</span>), N.i=[N.i;Data{i}.i]; <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 <span class="comment">%%</span>
+0047 Poly=[];
+0048 nel=nel*dd;
+0049 nodes(1:dd:<span class="keyword">end</span>,4)=-99;
+0050 top=nodes(end-nel+1:<span class="keyword">end</span>,:);top(:,3)=ztop;top(:,4)=1;
+0051 bottom=nodes(1:nel,:);bottom(:,3)=zbottom;bottom(:,4)=1;
+0052 Poly.node=[bottom;nodes;top];
+0053 l=0;
+0054 Poly.face={};
+0055 <span class="keyword">for</span> j=1:length(zs)+1,
+0056     <span class="keyword">for</span> i=1:nel-1,
+0057         l=l+1;
+0058         Poly.face{l}=[1 2 nel+2 nel+1]+i-1+(j-1)*nel;
+0059     <span class="keyword">end</span>
+0060     l=l+1;
+0061     Poly.face{l}=[nel 1 nel+1 2*nel]+(j-1)*nel;
+0062 <span class="keyword">end</span>
+0063 Poly.face{end+1}=1:nel;
+0064 Poly.face{end+1}=(1:nel)+(length(zs)+1)*nel;
+0065 Poly.region=[mean(elec(:,1:2)) mean(zs) 2 1e-4]; <span class="comment">% parameter region</span>
+0066 Poly.node(end+1,:)=[mean(elec(:,1:2)) mean(zs)-dz/2 -999]; <span class="comment">% reference electrode (arbitrary)</span>
+0067 Poly.node(end+1,:)=[mean(elec(:,1:2)) mean(zs)+dz/2 -1000]; <span class="comment">% reference point for Neumann problem</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

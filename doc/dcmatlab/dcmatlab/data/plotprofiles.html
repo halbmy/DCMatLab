@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotprofiles</title>
+  <meta name="keywords" content="plotprofiles">
+  <meta name="description" content="PLOTPROFILES - Plot profiles of a 3D data set">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; plotprofiles.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>plotprofiles
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PLOTPROFILES - Plot profiles of a 3D data set</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [cmin,cmax,iscb]=plotprofiles(N,field,mal) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PLOTPROFILES - Plot profiles of a 3D data set
+ plotprofiles(N)
+ where N is a data structure of electrodes (elec)
+ a/b/m/n electrode numbers, k-factors(k) and resistivities(r)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="showdata2d.html" class="code" title="function [mids,seps,ii,kk]=showdata2d(NN,feld,MAL)">showdata2d</a>	SHOWDATA2D show datum points</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="showdata.html" class="code" title="function showdata(Data)">showdata</a>	SHOWDATA - Show data of any kind or dimension</li><li><a href="showdata3d.html" class="code" title="function [cmin,cmax]=showdata3d(N,feld,mal)">showdata3d</a>	SHOWDATA3D show datum points of 3d data</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [cmin,cmax,iscb]=plotprofiles(N,field,mal)</a>
+0002 
+0003 <span class="comment">% PLOTPROFILES - Plot profiles of a 3D data set</span>
+0004 <span class="comment">% plotprofiles(N)</span>
+0005 <span class="comment">% where N is a data structure of electrodes (elec)</span>
+0006 <span class="comment">% a/b/m/n electrode numbers, k-factors(k) and resistivities(r)</span>
+0007 
+0008 iscb=0;
+0009 <span class="keyword">if</span> (nargin&lt;1)||(~isstruct(N)),
+0010     error(<span class="string">'Data structure required as input!'</span>);
+0011 <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;3, mal=struct(<span class="string">'cauto'</span>,1); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> (nargin&lt;2)||isempty(field), field=N.r; <span class="keyword">end</span>
+0014 nu=0;nv=0;
+0015 <span class="keyword">if</span> ~isfield(mal,<span class="string">'cauto'</span>), mal.cauto=1; <span class="keyword">end</span>
+0016 <span class="keyword">if</span> isfield(mal,<span class="string">'nu'</span>), nu=mal.nu; <span class="keyword">end</span>
+0017 <span class="keyword">if</span> isfield(mal,<span class="string">'nv'</span>), nv=mal.nv; <span class="keyword">end</span>
+0018 clog=0;
+0019 <span class="keyword">if</span> isfield(mal,<span class="string">'log'</span>), clog=mal.log; <span class="keyword">end</span>
+0020 <span class="keyword">if</span> isfield(mal,<span class="string">'clog'</span>), clog=mal.clog; <span class="keyword">end</span>
+0021 <span class="keyword">if</span> min(field)&lt;0, clog=0; <span class="keyword">end</span>
+0022 <span class="comment">% 2d profiles available</span>
+0023 <span class="keyword">if</span> mal.cauto==1,
+0024   <span class="keyword">if</span> clog,
+0025     [NN,VV]=hist(log10(field),100);
+0026   <span class="keyword">else</span>
+0027     [NN,VV]=hist(field,100);
+0028   <span class="keyword">end</span>
+0029   CN=cumsum(NN);CN=CN/max(CN);
+0030   imin=max(find(CN&lt;0.01));
+0031   <span class="keyword">if</span> isempty(imin), imin=1; <span class="keyword">end</span>
+0032   imax=min(find(CN&gt;0.99));
+0033   <span class="keyword">if</span> isempty(imax), imax=100; <span class="keyword">end</span>
+0034   cmin=VV(imin);
+0035   cmax=VV(imax);
+0036   <span class="keyword">if</span> clog, cmin=10^cmin;cmax=10^cmax; <span class="keyword">end</span>
+0037   mal.cmin=cmin;mal.cmax=cmax;mal.cauto=0;
+0038 <span class="keyword">else</span>
+0039   cmin=mal.cmin;cmax=mal.cmax;
+0040 <span class="keyword">end</span>
+0041 <span class="keyword">if</span> isfield(N,<span class="string">'eind'</span>),
+0042     nplots=length(N.zweid);
+0043     <span class="keyword">if</span> nu*nv==0,
+0044         nv=round(sqrt(nplots))+1;
+0045         nu=round(nplots/nv+0.499);
+0046         <span class="keyword">while</span>((nu-1)*nv&gt;=nplots), nu=nu-1; <span class="keyword">end</span>
+0047         <span class="keyword">while</span>((nv-1)*nu&gt;=nplots), nv=nv-1; <span class="keyword">end</span>
+0048     <span class="keyword">end</span>
+0049     <span class="keyword">if</span> nu*nv&gt;1, clf; <span class="keyword">end</span>
+0050     rmin=min(field);rmax=max(field);
+0051     <span class="keyword">if</span> rmax&lt;=rmin, rmax=rmin*2;rmin=rmax/2; <span class="keyword">end</span>
+0052     amin=99999;amax=0;
+0053     <span class="keyword">for</span> n=1:nplots,
+0054         abh=N.eind{n}(:,1);mi=min(abh);ma=max(abh);
+0055         <span class="keyword">if</span> mi&lt;amin, amin=mi; <span class="keyword">end</span>
+0056         <span class="keyword">if</span> ma&gt;amax, amax=ma; <span class="keyword">end</span>
+0057     <span class="keyword">end</span>
+0058     amin=round(amin*10)/10;amax=round(amax*10)/10;
+0059     amed=round(sqrt(amin*amax));
+0060     <span class="keyword">if</span> rmin&lt;0, rmed=(rmin+rmax)/2; <span class="keyword">else</span> rmed=sqrt(rmin*rmax); <span class="keyword">end</span>
+0061     <span class="keyword">if</span> (abs(rmin)&gt;0.85)&amp;&amp;(abs(rmax)&gt;10), rmin=round(rmin);rmax=round(rmax);rmed=round(rmed); <span class="keyword">end</span>
+0062     xtl=num2strcell([rmin rmed rmax]);ytl=num2strcell([amin amed amax]);
+0063     ytl{2}=<span class="string">'AB/2'</span>;
+0064     <span class="keyword">for</span> n=1:nplots,
+0065         <span class="keyword">if</span> n&lt;=nu*nv,
+0066             <span class="keyword">if</span> nu*nv&gt;1, subplot(nu,nv,n); <span class="keyword">end</span>
+0067             abh=N.eind{n}(:,1);
+0068             rhoa=field(N.nr{n});<span class="comment">%N.eind{n}(:,2);</span>
+0069             <span class="keyword">if</span> rmin&gt;0, loglog(rhoa,abh,<span class="string">'x-'</span>); <span class="keyword">else</span>
+0070                 semilogy(rhoa,abh,<span class="string">'x-'</span>); <span class="keyword">end</span>
+0071             grid on;
+0072             set(gca,<span class="string">'xlim'</span>,[rmin rmax],<span class="string">'ylim'</span>,[amin amax]);
+0073             set(gca,<span class="string">'YDir'</span>,<span class="string">'reverse'</span>,<span class="string">'XAxisLocation'</span>,<span class="string">'top'</span>);
+0074             set(gca,<span class="string">'XMinorGrid'</span>,<span class="string">'off'</span>,<span class="string">'YMinorGrid'</span>,<span class="string">'off'</span>)
+0075             <span class="keyword">if</span> length(get(gca,<span class="string">'XTick'</span>)&lt;3), set(gca,<span class="string">'XTick'</span>,[rmin rmed rmax],<span class="string">'XTickLabel'</span>,xtl); <span class="keyword">end</span>
+0076             <span class="keyword">if</span> length(get(gca,<span class="string">'YTick'</span>)&lt;3), set(gca,<span class="string">'YTick'</span>,[amin amed amax],<span class="string">'YTickLabel'</span>,ytl); <span class="keyword">end</span>
+0077             tt=text(rmax,amax,N.names{n});
+0078             set(tt,<span class="string">'VerticalAlignment'</span>,<span class="string">'bottom'</span>,<span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>);
+0079         <span class="keyword">end</span>
+0080     <span class="keyword">end</span>
+0081     <span class="keyword">return</span>;
+0082 <span class="keyword">end</span>
+0083 <span class="keyword">if</span> ~isfield(N,<span class="string">'zweid'</span>),
+0084 <span class="comment">%   [cmin,cmax]=showdata3d(N,field,mal);</span>
+0085   <span class="keyword">return</span>;
+0086 <span class="keyword">end</span>
+0087 nplots=length(N.zweid);
+0088 nn=N.zweid{1};
+0089 <span class="keyword">if</span> nu*nv==0,
+0090     nv=round(sqrt(nplots)/size(nn.elec,1)*12)+1;
+0091     nu=round(nplots/nv+0.499);
+0092     <span class="keyword">while</span>((nu-1)*nv&gt;=nplots), nu=nu-1; <span class="keyword">end</span>
+0093     <span class="keyword">while</span>((nv-1)*nu&gt;=nplots), nv=nv-1; <span class="keyword">end</span>
+0094 <span class="keyword">end</span>
+0095 <span class="keyword">if</span> nu*nv&gt;1, clf; <span class="keyword">end</span>
+0096 <span class="comment">%mal.cbar=(nu*nv==nplots);</span>
+0097 mal.cbar=0;mal.elec=0;
+0098 <span class="keyword">for</span> n=1:nplots,
+0099     <span class="keyword">if</span> n&lt;=nu*nv,
+0100         <span class="keyword">if</span> nu*nv&gt;1, subplot(nu,nv,n); <span class="keyword">end</span>
+0101         NN=N.zweid{n};
+0102         NN.r=field(N.nr{n});
+0103 <span class="comment">%         [mids,konfs]=showdata2d(NN,NN.r,mal);</span>
+0104         <a href="showdata2d.html" class="code" title="function [mids,seps,ii,kk]=showdata2d(NN,feld,MAL)">showdata2d</a>(NN,NN.r,mal);
+0105         yl=get(gca,<span class="string">'Ylim'</span>);xl=get(gca,<span class="string">'Xlim'</span>);
+0106         nn=strrep(strrep(N.names{n},<span class="string">'_'</span>,<span class="string">' '</span>),<span class="string">' '</span>,<span class="string">''</span>);
+0107         tt=text(xl(2),yl(2),nn);
+0108         set(tt,<span class="string">'HorizontalAlignment'</span>,<span class="string">'Right'</span>,<span class="string">'VerticalAlignment'</span>,<span class="string">'Bottom'</span>);
+0109     <span class="keyword">end</span>
+0110 <span class="keyword">end</span>
+0111 <span class="keyword">if</span> nu*nv&gt;n, <span class="comment">% one subplot left</span>
+0112     iscb=1;
+0113     subplot(nu,nv,nu*nv);
+0114     hc=cbar(mal.cmin,mal.cmax,clog,0,5,1);
+0115     xl=xlim;xl(1)=xl(1)+diff(xl)/64;
+0116     set(gca,<span class="string">'XLim'</span>,xl);
+0117     <span class="comment">%     xt=get(hc,'XTick');if xt(1)==0, xt(1)=1; end</span>
+0118     <span class="keyword">if</span> isfield(mal,<span class="string">'canot'</span>)&amp;&amp;isstr(mal.canot),
+0119         tit=mal.canot;
+0120     <span class="keyword">else</span>
+0121         <span class="keyword">if</span> cmin&lt;0,
+0122             tit=<span class="string">'\Delta in %'</span>;
+0123         <span class="keyword">else</span>
+0124             tit=<span class="string">'\rho_a in \Omega\cdotm'</span>;
+0125         <span class="keyword">end</span>
+0126     <span class="keyword">end</span>
+0127     xl=get(gca,<span class="string">'Xlim'</span>);yl=get(gca,<span class="string">'Ylim'</span>);
+0128     set(text(mean(xl),yl(1),tit),<span class="string">'VerticalAlignment'</span>,<span class="string">'bottom'</span>,<span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>);
+0129 <span class="keyword">end</span>
+0130 <span class="keyword">if</span> nargout&lt;2, cmin=[cmin cmax]; <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of saveres3dinvfile</title>
+  <meta name="keywords" content="saveres3dinvfile">
+  <meta name="description" content="SAVERES3DINVFILE -  Save Data in RES3DINV Format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; saveres3dinvfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>saveres3dinvfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVERES3DINVFILE -  Save Data in RES3DINV Format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function saveres3dinvfile(outfile,N,field,raw) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVERES3DINVFILE -  Save Data in RES3DINV Format
+                     (using general electrode array)
+ saveres3dinvfile(filename,N[,field[,rawdata]])
+ saves field, otherwise N.r</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function saveres3dinvfile(outfile,N,field,raw)</a>
+0002 
+0003 <span class="comment">% SAVERES3DINVFILE -  Save Data in RES3DINV Format</span>
+0004 <span class="comment">%                     (using general electrode array)</span>
+0005 <span class="comment">% saveres3dinvfile(filename,N[,field[,rawdata]])</span>
+0006 <span class="comment">% saves field, otherwise N.r</span>
+0007 
+0008 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Too less input arguments!'</span>); <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;3, field=N.r; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;4, raw=0; <span class="keyword">end</span>
+0011 
+0012 data=length(N.r);
+0013 
+0014 fid=fopen(outfile,<span class="string">'w'</span>);
+0015 
+0016 <span class="keyword">if</span> ~raw,
+0017     fprintf(fid,<span class="string">'Mixed Array\r\n'</span>);
+0018     fprintf(fid,<span class="string">'1\r\n'</span>);
+0019     fprintf(fid,<span class="string">'1\r\n'</span>);
+0020     del=min(diff(N.elec(:,1)));
+0021     fprintf(fid,<span class="string">'%.2f\r\n'</span>,del);
+0022     del=min(diff(N.elec(:,2)));
+0023     fprintf(fid,<span class="string">'%.2f\r\n'</span>,del);
+0024     fprintf(fid,<span class="string">'11\r\n'</span>);
+0025     fprintf(fid,<span class="string">'%d\r\n'</span>,data);
+0026 <span class="keyword">end</span>
+0027 <span class="keyword">for</span> l = 1:data,
+0028     s=sprintf(<span class="string">'%.2f '</span>,N.elec(N.a(l),1:2));
+0029     ne=2;
+0030     <span class="keyword">if</span> N.b(l)&gt;0,
+0031         s=[s sprintf(<span class="string">'%.2f '</span>,N.elec(N.b(l),1:2))];
+0032         ne=ne+1;
+0033     <span class="keyword">end</span>        
+0034     s=[s sprintf(<span class="string">'%.2f '</span>,N.elec(N.m(l),1:2))];
+0035     <span class="keyword">if</span> N.n(l)&gt;0,
+0036         s=[s sprintf(<span class="string">'%.2f '</span>,N.elec(N.n(l),1:2))];
+0037         ne=ne+1;
+0038     <span class="keyword">end</span>
+0039     fprintf(fid,<span class="string">'%d %s %.3f\r\n'</span>,ne,s,field(l));
+0040 <span class="keyword">end</span>
+0041 <span class="keyword">if</span> ~raw, 
+0042     <span class="keyword">for</span> l=1:5, fprintf(fid,<span class="string">'0\r\n'</span>); <span class="keyword">end</span> 
+0043 <span class="keyword">end</span>
+0044 
+0045 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

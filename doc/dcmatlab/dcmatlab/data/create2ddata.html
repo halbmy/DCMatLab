@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of create2ddata</title>
+  <meta name="keywords" content="create2ddata">
+  <meta name="description" content="CREATE2DDATA - Create 2d surface data set">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; create2ddata.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>create2ddata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CREATE2DDATA - Create 2d surface data set</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=create2ddata(arr,nel,del,eel,seps,bigd) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CREATE2DDATA - Create 2d surface data set
+ Data = create2ddata(arr,nel,del,fel,seps,bigd)
+ arr..array(1-Wenner,2-Pole-Pole,3-Dipole-Dipole,4/5-Wenner-beta/gamma,
+            6-Pole-Dipole,7-Schlumberger,8-PD-reverse,9-circulating DD)
+ nel..number of electrodes
+ del..electrode distance
+ fel..first electrode
+ sep..separations ([min max])
+ big..dipole enlargement ([every shift])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>	GETKONF - Get Configuration factor from electrode positions</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=create2ddata(arr,nel,del,eel,seps,bigd)</a>
+0002 
+0003 <span class="comment">% CREATE2DDATA - Create 2d surface data set</span>
+0004 <span class="comment">% Data = create2ddata(arr,nel,del,fel,seps,bigd)</span>
+0005 <span class="comment">% arr..array(1-Wenner,2-Pole-Pole,3-Dipole-Dipole,4/5-Wenner-beta/gamma,</span>
+0006 <span class="comment">%            6-Pole-Dipole,7-Schlumberger,8-PD-reverse,9-circulating DD)</span>
+0007 <span class="comment">% nel..number of electrodes</span>
+0008 <span class="comment">% del..electrode distance</span>
+0009 <span class="comment">% fel..first electrode</span>
+0010 <span class="comment">% sep..separations ([min max])</span>
+0011 <span class="comment">% big..dipole enlargement ([every shift])</span>
+0012 
+0013 <span class="comment">% initialization</span>
+0014 <span class="keyword">if</span> nargin&lt;6, bigd=[0 0]; <span class="keyword">end</span>
+0015 <span class="keyword">if</span> (nargin&lt;5)||(isempty(seps)), seps=[1 100]; <span class="keyword">end</span>
+0016 <span class="keyword">if</span> nargin&lt;4, eel=0; <span class="keyword">end</span>
+0017 <span class="keyword">if</span> nargin&lt;3, del=1; <span class="keyword">end</span>
+0018 <span class="keyword">if</span> nargin&lt;2, nel=41; <span class="keyword">end</span>
+0019 <span class="keyword">if</span> nargin&lt;1, arr=1; <span class="keyword">end</span>
+0020 nmin=seps(1);nmax=seps(2);
+0021 enl=0;
+0022 <span class="keyword">if</span> min(bigd)&gt;0,
+0023     enl=1;
+0024     every=bigd(1);
+0025     shift=bigd(1);
+0026 <span class="keyword">end</span>
+0027 <span class="comment">% creation</span>
+0028 N=[];
+0029 N.elec=(0:nel-1)'*del+eel;N.elec(1,2)=0;
+0030 N.a=[];N.b=[];N.m=[];N.n=[]; 
+0031 <span class="keyword">for</span> n=nmin:nmax,
+0032     df=1;ddf=1; <span class="comment">% dipole enlargement for high separations</span>
+0033     <span class="keyword">if</span> enl&amp;ismember(arr,[3 6 7 8 9]), <span class="comment">% DD,PD(f/r),CCPPC,SCHLUM</span>
+0034         <span class="comment">%             df=fix(n/(every+1))+1;</span>
+0035         <span class="comment">%             ddf=fix(n/(shift+1))+1;</span>
+0036         <span class="keyword">if</span> every&gt;0, df=ceil(n/every); <span class="keyword">end</span>
+0037         <span class="keyword">if</span> shift==0, ddf=1; <span class="keyword">else</span> ddf=ceil(n/shift); <span class="keyword">end</span>
+0038     <span class="keyword">end</span>
+0039     first=(1:ddf:nel)';
+0040     abmn=zeros(length(first),4);
+0041     abmn(:,1)=first;
+0042     <span class="keyword">switch</span> arr,
+0043         <span class="keyword">case</span> 1, <span class="comment">%Wenner</span>
+0044             abmn(:,3)=abmn(:,1)+n;
+0045             abmn(:,4)=abmn(:,1)+2*n;
+0046             abmn(:,2)=abmn(:,1)+3*n;
+0047         <span class="keyword">case</span> 2, <span class="comment">%Pole-Pole</span>
+0048             abmn(:,3)=abmn(:,1)+n*df;
+0049         <span class="keyword">case</span> {3,9}, <span class="comment">%Dipole-Dipole and CC-PP-C</span>
+0050             abmn(:,2)=abmn(:,1)+df;
+0051             abmn(:,3)=abmn(:,2)+n;
+0052             abmn(:,4)=abmn(:,3)+df;
+0053         <span class="keyword">case</span> 4, <span class="comment">%Wenner-beta</span>
+0054             abmn(:,2)=abmn(:,1)+n;
+0055             abmn(:,3)=abmn(:,1)+2*n;
+0056             abmn(:,4)=abmn(:,1)+3*n;
+0057         <span class="keyword">case</span> 5, <span class="comment">%Wenner-gamma</span>
+0058             abmn(:,3)=abmn(:,1)+n;
+0059             abmn(:,2)=abmn(:,1)+2*n;
+0060             abmn(:,4)=abmn(:,1)+3*n;
+0061         <span class="keyword">case</span> 6, <span class="comment">%Pole-Dipole</span>
+0062             abmn(:,3)=abmn(:,1)+n;
+0063             abmn(:,4)=abmn(:,3)+df;
+0064         <span class="keyword">case</span> 8, <span class="comment">%Pole-Dipole reverse</span>
+0065             abmn(:,1)=nel+1-first;
+0066             abmn(:,3)=abmn(:,1)-n;
+0067             abmn(:,4)=abmn(:,3)-df;
+0068             abmn(find(abmn(:,4)&lt;1),4)=-1;
+0069         <span class="keyword">case</span> 7, <span class="comment">%Schlumberger</span>
+0070             abmn(:,3)=abmn(:,1)+n;
+0071             abmn(:,4)=abmn(:,3)+df;
+0072             abmn(:,2)=abmn(:,4)+n;
+0073     <span class="keyword">end</span> <span class="comment">% switch</span>
+0074     fi=find(max(abmn')&gt;nel);
+0075     abmn(fi,:)=[];
+0076     fi=find(min(abmn')&lt;0);
+0077     abmn(fi,:)=[];
+0078     <span class="keyword">if</span> ~isempty(abmn),
+0079         N.a=[N.a;abmn(:,1)];
+0080         N.b=[N.b;abmn(:,2)];
+0081         N.m=[N.m;abmn(:,3)];
+0082         N.n=[N.n;abmn(:,4)];
+0083     <span class="keyword">end</span>
+0084 <span class="keyword">end</span> <span class="comment">% n loop</span>
+0085 <span class="keyword">if</span> arr==9, <span class="comment">% circulating dipole</span>
+0086     nradd=nel-3;
+0087     N.a=[N.a;ones(nradd,1)];
+0088     N.b=[N.b;ones(nradd,1)*nel];
+0089     N.m=[N.m;(1:nradd)'+1];
+0090     N.n=[N.n;(1:nradd)'+2];
+0091 <span class="keyword">end</span> 
+0092 N.k=<a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>(N);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

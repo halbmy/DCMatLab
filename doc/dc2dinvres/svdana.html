@@ -1,0 +1,65 @@
+<html>
+<head>
+<title>DC2DInvRes - Resolution Analysis Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<h2>DC2DInvRes - Resolution Analysis Menu</h2>
+<p>The SVD resolution analysis is an powerfull tool for estimating quality and 
+  confidence of inversion results as well as for experimental design and the optimization 
+  of model parameterization. For further information see <a href="resolution.pdf">here</a>.<br>
+  By means of an example is show, how the particular quantities can be interpreted.</p>
+<h3><a name="datres"></a>Data Resolution</h3>
+The &quot;Data Resolution&quot; is the main diagonal of the 
+  data resolution matrix. It shows, how well (and how independend from other data) 
+  the particular data points can be predicted and how much information of the 
+  data set comes from this measurement. The maximum of 1 is nearly reached for 
+  shallow electrode configurations with small errors. Data with large errors and 
+  (nearly) redundant data have small resolutions and contribute less information.
+<p align="center"> <img src="pic/datres.png" width="669" height="252"> </p>
+<p>Data resolution of a pole-dipole survey with separation 1-8</p>
+<h3><a name="modres"></a>Model Resolution</h3>
+<p>The &quot;Model Resolution&quot; is the main diagonal of the model resolution 
+  matrix. The value can be interpreted as reconstructability of the model cells. 
+  Shallow cells have high resolution (1), resulting in a good resistivity reconstruction 
+  in amplitude and shape. Deep cells and such outside of the center can't perfectly 
+  be reconstructed by the inversion process. A loss in amplitude is the result 
+  connected with smooth shapes.</p>
+<p align="center"><img src="pic/modres.png" width="669" height="252"></p>
+<h3><a name="resrad"></a>Resolution radius</h3>
+<p>Under the assumption of approximately constant model resolution a cell can 
+  be seen as an equivalent circle with the same model information. The consideration 
+  of model dimensions leads to the resolution radius, which can be treated as 
+  uncertainty of boundary or bodies.</p>
+<p align="center"><img src="pic/resrad.png" width="669" height="252"> </p>
+<h3><a name="modcov"></a>Model Cell Resolution</h3>
+<p>The columns of the model resolution matrix show for each model cell, how a 
+  change in resistivity is reproduced by the inversion. Shallow cells have sharp 
+  cell resolutions, whereas deep cells tend to give blurred images. <br>
+  The model cells can be chosen by clicking on it or by controlling the slider.<br>
+  Note, that the model cell resolutions can be calculated without singular value 
+  decomposition. </p>
+<p align="center"><img src="pic/rm74.png" width="669" height="252"> </p>
+<h3><a name="datcov"></a>Single Data Resolution</h3>
+<p>The different columns of the data resolution matrix show for each datum point, 
+  how well they are connected with each other. Data with the same transmittor/receiver 
+  dipole usually correlate to a high degree.</p>
+<p align="center"><img src="pic/rd86.png" width="669" height="252"></p>
+<h3><a name="sv"></a>Singular Values</h3>
+Shows the singular values. Fast decreasing singular values show the ill-conditioning 
+of the inverse problem. 
+<h3><a name="filfak"></a>Filter factors and transform function</h3>
+<p>Very small singular values tend to explode in the inversion, resulting in much 
+  high-frequency components in the solution. Filter factors are used to prevent 
+  this. Additionally, this plot shows the transform function, filter factors divided 
+  by singular values, which is the main diagonal in the generalized inverse. It 
+  can also be seen, how the information content is cumulated by the several singular 
+  vectors.</p>
+<p align="center"><img src="pic/filfak.png" width="400" height="300"> </p>
+<h3></h3>
+<h3><a name="clear"></a>Clear SVD</h3>
+This option is used to clean any svd matrices from workspace and to force a new 
+calculation, when resolution images are called. 
+</body>
+</html>

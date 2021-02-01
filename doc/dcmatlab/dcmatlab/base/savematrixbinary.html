@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of savematrixbinary</title>
+  <meta name="keywords" content="savematrixbinary">
+  <meta name="description" content="SAVEMATRIXBINARY - Save matrix to binary (bmat) format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; savematrixbinary.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>savematrixbinary
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAVEMATRIXBINARY - Save matrix to binary (bmat) format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function savematrixbinary(filename,A) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAVEMATRIXBINARY - Save matrix to binary (bmat) format
+ savesensmat(S,sensname)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function savematrixbinary(filename,A)</a>
+0002 
+0003 <span class="comment">% SAVEMATRIXBINARY - Save matrix to binary (bmat) format</span>
+0004 <span class="comment">% savesensmat(S,sensname)</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;2, error(<span class="string">'Two inputs (name and matrix) required!'</span>); <span class="keyword">end</span>
+0007 fid=fopen(filename,<span class="string">'w'</span>);
+0008 ndata=size(A,1);nmodel=size(A,2);
+0009 fwrite(fid,ndata,<span class="string">'long'</span>);
+0010 fwrite(fid,nmodel,<span class="string">'long'</span>);
+0011 <span class="keyword">for</span> i=1:ndata, fwrite(fid,A(i,:),<span class="string">'double'</span>); <span class="keyword">end</span>
+0012 fclose(fid);</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

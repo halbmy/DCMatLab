@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of combdata2d</title>
+  <meta name="keywords" content="combdata2d">
+  <meta name="description" content="COMBDATA2D - Combine data sets">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; combdata2d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>combdata2d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>COMBDATA2D - Combine data sets</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function N=combdata2d(N,N1) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> COMBDATA2D - Combine data sets
+ N = combdata2d(N1,N2)
+ N,N1,N2..structures of * arrays a,b,m,n = electrode numbers(elec)
+                                 k = konfiguration factor
+                        * elec..Electrode positions ( x,z )</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="sort2delecs.html" class="code" title="function NN=sort2delecs(N,islinear)">sort2delecs</a>	SORT2DELECS - sort 2d electrode points clock-wise</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="combdata.html" class="code" title="function newdata=combdata(varargin)">combdata</a>	COMBDATA - combine two data structs (calls combdata2d/3d)</li><li><a href="reads2dfile.html" class="code" title="function N=readsnd2d(filename)">reads2dfile</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="readsnd2d.html" class="code" title="function N=readsnd2d(filename)">readsnd2d</a>	READSND2D - Read 2d file by use of soundings</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function N=combdata2d(N,N1)</a>
+0002 
+0003 <span class="comment">% COMBDATA2D - Combine data sets</span>
+0004 <span class="comment">% N = combdata2d(N1,N2)</span>
+0005 <span class="comment">% N,N1,N2..structures of * arrays a,b,m,n = electrode numbers(elec)</span>
+0006 <span class="comment">%                                 k = konfiguration factor</span>
+0007 <span class="comment">%                        * elec..Electrode positions ( x,z )</span>
+0008 
+0009 
+0010 data=length(N.a);
+0011 ne=size(N.elec,1);
+0012 <span class="comment">% ne1=size(N.elec,1);</span>
+0013 data1=length(N1.a);
+0014 
+0015 index=(1:size(N1.elec,1))'+ne;
+0016 <span class="comment">%Elektroden anhängen</span>
+0017 [aa,bb]=meshgrid(N1.elec(:,1)+N1.elec(:,2)*12.34,N.elec(:,1)+N.elec(:,2)*12.34);
+0018 [ii,jj]=find((aa-bb)==0);
+0019 index(jj)=ii;
+0020 ind=find(index&gt;ne);
+0021 N.elec=[N.elec;N1.elec(ind,:)];
+0022 cu=cumsum(index&gt;ne);
+0023 index(ind)=ne+cu(ind);
+0024 N.a(data+1:data+data1)=index(N1.a);
+0025 N.b(data+data1)=0; <span class="comment">% verlängern</span>
+0026 fb=find(N1.b&gt;0);
+0027 N.b(fb+data)=index(N1.b(fb));
+0028 N.m(data+1:data+data1)=index(N1.m);
+0029 N.n(data+data1)=0; <span class="comment">% verlängern</span>
+0030 fn=find(N1.n&gt;0);
+0031 N.n(fn+data)=index(N1.n(fn));
+0032 <span class="keyword">if</span> isfield(N,<span class="string">'r'</span>)&amp;isfield(N1,<span class="string">'r'</span>),
+0033     N.r=[N.r(:);N1.r(:)];
+0034 <span class="keyword">else</span> N.r=[]; <span class="keyword">end</span>
+0035 <span class="keyword">if</span> isfield(N,<span class="string">'k'</span>)&amp;isfield(N1,<span class="string">'k'</span>),
+0036     N.k=[N.k(:);N1.k(:)];
+0037 <span class="keyword">else</span> N.k=[]; <span class="keyword">end</span>
+0038 <span class="keyword">if</span> isfield(N,<span class="string">'err'</span>)&amp;isfield(N1,<span class="string">'err'</span>),
+0039     N.err=[N.err(:);N1.err(:)];
+0040 <span class="keyword">else</span> N.err=[]; <span class="keyword">end</span>
+0041 <span class="keyword">if</span> isfield(N,<span class="string">'rho'</span>)&amp;isfield(N1,<span class="string">'rho'</span>),
+0042     N.rho=[N.rho(:);N1.rho(:)];
+0043 <span class="keyword">else</span> N.rho=[]; <span class="keyword">end</span>
+0044 <span class="keyword">if</span> isfield(N,<span class="string">'ip'</span>)&amp;isfield(N1,<span class="string">'ip'</span>),
+0045     N.ip=[N.ip(:);N1.ip(:)];
+0046 <span class="keyword">else</span> N.ip=[]; <span class="keyword">end</span>
+0047 <span class="keyword">if</span> isfield(N,<span class="string">'i'</span>)&amp;isfield(N1,<span class="string">'i'</span>),
+0048     N.i=[N.i(:);N1.i(:)];
+0049 <span class="keyword">else</span> N.i=[]; <span class="keyword">end</span>
+0050 <span class="keyword">if</span> isfield(N,<span class="string">'u'</span>)&amp;isfield(N1,<span class="string">'u'</span>),
+0051     N.u=[N.u(:);N1.u(:)];
+0052 <span class="keyword">else</span> N.u=[]; <span class="keyword">end</span>
+0053 N=<a href="sort2delecs.html" class="code" title="function NN=sort2delecs(N,islinear)">sort2delecs</a>(N,1);
+0054 <span class="comment">% index</span>
+0055 <span class="comment">% N</span>
+0056 <span class="comment">% size(N.elec)</span>
+0057 <span class="comment">% allei=1:length(N.a);</span>
+0058 <span class="comment">% plot(N.elec(N.a,1),allei,'r.');</span>
+0059 <span class="comment">% hold on</span>
+0060 <span class="comment">% plot(N.elec(N.m,1),allei,'b.');</span>
+0061 <span class="comment">% fb=find(N.b&gt;0);</span>
+0062 <span class="comment">% plot(N.elec(N.b(fb),1),allei(fb),'r.');</span>
+0063 <span class="comment">% fn=find(N.n&gt;0);</span>
+0064 <span class="comment">% plot(N.elec(N.n(fn),1),allei(fn),'b.');</span>
+0065 <span class="comment">% hold off</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

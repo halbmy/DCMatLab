@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showdata3d</title>
+  <meta name="keywords" content="showdata3d">
+  <meta name="description" content="SHOWDATA3D show datum points of 3d data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; showdata3d.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>showdata3d
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SHOWDATA3D show datum points of 3d data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [cmin,cmax]=showdata3d(N,feld,mal) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SHOWDATA3D show datum points of 3d data
+ showdata3d(N[,field[,options]])
+ N..Structure of electrode numbers(a,b,m,n), 
+    k-factors(k) and measurements(r)
+    elec-Electrode Positions
+ field - plot field instead of N.r</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getpseudos.html" class="code" title="function N=getpseudos(N,dirs)">getpseudos</a>	GETPSEUDOS - Extract profiles from 3D data set</li><li><a href="plotprofiles.html" class="code" title="function [cmin,cmax,iscb]=plotprofiles(N,field,mal)">plotprofiles</a>	PLOTPROFILES - Plot profiles of a 3D data set</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [cmin,cmax]=showdata3d(N,feld,mal)</a>
+0002 
+0003 <span class="comment">% SHOWDATA3D show datum points of 3d data</span>
+0004 <span class="comment">% showdata3d(N[,field[,options]])</span>
+0005 <span class="comment">% N..Structure of electrode numbers(a,b,m,n),</span>
+0006 <span class="comment">%    k-factors(k) and measurements(r)</span>
+0007 <span class="comment">%    elec-Electrode Positions</span>
+0008 <span class="comment">% field - plot field instead of N.r</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;2, feld=N.r; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;3, mal=struct(<span class="string">'xdir'</span>,0,<span class="string">'ydir'</span>,0,<span class="string">'vie'</span>,0); <span class="keyword">end</span>
+0012 <span class="keyword">if</span> ~isfield(mal,<span class="string">'vie'</span>), mal.vie=1; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> isempty(feld), feld=N.r; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> mal.vie,
+0015     <span class="keyword">if</span> ~isfield(N,<span class="string">'zweid'</span>), N=<a href="getpseudos.html" class="code" title="function N=getpseudos(N,dirs)">getpseudos</a>(N); <span class="keyword">end</span>
+0016     [cmin,cmax]=<a href="plotprofiles.html" class="code" title="function [cmin,cmax,iscb]=plotprofiles(N,field,mal)">plotprofiles</a>(N,mal.vie-1,feld);
+0017     <span class="keyword">if</span> nargout&lt;2, cmin=[cmin cmax]; <span class="keyword">end</span>
+0018     <span class="keyword">return</span>
+0019 <span class="keyword">end</span>
+0020 konfs=unique(sort(abs(N.k)));
+0021 [aa,bb]=meshgrid(abs(N.k),konfs);
+0022 [ik,jk]=find((aa-bb)==0);
+0023 midpoint=(N.elec(N.a,1:2)+N.elec(N.m,1:2))/2; <span class="comment">% 2-Punkt-Anordnungen</span>
+0024 fn=find(N.n&gt;0);
+0025 <span class="keyword">if</span> ~isempty(fn),  <span class="comment">% 3-Punkt-Anordnungen</span>
+0026     <span class="comment">%midpoint(fn,:)=(2*N.elec(N.a(fn),1:2)+N.elec(N.m(fn),1:2)+...</span>
+0027     <span class="comment">%    N.elec(N.n(fn),1:2))/4;</span>
+0028     midpoint(fn,:)=(N.elec(N.m(fn),1:2)+N.elec(N.n(fn),1:2))/2;
+0029 <span class="keyword">end</span>
+0030 fb=find(N.b&gt;0);
+0031 <span class="keyword">if</span> ~isempty(fb), <span class="comment">% 4-Punkt-Anordnungen</span>
+0032     midpoint(fb,:)=(N.elec(N.a(fb),1:2)+N.elec(N.b(fb),1:2)+<span class="keyword">...</span>
+0033         N.elec(N.m(fb),1:2)+N.elec(N.n(fb),1:2))/4;
+0034 <span class="keyword">end</span>
+0035 midx=unique(sort(midpoint(:,1)));
+0036 midy=unique(sort(midpoint(:,2)));
+0037 dmx=min(diff(midx));
+0038 midx=min(midx):dmx:max(midx);
+0039 dmy=min(diff(midy));
+0040 midy=min(midy):dmy:max(midy);
+0041 [aa,bb]=meshgrid(midpoint(:,1),midx);
+0042 [ix,jx]=find((aa-bb)==0);
+0043 [aa,bb]=meshgrid(midpoint(:,2),midy);
+0044 [iy,jy]=find((aa-bb)==0);
+0045 datums=ones(length(midx),length(midy),length(konfs))*NaN;
+0046 <span class="keyword">for</span> l = 1:length(feld),
+0047     datums(ix(l),iy(l),ik(l))=feld(l);
+0048 <span class="keyword">end</span>
+0049 mal.elec=[];
+0050 mal.cont=[];
+0051 mal.cauto=1;
+0052 mal.alpha=0;
+0053 <span class="comment">%mal.xy=0;</span>
+0054 <span class="comment">%mal.vie=2;</span>
+0055 <span class="keyword">if</span> min(feld(:))&lt;0,
+0056     mal.log=0;
+0057     mal.cmap=2;
+0058     mal.cmax=max(abs(feld(:)));
+0059     mal.cauto=0;
+0060     mal.cmin=-mal.cmax;
+0061 <span class="keyword">end</span>
+0062 xx=zeros(length(midx)+1,1);
+0063 yy=zeros(length(midy)+1,1);
+0064 xx(2:end-1)=(midx(1:end-1)+midx(2:end))/2;
+0065 yy(2:end-1)=(midy(1:end-1)+midy(2:end))/2;
+0066 xx(1)=2*midx(1)-xx(2);
+0067 xx(end)=2*midx(end)-xx(end-1);
+0068 yy(1)=2*midy(1)-yy(2);
+0069 yy(end)=2*midy(end)-yy(end-1);
+0070 <span class="comment">%draw3dgridmodel(datums,xx,yy,[0;1;konfs(:)],mal);</span>
+0071 [cmin,cmax]=draw3dgridmodel(datums,xx,yy,[0 1 2:(length(konfs)+1)],mal);
+0072 <span class="keyword">if</span> nargout&lt;2, cmin=[cmin cmax]; <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

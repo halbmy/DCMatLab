@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readtx0file</title>
+  <meta name="keywords" content="readtx0file">
+  <meta name="description" content="READTX0FILE - Read TX0 file (Lippmann multielectrode device)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readtx0file.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readtx0file
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READTX0FILE - Read TX0 file (Lippmann multielectrode device)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [N,ff] = readtx0file(filename,trotz) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READTX0FILE - Read TX0 file (Lippmann multielectrode device)
+ N = readtx0file(filename)
+ N..structure of electrodes(elecs),numbers(a,b,m,n)
+    and possible fields (u,i,rho,r,err,ip,...)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>	GETKONF - Get Configuration factor from electrode positions</li><li><a href="getmeasurement.html" class="code" title="function Nnew=getmeasurement(N,fi)">getmeasurement</a>	GETMEASUREMENT - Delete measurement from data struct</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="read2dfile.html" class="code" title="function N=read2dfile(datfile)">read2dfile</a>	READ2DFILE - Read 2d data file (all file types)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [N,ff] = readtx0file(filename,trotz)</a>
+0002 <span class="comment">% READTX0FILE - Read TX0 file (Lippmann multielectrode device)</span>
+0003 <span class="comment">% N = readtx0file(filename)</span>
+0004 <span class="comment">% N..structure of electrodes(elecs),numbers(a,b,m,n)</span>
+0005 <span class="comment">%    and possible fields (u,i,rho,r,err,ip,...)</span>
+0006 
+0007 <span class="comment">% filename='D:\Guenther.T\2d\test060406.tx0';</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;2, trotz=0; <span class="keyword">end</span>
+0010 numel=0;del=0;firstel=0; <span class="comment">% default values</span>
+0011 fid=fopen(filename,<span class="string">'r'</span>);
+0012 <span class="keyword">if</span> fid==-1, error(<span class="string">'Could not open file'</span>); <span class="keyword">end</span>
+0013 N=[];
+0014 zeile=fgetl(fid); <span class="comment">% read first</span>
+0015 anfang=<span class="string">'    A'</span>;<span class="comment">%'#    A';</span>
+0016 anfang2=<span class="string">'num A'</span>;
+0017 anfang3=<span class="string">'* num'</span>;
+0018 <span class="keyword">while</span> ischar(zeile),
+0019     zeile(zeile==9)=32; <span class="comment">%tab to blank</span>
+0020     <span class="keyword">if</span> ~isempty(strfind(zeile,anfang)), <span class="keyword">break</span>; <span class="keyword">end</span>
+0021     <span class="keyword">if</span> (length(zeile)&gt;4)&amp;&amp;isequal(zeile(1:5),anfang2), <span class="keyword">break</span>; <span class="keyword">end</span>
+0022     <span class="keyword">if</span> (length(zeile)&gt;4)&amp;&amp;isequal(zeile(1:5),anfang3), <span class="keyword">break</span>; <span class="keyword">end</span>
+0023     <span class="keyword">if</span> strfind(lower(zeile),<span class="string">'electrode last num'</span>),
+0024         numel=sscanf(zeile,<span class="string">'%*s%*s%*s%*s%*s%d'</span>); 
+0025         N.elec=(0:numel-1)'*del+firstel;N.elec(:,3)=0;
+0026     <span class="keyword">end</span>
+0027     <span class="keyword">if</span> strfind(lower(zeile),<span class="string">'electrode start (m)'</span>),
+0028         firstel=sscanf(strrep(zeile,<span class="string">','</span>,<span class="string">'.'</span>),<span class="string">'%*s%*s%*s%*s%*s%f'</span>); <span class="keyword">end</span>
+0029     <span class="keyword">if</span> strfind(lower(zeile),<span class="string">'electrode separation (m)'</span>),
+0030         del=sscanf(strrep(zeile,<span class="string">','</span>,<span class="string">'.'</span>),<span class="string">'%*s%*s%*s%*s%*s%f'</span>); <span class="keyword">end</span>
+0031     <span class="keyword">if</span> strfind(lower(zeile),<span class="string">'electrode ['</span>),
+0032 <span class="comment">%         aa=sscanf(strrep(zeile,',','.'),'%*s%*s%*s%*s%*s%*s%*s%*s%*s%f%f%f');</span>
+0033 <span class="comment">%         ii=str2num(zeile(strfind(zeile,'[')+1:strfind(zeile,']')-1));</span>
+0034         aa=sscanf(strrep(zeile,<span class="string">','</span>,<span class="string">'.'</span>),<span class="string">'%*s%*s [%d] %*s%*s%*s%*s%*s%f%f%f'</span>);
+0035         ii=aa(1);aa(1)=[];
+0036         N.elec(ii,1:3)=aa;
+0037     <span class="keyword">end</span>
+0038     zeile=fgetl(fid); <span class="comment">% read next</span>
+0039 <span class="keyword">end</span>
+0040 <span class="keyword">if</span> ~ischar(zeile), <span class="keyword">return</span>; <span class="keyword">end</span>
+0041 fr=[];
+0042 <span class="keyword">if</span> 1,<span class="comment">%strfind(zeile,anfang)||isequal(zeile(1:5),anfang2),</span>
+0043     ia=2;ib=3;im=4;in=5;ii=6;iu=7;iip=12;ierr=8;ifr=13;inr=1;
+0044     ila=0;ilo=0;it=0;iz=0;
+0045     zeile=destrip(zeile);
+0046     i=0;imax=1;
+0047     <span class="keyword">if</span> zeile(1)==<span class="string">'*'</span>, zeile(1)=<span class="string">''</span>; <span class="keyword">end</span>
+0048     <span class="keyword">while</span> ~isempty(zeile),
+0049         i=i+1;
+0050         [tok,zeile]=strtok(zeile);
+0051 <span class="comment">%         fprintf('%d %s\n',i,tok);</span>
+0052         <span class="keyword">switch</span> lower(tok),
+0053             <span class="keyword">case</span> <span class="string">'A'</span>, ia=i;
+0054             <span class="keyword">case</span> <span class="string">'B'</span>, ib=i;
+0055             <span class="keyword">case</span> <span class="string">'M'</span>, im=i;
+0056             <span class="keyword">case</span> <span class="string">'N'</span>, in=i;
+0057             <span class="keyword">case</span> <span class="string">'U'</span>, iu=i;
+0058             <span class="keyword">case</span> <span class="string">'I'</span>, ii=i;
+0059             <span class="keyword">case</span> {<span class="string">'la'</span>,<span class="string">'x'</span>}, ila=i;
+0060             <span class="keyword">case</span> {<span class="string">'lo'</span>,<span class="string">'y'</span>}, ilo=i;
+0061             <span class="keyword">case</span> <span class="string">'z'</span>, iz=i;
+0062             <span class="keyword">case</span> <span class="string">'time'</span>, it=i;
+0063             <span class="keyword">otherwise</span> imax=i;
+0064         <span class="keyword">end</span>
+0065     <span class="keyword">end</span>
+0066     <span class="comment">% evaluate token string</span>
+0067     mai=max([ia ib im in ii iu iip ierr ila ilo iz]);
+0068     N.a=[];N.b=[];N.m=[];N.n=[];
+0069     <span class="keyword">if</span> iu, N.u=[]; <span class="keyword">end</span>
+0070     <span class="keyword">if</span> ierr, N.err=[]; <span class="keyword">end</span>
+0071     <span class="keyword">if</span> ii, N.i=[]; <span class="keyword">end</span>
+0072     <span class="keyword">if</span> ierr, N.err=[]; <span class="keyword">end</span>
+0073     <span class="keyword">if</span> iip, N.ip=[]; <span class="keyword">end</span>
+0074     <span class="keyword">if</span> ila, N.gpslat=[]; <span class="keyword">end</span>
+0075     <span class="keyword">if</span> ilo, N.gpslon=[]; <span class="keyword">end</span>
+0076     <span class="keyword">if</span> iz, N.gpsz=[]; <span class="keyword">end</span>
+0077     <span class="keyword">if</span> ifr, fr=[]; <span class="keyword">end</span>
+0078     <span class="keyword">if</span> inr, nr=[]; <span class="keyword">end</span>
+0079     <span class="keyword">if</span> it, N.t=[]; <span class="keyword">end</span>
+0080     zeile=fgetl(fid);
+0081     emul=1/100;
+0082     imul=1/1000;umul=1/1000; <span class="comment">%mA/mV neg.</span>
+0083     <span class="comment">% evaluate unit string</span>
+0084     zeile=fgetl(fid);
+0085     <span class="keyword">while</span> ischar(zeile), <span class="comment">% no EOF</span>
+0086         <span class="keyword">while</span> ischar(zeile)&amp;&amp;~isempty(strfind(lower(zeile),<span class="string">'inf'</span>)),
+0087             fprintf(<span class="string">'inf '</span>);
+0088             zeile=fgetl(fid);
+0089         <span class="keyword">end</span>        
+0090         <span class="keyword">if</span> ~ischar(zeile), <span class="keyword">break</span>; <span class="keyword">end</span>
+0091         <span class="keyword">if</span> it==imax, 
+0092             N.t(end+1)=datenum(zeile(max(strfind(zeile,<span class="string">' '</span>))+1:end)); 
+0093         <span class="keyword">end</span>
+0094         zeile(zeile==9)=32;
+0095         bb=strrep(strrep(zeile,<span class="string">' - '</span>,<span class="string">' 0 '</span>),<span class="string">','</span>,<span class="string">'.'</span>);
+0096         bb(end)=[];
+0097         aa=str2num(bb);
+0098 <span class="comment">%         if ~any(strfind(zeile,'- '))&amp;&amp;isnumeric(aa)&amp;&amp;(length(aa)&gt;=mai), % valid numbers</span>
+0099         <span class="keyword">if</span> isnumeric(aa)&amp;&amp;(length(aa)&gt;=mai-double(it&gt;0))&amp;&amp;((aa(iu)~=0)||trotz), <span class="comment">% valid numbers</span>
+0100            <span class="keyword">if</span> ia, N.a(end+1)=aa(ia); <span class="keyword">else</span> N.a(end+1)=0; <span class="keyword">end</span>
+0101            <span class="keyword">if</span> ib, N.b(end+1)=aa(ib); <span class="keyword">else</span> N.b(end+1)=0; <span class="keyword">end</span>
+0102            <span class="keyword">if</span> im, N.m(end+1)=aa(im); <span class="keyword">else</span> N.m(end+1)=0; <span class="keyword">end</span>
+0103            <span class="keyword">if</span> in, N.n(end+1)=aa(in); <span class="keyword">else</span> N.n(end+1)=0; <span class="keyword">end</span>
+0104            <span class="keyword">if</span> ierr, N.err(end+1)=aa(ierr)*emul; <span class="keyword">else</span> N.err(end+1)=0; <span class="keyword">end</span>
+0105            <span class="keyword">if</span> iu, N.u(end+1)=aa(iu)*umul; <span class="keyword">end</span>
+0106            <span class="keyword">if</span> ii, N.i(end+1)=aa(ii)*imul; <span class="keyword">end</span>
+0107            <span class="keyword">if</span> iip, N.ip(end+1)=aa(iip); <span class="keyword">end</span> <span class="comment">% + oder - ???</span>
+0108            <span class="keyword">if</span> ifr, fr(end+1)=aa(ifr); <span class="keyword">end</span>
+0109            <span class="keyword">if</span> inr, nr(end+1)=aa(inr); <span class="keyword">end</span>
+0110            <span class="keyword">if</span> ila, N.gpslat(end+1)=aa(ila); <span class="keyword">end</span>
+0111            <span class="keyword">if</span> ilo, N.gpslon(end+1)=aa(ilo); <span class="keyword">end</span>
+0112            <span class="keyword">if</span> iz&amp;length(aa)&gt;=iz, N.gpsz(end+1)=aa(iz); <span class="keyword">end</span>
+0113 <span class="comment">%            if it, N.t(end+1)=datenum(aa(inr)); end</span>
+0114         <span class="keyword">end</span>
+0115         zeile=fgetl(fid);
+0116     <span class="keyword">end</span>
+0117 <span class="keyword">end</span>
+0118 fclose(fid);
+0119 <span class="comment">% fprintf('\n');</span>
+0120 
+0121 N.ff=unique(fr);
+0122 <span class="keyword">if</span> length(N.ff)&gt;1, <span class="comment">% multiple frequencies</span>
+0123 <span class="comment">%     N.allip=zeros(max(inr),length(N.ff));</span>
+0124     <span class="keyword">for</span> i=length(N.ff):-1:1,
+0125         fi=find(fr==N.ff(i));
+0126         N.sip{i}=<a href="getmeasurement.html" class="code" title="function Nnew=getmeasurement(N,fi)">getmeasurement</a>(N,fi);
+0127         N.sip{i}.nr=fi;
+0128 <span class="comment">%         N.allip(nr(fi),i)=N.ip(fi);</span>
+0129 <span class="comment">%         N.allrho(nr(fi),i)=N.u(fi)./N.i(fi);</span>
+0130     <span class="keyword">end</span>
+0131     aa=zeros(length(fi),1);
+0132     N.a(nr(fi))=N.a(fi);N.b(nr(fi))=N.b(fi);
+0133     N.m(nr(fi))=N.m(fi);N.n(nr(fi))=N.n(fi);
+0134     N.u(nr(fi))=N.u(fi);N.i(nr(fi))=N.i(fi);
+0135     N.ip(nr(fi))=N.ip(fi);N.err(nr(fi))=N.err(fi);
+0136     ma=max(nr);
+0137     N.a(ma+1:end)=[];N.b(ma+1:end)=[];N.m(ma+1:end)=[];N.n(ma+1:end)=[];
+0138     N.u(ma+1:end)=[];N.i(ma+1:end)=[];N.ip(ma+1:end)=[];N.err(ma+1:end)=[];
+0139 <span class="keyword">end</span>
+0140 <span class="comment">% if iip, N.ip=atan2(N.ip,N.u); end</span>
+0141 fn=fieldnames(N);
+0142 <span class="keyword">for</span> i=1:length(fn),
+0143     aa=getfield(N,fn{i});
+0144     <span class="keyword">if</span> min(size(aa))==1, N=setfield(N,fn{i},aa(:)); <span class="keyword">end</span>
+0145 <span class="keyword">end</span>
+0146 <span class="keyword">if</span> ~isfield(N,<span class="string">'k'</span>)||(length(find(N.k==0))&gt;0), N.k=<a href="getkonf2d.html" class="code" title="function konf=getkonf2d(N)">getkonf2d</a>(N); <span class="keyword">end</span>
+0147 <span class="keyword">if</span> ~isfield(N,<span class="string">'r'</span>), <span class="comment">% no apparent resistivities</span>
+0148     <span class="keyword">if</span> ~isfield(N,<span class="string">'rho'</span>)&amp;&amp;isfield(N,<span class="string">'u'</span>)&amp;&amp;isfield(N,<span class="string">'i'</span>), N.rho=N.u./N.i; <span class="keyword">end</span>
+0149     <span class="keyword">if</span> isfield(N,<span class="string">'rho'</span>)&amp;&amp;isfield(N,<span class="string">'k'</span>)&amp;&amp;isequal(size(N.rho),size(N.k)),
+0150         N.r=N.rho.*N.k; <span class="keyword">end</span>
+0151 <span class="keyword">end</span>
+0152 message(sprintf(<span class="string">'%s: %d Measurements with %d Electrodes'</span>,filename,length(N.a),size(N.elec,1)));</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

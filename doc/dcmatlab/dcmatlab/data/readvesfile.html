@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readvesfile</title>
+  <meta name="keywords" content="readvesfile">
+  <meta name="description" content="READVESFILE - read vertical sounding file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readvesfile.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readvesfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READVESFILE - read vertical sounding file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [out]=readvesfile(vesfile) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READVESFILE - read vertical sounding file
+ out = readvesfile(filename)
+ filename should contain ab/2 mn/2 rhoa OR
+ headerline defining ab/2,mn/2,rhoa or rho 
+   by keywords ab* mn* rhoa* app* rho*
+ followed by values</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="reads2dfile.html" class="code" title="function N=readsnd2d(filename)">reads2dfile</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="reads3dfile.html" class="code" title="function N=readsnd3d(filename)">reads3dfile</a>	READSND3D - Read 3d file by use of soundings</li><li><a href="readsnd2d.html" class="code" title="function N=readsnd2d(filename)">readsnd2d</a>	READSND2D - Read 2d file by use of soundings</li><li><a href="readsnd3d.html" class="code" title="function N=readsnd3d(filename)">readsnd3d</a>	READSND3D - Read 3d file by use of soundings</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out]=readvesfile(vesfile)</a>
+0002 
+0003 <span class="comment">% READVESFILE - read vertical sounding file</span>
+0004 <span class="comment">% out = readvesfile(filename)</span>
+0005 <span class="comment">% filename should contain ab/2 mn/2 rhoa OR</span>
+0006 <span class="comment">% headerline defining ab/2,mn/2,rhoa or rho</span>
+0007 <span class="comment">%   by keywords ab* mn* rhoa* app* rho*</span>
+0008 <span class="comment">% followed by values</span>
+0009 
+0010 <span class="comment">% vesfile='d:\Guenther.T\3d\quorn\dc\q60e60s.ves';</span>
+0011 fid=fopen(vesfile,<span class="string">'r'</span>);
+0012 zeile=fgetl(fid);fclose(fid);
+0013 i=1;
+0014 <span class="keyword">while</span>(i&lt;length(zeile)), 
+0015     <span class="keyword">if</span> isequal(zeile(i:i+1),[32 32]), zeile(i+1)=<span class="string">''</span>; 
+0016     <span class="keyword">else</span> i=i+1; 
+0017     <span class="keyword">end</span>
+0018 <span class="keyword">end</span>    
+0019 ft=find((zeile==9)|(zeile==32));
+0020 iab=0;imn=0;ir=0;irhoa=0;
+0021 <span class="keyword">if</span> any(ft),
+0022     ft(end+1)=length(zeile)+1;
+0023     <span class="keyword">if</span> ft(1)&gt;1, ft=[0 ft]; <span class="keyword">end</span>
+0024     <span class="keyword">for</span> i=1:length(ft)-1,
+0025        ss=lower(zeile(ft(i)+1:ft(i+1)-1));
+0026        <span class="keyword">if</span> (length(ss)&gt;1)&amp;&amp;isequal(ss(1:2),<span class="string">'ab'</span>), iab=i; <span class="keyword">end</span>
+0027        <span class="keyword">if</span> (length(ss)&gt;1)&amp;&amp;isequal(ss(1:2),<span class="string">'mn'</span>), imn=i; <span class="keyword">end</span>
+0028        <span class="keyword">if</span> (length(ss)&gt;2)&amp;&amp;isequal(ss(1:3),<span class="string">'app'</span>), irhoa=i; <span class="keyword">end</span>
+0029        <span class="keyword">if</span> (length(ss)&gt;2)&amp;&amp;isequal(ss(1:3),<span class="string">'rho'</span>), 
+0030            <span class="keyword">if</span> (length(ss)&gt;3)&amp;&amp;isequal(ss(4),<span class="string">'a'</span>), irhoa=i; <span class="keyword">else</span> ir=i; <span class="keyword">end</span>
+0031        <span class="keyword">end</span>
+0032        <span class="keyword">if</span> (length(ss)&gt;=10)&amp;&amp;(isequal(ss(1:10),<span class="string">'resistance'</span>)), ir=i; <span class="keyword">end</span>
+0033     <span class="keyword">end</span>
+0034 <span class="keyword">end</span>
+0035 [data]=textread(vesfile,<span class="string">''</span>,<span class="string">'commentstyle'</span>,<span class="string">'shell'</span>,<span class="string">'headerlines'</span>,double(iab&gt;0));
+0036 <span class="keyword">if</span> iab==0, iab=1;imn=2;irhoa=3; <span class="keyword">end</span> <span class="comment">% not given</span>
+0037 ab=data(:,iab);mn=data(:,imn);
+0038 <span class="keyword">if</span> irhoa, 
+0039     rhoa=data(:,irhoa); 
+0040 <span class="keyword">elseif</span> ir,
+0041     k=(ab.^2-mn.^2)./min(ab,mn)*pi/2;rhoa=data(:,ir).*k;
+0042 <span class="keyword">else</span>
+0043     rhoa=ones(size(data,1),1); 
+0044 <span class="keyword">end</span>
+0045 out=[ab mn rhoa];</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

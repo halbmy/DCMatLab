@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of curvature</title>
+  <meta name="keywords" content="curvature">
+  <meta name="description" content="Curvature of parametric function x(t), y(t)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; curvature.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>curvature
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Curvature of parametric function x(t), y(t)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function curv=curvature(x,y,n,t) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Curvature of parametric function x(t), y(t)
+ curv=curvature(x,y,n)
+ n-number of sampling points</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="lkurv.html" class="code" title="function mm=lkurv(rho,eta,ak,n)">lkurv</a>	% LKURV - L-Curve Criterion</li><li><a href="tomkurv.html" class="code" title="function ind=tomkurv(rho,eta,ak)">tomkurv</a>	TOMKURV - L-curve criterion by maximum curvature</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function curv=curvature(x,y,n,t)</a>
+0002 <span class="comment">% Curvature of parametric function x(t), y(t)</span>
+0003 <span class="comment">% curv=curvature(x,y,n)</span>
+0004 <span class="comment">% n-number of sampling points</span>
+0005 nn=min([length(x) length(y)]);
+0006 x=x(1:nn);
+0007 y=y(1:nn);
+0008 <span class="keyword">if</span> nargin&lt;4, t=reshape(1:nn,size(x)); <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;3, n=0; <span class="keyword">end</span>
+0010 vor=n;nach=n;
+0011 <span class="keyword">if</span> n==0,
+0012     ys=(y(3:nn)-y(1:nn-2))./(x(3:nn)-x(1:nn-2));
+0013     dydx=diff(y)./diff(x);
+0014     yss=diff(dydx)./(x(3:nn)-x(1:nn-2))*2;
+0015     curv=yss./((1+ys.^2).^1.5);
+0016     curv=[curv(1);curv(:);curv(length(curv))];
+0017 <span class="keyword">else</span>
+0018   <span class="keyword">if</span> n==1,
+0019       xp=(x(3:nn)-x(1:nn-2))./(t(3:nn)-t(1:nn-2));
+0020       yp=(y(3:nn)-y(1:nn-2))./(t(3:nn)-t(1:nn-2));
+0021       <span class="comment">%xpp=x(1:nn-2)+x(3:nn)-2*x(2:nn-1);</span>
+0022       <span class="comment">%ypp=y(1:nn-2)+y(3:nn)-2*y(2:nn-1);</span>
+0023       xpp=(x(3:nn)-x(2:nn-1))./(t(3:nn)-t(2:nn-1));
+0024       xpp=xpp-(x(2:nn-1)-x(1:nn-2))./(t(2:nn-1)-t(1:nn-2));
+0025       xpp=xpp./(t(3:nn)-t(1:nn-2))*2;
+0026       ypp=(y(3:nn)-y(2:nn-1))./(t(3:nn)-t(2:nn-1));
+0027       ypp=ypp-(y(2:nn-1)-y(1:nn-2))./(t(2:nn-1)-t(1:nn-2));
+0028       ypp=ypp./(t(3:nn)-t(1:nn-2))*2;
+0029   <span class="keyword">end</span>
+0030   <span class="keyword">if</span> n==2,
+0031       xp=(x(1:nn-4)-8*x(2:nn-3)+8*x(4:nn-1)-x(5:nn))/12;
+0032       yp=(y(1:nn-4)-8*y(2:nn-3)+8*y(4:nn-1)-y(5:nn))/12;
+0033       xpp=(-x(1:nn-4)+16*x(2:nn-3)-30*x(3:nn-2)+16*x(4:nn-1)-x(5:nn))/12;
+0034       ypp=(-y(1:nn-4)+16*y(2:nn-3)-30*y(3:nn-2)+16*y(4:nn-1)-y(5:nn))/12;
+0035   <span class="keyword">end</span>
+0036   <span class="keyword">if</span> n==3,
+0037       xp=-x(1:nn-3)+x(2:nn-2);
+0038       yp=-y(1:nn-3)+y(2:nn-2);    
+0039       xpp=2*x(1:nn-3)-5*x(2:nn-2)+4*x(3:nn-1)-x(4:nn);
+0040       ypp=2*y(1:nn-3)-5*y(2:nn-2)+4*y(3:nn-1)-y(4:nn);
+0041       vor=0;nach=3;
+0042   <span class="keyword">end</span>
+0043   <span class="keyword">if</span> n==4,
+0044       xp=(-3*x(2:nn-5)-10*x(3:nn-4)+18*x(4:nn-3)-6*x(5:nn-2)+x(6:nn-1))/12;
+0045       yp=(-3*y(2:nn-5)-10*y(3:nn-4)+18*y(4:nn-3)-6*y(5:nn-2)+y(6:nn-1))/12;
+0046       xpp=(-13*x(1:nn-6)+228*x(2:nn-5)-420*x(3:nn-4)+200*x(4:nn-3)+15*x(5:nn-2)-12*x(6:nn-1)+2*x(7:nn))/180;    
+0047       ypp=(-13*y(1:nn-6)+228*y(2:nn-5)-420*y(3:nn-4)+200*y(4:nn-3)+15*y(5:nn-2)-12*y(6:nn-1)+2*y(7:nn))/180;    
+0048       vor=2;nach=4;
+0049   <span class="keyword">end</span>
+0050   curv=(xp(:).*ypp(:)-xpp(:).*yp(:))./((xp(:).^2+yp(:).^2).^1.5);
+0051   curv=[curv(1)*ones(vor,1);curv(:);curv(length(curv))*ones(nach,1)];
+0052 <span class="keyword">end</span>
+0053 curv=-reshape(curv,size(x));
+0054 <span class="keyword">return</span>;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

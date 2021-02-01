@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of spy2</title>
+  <meta name="keywords" content="spy2">
+  <meta name="description" content="SPY2 An improvement of SPY">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; spy2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>spy2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SPY2 An improvement of SPY</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function spy2(A,col) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">SPY2 An improvement of SPY
+   SPY2(A)  where A is a matrix, will plot
+   the matrix with color codes.
+   Elements containing NaN or Inf will be counted as
+   non-zero but will be displayed
+   as zero elements.
+
+   SPY2(A,COLOR)  will plot zero elements with
+   white color and nonzero elements with black
+   color.
+   Elements containing NaN or Inf will be counted as
+   non-zero and will also be displayed
+   as non-zero elements.
+
+   The displayed matrix will have sides proportional to
+   the number of elements in each row/column.
+   If the matrix contains complex numbers, only the real
+   part will be displayed.
+
+   See also SPY.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function spy2(A,col)</a>
+0002 <span class="comment">%SPY2 An improvement of SPY</span>
+0003 <span class="comment">%   SPY2(A)  where A is a matrix, will plot</span>
+0004 <span class="comment">%   the matrix with color codes.</span>
+0005 <span class="comment">%   Elements containing NaN or Inf will be counted as</span>
+0006 <span class="comment">%   non-zero but will be displayed</span>
+0007 <span class="comment">%   as zero elements.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   SPY2(A,COLOR)  will plot zero elements with</span>
+0010 <span class="comment">%   white color and nonzero elements with black</span>
+0011 <span class="comment">%   color.</span>
+0012 <span class="comment">%   Elements containing NaN or Inf will be counted as</span>
+0013 <span class="comment">%   non-zero and will also be displayed</span>
+0014 <span class="comment">%   as non-zero elements.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   The displayed matrix will have sides proportional to</span>
+0017 <span class="comment">%   the number of elements in each row/column.</span>
+0018 <span class="comment">%   If the matrix contains complex numbers, only the real</span>
+0019 <span class="comment">%   part will be displayed.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   See also SPY.</span>
+0022 
+0023 <span class="comment">% Copyright 2000-11-14, B. Rasmus Anthin.</span>
+0024 <span class="comment">% Revision 2003-09-15, 2003-09-16.</span>
+0025 
+0026 error(nargchk(1,2,nargin))
+0027 
+0028 A=real(double(A));
+0029 A(~isfinite(A))=realmin;
+0030 A(end+1,end+1)=0;
+0031 x=1:size(A,2);
+0032 y=1:size(A,1);
+0033 [X,Y]=meshgrid(x-.5,y-.5);   <span class="comment">%i use surf and meshgrid instead of pcolor so that</span>
+0034 <span class="keyword">if</span> nargin==1
+0035    surf(X,Y,A)                  <span class="comment">% the element numbers will be correctly aligned</span>
+0036    colormap gray                <span class="comment">%just change this afterwards to get another colormap</span>
+0037    colorbar
+0038 <span class="keyword">else</span>
+0039    A=~~A;
+0040    A(1:<span class="keyword">end</span>,end)=0;
+0041    A(<span class="keyword">end</span>,1:end)=0;
+0042    surf(X,Y,A)
+0043    <span class="keyword">if</span> ischar(col)
+0044       <span class="keyword">switch</span>(lower(col))
+0045       <span class="keyword">case</span> {<span class="string">'y'</span>,<span class="string">'yellow'</span>}
+0046          col=[1 1 0];
+0047       <span class="keyword">case</span> {<span class="string">'m'</span>,<span class="string">'magenta'</span>}
+0048          col=[1 0 1];
+0049       <span class="keyword">case</span> {<span class="string">'c'</span>,<span class="string">'cyan'</span>}
+0050          col=[0 1 1];
+0051       <span class="keyword">case</span> {<span class="string">'r'</span>,<span class="string">'red'</span>}
+0052          col=[1 0 0];
+0053       <span class="keyword">case</span> {<span class="string">'g'</span>,<span class="string">'green'</span>}
+0054          col=[0 1 0];
+0055       <span class="keyword">case</span> {<span class="string">'b'</span>,<span class="string">'blue'</span>}
+0056          col=[0 0 1];
+0057       <span class="keyword">case</span> {<span class="string">'w'</span>,<span class="string">'white'</span>}      <span class="comment">%very bad idea :-)</span>
+0058          col=[1 1 1];
+0059       <span class="keyword">case</span> {<span class="string">'k'</span>,<span class="string">'black'</span>}
+0060          col=[0 0 0];
+0061       <span class="keyword">otherwise</span>
+0062          col=[0 0 1];         <span class="comment">%default to blue color</span>
+0063       <span class="keyword">end</span>
+0064    <span class="keyword">end</span>
+0065    <span class="keyword">if</span> isempty(col), col=[0 0 1];<span class="keyword">end</span>
+0066    colormap([1 1 1;col])
+0067 <span class="keyword">end</span>
+0068 view(2)
+0069 axis ij equal tight
+0070 box on
+0071 xlabel([<span class="string">'nz = '</span> int2str(nnz(A))])</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

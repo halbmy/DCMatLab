@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of harmfit</title>
+  <meta name="keywords" content="harmfit">
+  <meta name="description" content="HARMFIT - Fit curve by harmonic functions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; harmfit.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>harmfit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>HARMFIT - Fit curve by harmonic functions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function yc = harmfit(x,y,nc,xc,err) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> HARMFIT - Fit curve by harmonic functions
+ yc = harmfit(x,y[,nc,xc,err]);
+ x/y .. curve to be fitted
+ yc  .. fitted curve
+ nc  .. number of coefficients
+ xc  .. abscissa to fit on (otherwise equal to x)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="rms.html" class="code" title="function erg = rms(soll,ist,lolo)">rms</a>	RMS - Calculate RMS(Root Mean Square)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function yc = harmfit(x,y,nc,xc,err)</a>
+0002 
+0003 <span class="comment">% HARMFIT - Fit curve by harmonic functions</span>
+0004 <span class="comment">% yc = harmfit(x,y[,nc,xc,err]);</span>
+0005 <span class="comment">% x/y .. curve to be fitted</span>
+0006 <span class="comment">% yc  .. fitted curve</span>
+0007 <span class="comment">% nc  .. number of coefficients</span>
+0008 <span class="comment">% xc  .. abscissa to fit on (otherwise equal to x)</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;5, err=ones(size(x)); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;4, xc=x; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> (nargin&lt;3)||(nc==0),
+0013     nc=round(length(x)/30); <span class="comment">% number of coefficients</span>
+0014 <span class="keyword">end</span>
+0015 xspan=max(x)-min(x);
+0016 xmi=min(x);
+0017 A=ones(length(x),nc*2+2)/2; <span class="comment">%nc*(sin+cos)+offset+drift</span>
+0018 A(:,2)=x(:)*3;
+0019 B=ones(length(xc),nc*2+2)/2;
+0020 B(:,2)=xc(:)*3;
+0021 <span class="keyword">for</span> i=1:nc,
+0022     A(:,i*2+1)=sin(2*i*pi*(x-xmi)/xspan);
+0023     A(:,i*2+2)=cos(2*i*pi*(x-xmi)/xspan);
+0024     B(:,i*2+1)=sin(2*i*pi*(xc(:)-xmi)/xspan);
+0025     B(:,i*2+2)=cos(2*i*pi*(xc(:)-xmi)/xspan);
+0026 <span class="keyword">end</span>
+0027 w=1./err;w(~isfinite(w))=0;
+0028 coeff=(spdiags(w,0,length(w),length(w))*A)\(y.*w);
+0029 yc=B*coeff;
+0030 <span class="keyword">if</span> nargout&lt;1,
+0031     plot(x,y,<span class="string">'b'</span>,xc,yc,<span class="string">'r-'</span>);
+0032     <a href="rms.html" class="code" title="function erg = rms(soll,ist,lolo)">rms</a>(y,A*coeff)
+0033 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

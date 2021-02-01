@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fcmcluster</title>
+  <meta name="keywords" content="fcmcluster">
+  <meta name="description" content="FCMCLUSTER - Fuzzy c-means clustering">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">patch</a> &gt; fcmcluster.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\patch&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>fcmcluster
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>FCMCLUSTER - Fuzzy c-means clustering</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function result = fcmcluster(data,param) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FCMCLUSTER - Fuzzy c-means clustering
+ result = fcmcluster(data,param)
+ data or data.X (Nxn)
+ param is a structure of
+      .c number of clusters
+      .m fuzziness (&gt;=1, default=2)
+      .e tolerance (0.001)
+      .ro cluster volumes
+      .norm normalize values (0 or 1)
+      .log take logarithms for ith column if log(i)&gt;0
+      .range limit range of values
+ result is a structure of
+      .cl associated cluster number
+      .mf normalized membership function (0 to 1)
+      .data.f partition matrix (Nxc) 
+      .data.d distance matrix
+      .cluster.v cluster centers (cxn)
+      .P covariance matrix
+      .cost cost function over iterations</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="clusterplot.html" class="code" title="function [cc,cl,mf] = clusterplot(para1,para2,ncluster,names,marker)">clusterplot</a>	CLUSTERPLOT - two variables crossplot using cluster colors</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function result = fcmcluster(data,param)</a>
+0002 
+0003 <span class="comment">% FCMCLUSTER - Fuzzy c-means clustering</span>
+0004 <span class="comment">% result = fcmcluster(data,param)</span>
+0005 <span class="comment">% data or data.X (Nxn)</span>
+0006 <span class="comment">% param is a structure of</span>
+0007 <span class="comment">%      .c number of clusters</span>
+0008 <span class="comment">%      .m fuzziness (&gt;=1, default=2)</span>
+0009 <span class="comment">%      .e tolerance (0.001)</span>
+0010 <span class="comment">%      .ro cluster volumes</span>
+0011 <span class="comment">%      .norm normalize values (0 or 1)</span>
+0012 <span class="comment">%      .log take logarithms for ith column if log(i)&gt;0</span>
+0013 <span class="comment">%      .range limit range of values</span>
+0014 <span class="comment">% result is a structure of</span>
+0015 <span class="comment">%      .cl associated cluster number</span>
+0016 <span class="comment">%      .mf normalized membership function (0 to 1)</span>
+0017 <span class="comment">%      .data.f partition matrix (Nxc)</span>
+0018 <span class="comment">%      .data.d distance matrix</span>
+0019 <span class="comment">%      .cluster.v cluster centers (cxn)</span>
+0020 <span class="comment">%      .P covariance matrix</span>
+0021 <span class="comment">%      .cost cost function over iterations</span>
+0022 
+0023 <span class="comment">%data normalization</span>
+0024 <span class="keyword">if</span> isfield(data,<span class="string">'X'</span>), X=data.X; <span class="keyword">else</span> X=data; <span class="keyword">end</span>
+0025 <span class="keyword">if</span> ~isfield(param,<span class="string">'c'</span>), error(<span class="string">'specify number of clusters!'</span>); <span class="keyword">end</span>
+0026 f0=param.c;
+0027 <span class="comment">%checking the parameters given</span>
+0028 <span class="comment">%default parameters</span>
+0029 <span class="keyword">if</span> isfield(param,<span class="string">'m'</span>), m = param.m; <span class="keyword">else</span> m = 2; <span class="keyword">end</span>;
+0030 <span class="keyword">if</span> isfield(param,<span class="string">'e'</span>), e = param.m; <span class="keyword">else</span> e = 1e-4; <span class="keyword">end</span>;
+0031 <span class="keyword">if</span> isfield(param,<span class="string">'log'</span>),
+0032     <span class="keyword">for</span> i=1:size(X,2),
+0033         <span class="keyword">if</span> param.log(min(length(param.log),i)), 
+0034             param.log(i)=1;
+0035             X(:,i)=log10(X(:,i));
+0036         <span class="keyword">end</span>
+0037     <span class="keyword">end</span>
+0038 <span class="keyword">end</span>
+0039 <span class="keyword">if</span> isfield(param,<span class="string">'range'</span>)&amp;&amp;(size(param.range,2)==size(data,2))&amp;&amp;(size(param.range,1)&gt;1),
+0040     display(<span class="string">'ranging values'</span>);
+0041     
+0042 <span class="keyword">end</span>
+0043 <span class="keyword">if</span> isfield(param,<span class="string">'norm'</span>)&amp;&amp;(param.norm&gt;0),
+0044     display(<span class="string">'normalizing values'</span>);
+0045     <span class="keyword">for</span> i=1:size(X,2),
+0046         mi(i)=min(X(:,i));ma(i)=max(X(:,i));
+0047         X(:,i)=(X(:,i)-mi(i))/(ma(i)-mi(i));
+0048     <span class="keyword">end</span>
+0049 <span class="keyword">end</span>
+0050 
+0051 [N,n] = size(X);
+0052 [Nf0,nf0] = size(f0); 
+0053 X1 = ones(N,1);
+0054 
+0055 <span class="comment">% Initialize fuzzy partition matrix</span>
+0056 rand(<span class="string">'state'</span>,0)
+0057 <span class="keyword">if</span> max(Nf0,nf0) == 1,         <span class="comment">% only number of cluster given</span>
+0058   c = f0;
+0059   mm = mean(X);             <span class="comment">%mean of the data (1,n)</span>
+0060   aa = max(abs(X - ones(N,1)*mm)); <span class="comment">%</span>
+0061   v = 2*(ones(c,1)*aa).*(rand(c,n)-0.5) + ones(c,1)*mm;
+0062   <span class="keyword">for</span> j = 1 : c,
+0063     xv = X - X1*v(j,:);
+0064     d(:,j) = sum((xv*eye(n).*xv),2);
+0065   <span class="keyword">end</span>;
+0066   d = (d+1e-10).^(-1/(m-1));
+0067   f0 = (d ./ (sum(d,2)*ones(1,c)));
+0068   
+0069 <span class="keyword">else</span>
+0070   c = size(f0,2);
+0071   fm = f0.^m; sumf = sum(fm);
+0072   v = (fm'*X)./(sumf'*ones(1,n)); <span class="comment">%</span>
+0073 <span class="keyword">end</span>;
+0074 
+0075 f = zeros(N,c);                <span class="comment">% partition matrix</span>
+0076 iter = 0;                       <span class="comment">% iteration counter</span>
+0077 
+0078 <span class="comment">% Iterate</span>
+0079 <span class="keyword">while</span>  max(max(f0-f)) &gt; e
+0080   iter = iter + 1;
+0081   f = f0;
+0082   <span class="comment">% Calculate centers</span>
+0083   fm = f.^m;
+0084   sumf = sum(fm);
+0085   v = (fm'*X)./(sumf'*ones(1,n));
+0086   <span class="keyword">for</span> j = 1 : c,
+0087     xv = X - X1*v(j,:);
+0088     d(:,j) = sum((xv*eye(n).*xv),2);
+0089   <span class="keyword">end</span>;
+0090   distout=sqrt(d);
+0091   J(iter) = sum(sum(f0.*d));
+0092   <span class="comment">% Update f0</span>
+0093   d = (d+1e-10).^(-1/(m-1));
+0094   f0 = (d ./ (sum(d,2)*ones(1,c)));
+0095 <span class="keyword">end</span>
+0096 
+0097 fm = f.^m; 
+0098 sumf = sum(fm);
+0099 
+0100 <span class="comment">%results</span>
+0101 result.data.f=f0;
+0102 result.data.d=distout;
+0103 result.cluster.v=v;
+0104 result.iter = iter;
+0105 result.cost = J;
+0106 <span class="comment">%</span>
+0107 [maxmf,result.cl]=max(result.data.f,[],2);
+0108 result.mf=(maxmf*param.c-1)/(param.c-1);
+0109 <span class="keyword">if</span> isfield(param,<span class="string">'norm'</span>)&amp;&amp;(param.norm&gt;0),
+0110    <span class="keyword">for</span> i=1:size(result.cluster.v,2),
+0111        result.cluster.v(:,i)=result.cluster.v(:,i)*(ma(i)-mi(i))+mi(i);
+0112    <span class="keyword">end</span>
+0113 <span class="keyword">end</span>
+0114 <span class="keyword">if</span> isfield(param,<span class="string">'log'</span>),
+0115    <span class="keyword">for</span> i=1:size(result.cluster.v,2),
+0116        <span class="keyword">if</span> param.log(i), result.cluster.v(:,i)=10.^result.cluster.v(:,i); <span class="keyword">end</span>
+0117    <span class="keyword">end</span>
+0118 <span class="keyword">end</span>
+0119 
+0120 <span class="comment">% [result.mf,result.cl]=max(result.data.f,[],2);</span>
+0121 <span class="comment">% result.cdef=(result.mf*param.c-1)/(param.c-1); %0-1 ranged value of membership</span>
+0122 result.param=param;</pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

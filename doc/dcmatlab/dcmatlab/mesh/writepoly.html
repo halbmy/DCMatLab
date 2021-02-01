@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of writepoly</title>
+  <meta name="keywords" content="writepoly">
+  <meta name="description" content="WRITEPOLY - Creatte poly file from Shot positions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; writepoly.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>writepoly
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>WRITEPOLY - Creatte poly file from Shot positions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function writepoly(Shotpos,filename,zz,dd,zvec) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> WRITEPOLY - Creatte poly file from Shot positions
+ writepoly(Shotpos,filename[,maxdepth,refinement])</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function writepoly(Shotpos,filename,zz,dd,zvec)</a>
+0002 
+0003 <span class="comment">% WRITEPOLY - Creatte poly file from Shot positions</span>
+0004 <span class="comment">% writepoly(Shotpos,filename[,maxdepth,refinement])</span>
+0005 
+0006 <span class="keyword">if</span> nargin&lt;1, error(<span class="string">'No shot provided'</span>); <span class="keyword">end</span>
+0007 <span class="keyword">if</span> nargin&lt;2, filename=<span class="string">'test.poly'</span>; <span class="keyword">end</span>
+0008 <span class="keyword">if</span> nargin&lt;3, zz=(max(Shotpos(:,1))-min(Shotpos(:,1)))/3; <span class="keyword">end</span>
+0009 <span class="keyword">if</span> nargin&lt;4, dd=0; <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;5, zvec=[]; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> size(Shotpos,2)&lt;2, Shotpos(:,2)=0; <span class="keyword">end</span>
+0012 
+0013 dx=median(diff(Shotpos(:,1)));
+0014 di=1;
+0015 <span class="keyword">if</span> dd&gt;0, <span class="comment">% refinement</span>
+0016     newpos=Shotpos;
+0017     <span class="keyword">if</span> dd&gt;0.3, <span class="comment">% set to 0.5</span>
+0018         newpos(1:end-1,2)=newpos(1:end-1,1)+diff(newpos(:,1))/2;
+0019         newpos=reshape(newpos',[],1);newpos(end)=[];
+0020         di=2;
+0021     <span class="keyword">else</span> <span class="comment">% right and left hand side</span>
+0022         newpos(:,2)=newpos(:,1);
+0023         dnew=diff(newpos(:,1))*dd;
+0024         newpos(2:<span class="keyword">end</span>,1)=newpos(2:<span class="keyword">end</span>,2)-dnew;
+0025         newpos(1:end-1,3)=newpos(1:end-1,2)+dnew;
+0026         newpos=reshape(newpos',[],1);
+0027         newpos([1 end])=[];
+0028         di=3;
+0029     <span class="keyword">end</span>
+0030     newpos(:,2)=interp1(Shotpos(:,1),Shotpos(:,2),newpos,<span class="string">'spline'</span>);
+0031     Shotpos=newpos;
+0032 <span class="keyword">end</span>
+0033 mi=min(Shotpos(:,1))-dx;
+0034 ma=max(Shotpos(:,1))+dx;
+0035 <span class="keyword">if</span> nargin&lt;3, zz=(ma-mi)/4; <span class="keyword">end</span>
+0036 np=size(Shotpos,1);
+0037 nn=(0:np+3)';
+0038 nn(:,2)=[mi;Shotpos(:,1);ma;ma;mi];
+0039 nn(:,3)=[Shotpos(1,2);Shotpos(:,2);Shotpos(<span class="keyword">end</span>,2);Shotpos(<span class="keyword">end</span>,2);Shotpos(1,2)];
+0040 nn(end-1:<span class="keyword">end</span>,3)=nn(end-1:<span class="keyword">end</span>,3)-abs(zz);
+0041 nn(2:di:end-2,4)=-99;
+0042 nn([1 end-2:end],4)=0;
+0043 ee=nn;
+0044 ee(:,2)=ee(:,1);ee(:,4)=-1;
+0045 ee(:,3)=ee(:,2)+1;ee(<span class="keyword">end</span>,3)=0;
+0046 <span class="keyword">if</span> length(zvec)&gt;0,
+0047    ln=size(nn,1);
+0048    le=size(ee,1);
+0049    lz=length(zvec);
+0050    apos=nn(1,2:3); <span class="comment">% first surface point</span>
+0051    epos=nn(ln-2,2:3); <span class="comment">% last surface point</span>
+0052    <span class="keyword">for</span> i=1:length(zvec), <span class="comment">%add new points</span>
+0053        nn(ln+i,2:3)=epos-[0 1]*zvec(i); <span class="comment">% right</span>
+0054        nn(ln+lz+i,2:3)=apos-[0 1]*zvec(i); <span class="comment">% left</span>
+0055    <span class="keyword">end</span>
+0056    nn(:,1)=0:size(nn,1)-1;
+0057    ee(end-2:2:<span class="keyword">end</span>,:)=[]; <span class="comment">% delete old vertical lines</span>
+0058    re=ln-3;li=0;
+0059    <span class="keyword">for</span> i=1:length(zvec),
+0060       ee(le+i-2,2:3)=[re ln-1+i]; 
+0061       ee(le+lz+i-2,2:3)=[ln+lz-1+i li];
+0062       li=ln+lz-1+i;re=ln-1+i;
+0063    <span class="keyword">end</span>
+0064    ee(end+1,2:3)=[re ln-2];
+0065    ee(end+1,2:3)=[ln-1 li];
+0066    <span class="keyword">for</span> i=1:length(zvec),
+0067       ee(end+1,2:3)=[ln-1+i ln+lz-1+i]; 
+0068    <span class="keyword">end</span>
+0069    ee(:,1)=0:size(ee,1)-1;
+0070    ee(:,4)=-1;
+0071 <span class="keyword">end</span>
+0072 fid=fopen(filename,<span class="string">'w'</span>);
+0073 fprintf(fid,<span class="string">'%d %d %d %d\n'</span>,size(nn,1),2,0,1);
+0074 fprintf(fid,<span class="string">'%d\t%.3f\t%.3f\t%d\n'</span>,nn');
+0075 fprintf(fid,<span class="string">'%d %d\n'</span>,size(ee,1),1);
+0076 fprintf(fid,<span class="string">'%d\t%d\t%d\t%d\n'</span>,ee');
+0077 fprintf(fid,<span class="string">'%d\n%d\n'</span>,0,0);
+0078 fclose(fid);
+0079 <span class="comment">% clf;</span>
+0080 <span class="comment">% plot(nn(:,2),nn(:,3),'*');</span>
+0081 <span class="comment">% for i=1:size(ee,1),</span>
+0082 <span class="comment">%     line(nn(ee(i,2:3)+1,2),nn(ee(i,2:3)+1,3));</span>
+0083 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

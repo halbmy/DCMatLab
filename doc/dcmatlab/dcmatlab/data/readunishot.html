@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readunishot</title>
+  <meta name="keywords" content="readunishot">
+  <meta name="description" content="READUNISHOT - Read shot from unified data format">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">data</a> &gt; readunishot.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\data&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>readunishot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>READUNISHOT - Read shot from unified data format</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Shot=readunishot(filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> READUNISHOT - Read shot from unified data format
+ Shot = readunishot(filename)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="readunifile.html" class="code" title="function N=readunifile(fname,dim)">readunifile</a>	READUNIFILE - Read data file in unified data format</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="joindata.html" class="code" title="">joindata</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Shot=readunishot(filename)</a>
+0002 
+0003 <span class="comment">% READUNISHOT - Read shot from unified data format</span>
+0004 <span class="comment">% Shot = readunishot(filename)</span>
+0005 
+0006 N=<a href="readunifile.html" class="code" title="function N=readunifile(fname,dim)">readunifile</a>(filename);
+0007 <span class="keyword">if</span> isfield(N,<span class="string">'x'</span>), 
+0008     Shot.pos=N.x;
+0009     <span class="keyword">if</span> isfield(N,<span class="string">'y'</span>), Shot.pos(:,2)=N.y; <span class="keyword">end</span>
+0010     <span class="keyword">if</span> isfield(N,<span class="string">'z'</span>),
+0011         Shot.pos(:,end+1)=N.z;
+0012     <span class="keyword">else</span>
+0013         <span class="keyword">if</span> isfield(N,<span class="string">'h'</span>), Shot.z=N.h; <span class="keyword">end</span>
+0014         <span class="keyword">if</span> isfield(Shot,<span class="string">'z'</span>)&amp;&amp;isfield(N,<span class="string">'d'</span>)&amp;&amp;(length(Shot.z)==length(N.d)),
+0015             Shot.z=Shot.z-N.d; <span class="keyword">end</span>
+0016     <span class="keyword">end</span>
+0017 <span class="keyword">else</span>
+0018     Shot.pos=N.elec;
+0019 <span class="keyword">end</span>
+0020 <span class="keyword">if</span> ~isfield(N,<span class="string">'s'</span>)&amp;isfield(N,<span class="string">'a'</span>), N.s=N.a; <span class="keyword">end</span>
+0021 <span class="keyword">if</span> ~isfield(N,<span class="string">'g'</span>)&amp;isfield(N,<span class="string">'m'</span>), N.g=N.m; <span class="keyword">end</span>
+0022 us=unique(N.s);
+0023 tf=isfield(N,<span class="string">'t'</span>);
+0024 <span class="keyword">if</span> tf, Shot.t=N.t; <span class="keyword">end</span>
+0025 <span class="keyword">if</span> isfield(N,<span class="string">'g'</span>), Shot.g=N.g; <span class="keyword">end</span>
+0026 <span class="keyword">if</span> isfield(N,<span class="string">'s'</span>), Shot.s=N.s; <span class="keyword">end</span>
+0027 <span class="keyword">for</span> i=1:length(us),
+0028     Shot.ns{i}=us(i);
+0029     fi=find(N.s==us(i));    
+0030 <span class="comment">%     [Shot.nx{i},I,J]=unique(N.g(fi));</span>
+0031     [Shot.nx{i},I]=sort(N.g(fi));
+0032     <span class="keyword">if</span> tf, Shot.tt{i}=Shot.t(fi(I))*1000; <span class="keyword">end</span>
+0033     Shot.nn{i}=fi(I);
+0034 <span class="keyword">end</span>
+0035 <span class="comment">% if tf,</span>
+0036 <span class="comment">%     Shot.t=[];</span>
+0037 <span class="comment">%     for i=1:length(Shot.tt), Shot.t=[Shot.t;Shot.tt{i}]; end</span>
+0038 <span class="comment">%     Shot.t=Shot.t/1000;</span>
+0039 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

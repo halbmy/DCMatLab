@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>DC3DInvRes - Model Menu</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ECE9D8">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr> 
+    <td width="20%" align=center> <a href="index.html">Start Page</a></td>
+    <td width="20%" align=center><a href="menue.html">Menu Items</a></td>
+    <td width="20%" align=center><a href="interact.html">Interactive Features</a></td>
+    <td width="20%" align=center><a href="hotkeys.html">Hotkeys</a></td>
+    <td width="20%" align=center><a href="tutorial.html">Tutorial</a></td>
+  </tr>
+</table>
+<h2>DC3DInvRes - Model Menu</h2>
+<hr>
+<h3><a name="modpar"></a>Model parameter</h3>
+<p>This dialog is used to control the model parameterizations. There are two different 
+  parameter strategies</p>
+<table cellpadding=10><tr><td>
+  <p align=center><img src="pic/gridmod.png" width="378" height="390"></p>
+</td><td>
+    <a name="grid"></a>GRID MODEL: The model cells are orthogonal hexaedra bounded 
+    by lines of x, y and z nodes.<br>
+    In this dialog all cell boundaries can be defined seperately. By changing 
+    dx or dy a new (equidistant) vector is constructed. By changing the number 
+    of layers and pressing button 1dsens the layer boundaries are determined using 
+    1d-sensitivity studies of the whole data set. By editing background resistivities 
+    for each layer a general layered model can be set. Note that the length of 
+    background and z vector are equal since the last layer is going to infinity. 
+    Those background values affect the fd forward result of the model.<br>
+</td></tr></table>
+<table><tr><td>
+    <a name="para"></a>PARA MODEL: In this model type, the length 
+      and width can differ for different layers corresponding to different resolution 
+      properties. In the dialog the number of layers, the layer boundaries and 
+      its resistivities can be changed the same way like for grid model.
+    The lower left boundary of the model is depicted by x0 and y0. By defining 
+    dx and dy the finest grid size in x and y direction is given, defaulting to 
+    one half of electrode spacing. The values nx and ny denote for each layer, 
+    how big the cells are, in multiples of dx and dy, respectively.
+</td><td>
+    <p align=center><img src="pic/paramod.png" width="518" height="236"></p>
+</td></tr></table>
+<h3><a name="free"></a>Free model edit</h3>
+<p>For setting up whole volumes to distinct resistivities the following dialog 
+  is useful.</p>
+<p align=center><img src="pic/freemod.png" width="469" height="329"></p>
+<p>By typing boundaries for x, y and z the region can be limited and set to the desired
+resistivity value. The forward modelling can be started to compare data and model response. 
+</p>
+<hr>
+<h3><a name="import"></a>ASCII output of model</h3>
+<p>To save the model it can be exported into an column-oriented textfile, named 
+  like the datafile with extension *.mod, in the following format, one row for 
+  each model cell.</p>
+<pre>x_1 x_2 y_1 y_2 z_1 z_2 resistivity 
+   ... </pre>
+<h3><a name="export"></a>ASCII input of model</h3>
+The exported model (e.g. a synthetic model) can be loaded from file into workspace. 
+<h3><a name="exportvtk"></a>Export vtk file</h3>
+The model can be exported to a vtk (Visual Toolkit) file, which can be viewed with the
+free and powerful 3d viewer <a href="http://www.paraview.org">Paraview</a>
+<h3><a name="dreid"></a>Read in 3d file</h3>
+not yet implemented! 
+<hr>
+</body>
+</html>

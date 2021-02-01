@@ -1,0 +1,504 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of exportpng1</title>
+  <meta name="keywords" content="exportpng1">
+  <meta name="description" content="EXPORTPNG - exports figure to png file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">base</a> &gt; exportpng1.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\base&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>exportpng1
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>EXPORTPNG - exports figure to png file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function exportpng(fig, filename, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> EXPORTPNG - exports figure to png file
+ changes version of write_png
+ it gets the current figure's Colordata map and writes it to filename
+ Syntax:
+ exportpng(fig,filename,varargin) OR
+ exportpng(filename) (takes gcf as fig)
+ varargin are additional (Property,Value) pairs, see writepng</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function out = CheckKeyword(in)</a></li><li><a href="#_sub2" class="code">function out = CheckTextItem(in)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function exportpng(fig, filename, varargin)</a>
+0002 <span class="comment">% EXPORTPNG - exports figure to png file</span>
+0003 <span class="comment">% changes version of write_png</span>
+0004 <span class="comment">% it gets the current figure's Colordata map and writes it to filename</span>
+0005 <span class="comment">% Syntax:</span>
+0006 <span class="comment">% exportpng(fig,filename,varargin) OR</span>
+0007 <span class="comment">% exportpng(filename) (takes gcf as fig)</span>
+0008 <span class="comment">% varargin are additional (Property,Value) pairs, see writepng</span>
+0009 
+0010 <span class="keyword">if</span> nargin==1, filename=fig;fig=gcf; <span class="keyword">end</span>
+0011 <span class="comment">% col=get(fig,'Color');</span>
+0012 <span class="comment">% set(fig,'Color',[1 1 1]);drawnow;</span>
+0013 fra=getframe(fig);
+0014 data=fra.cdata;
+0015 <span class="keyword">if</span> 0,
+0016     data(1,1,:)=255;
+0017     <span class="keyword">while</span>(length(unique(data(:,1,1)))==1), data(:,1,:)=[]; <span class="keyword">end</span>
+0018     <span class="keyword">if</span> isempty(data), <span class="keyword">return</span>; <span class="keyword">end</span>
+0019     <span class="keyword">while</span>(length(unique(data(:,<span class="keyword">end</span>,1)))==1), data(:,<span class="keyword">end</span>,:)=[]; <span class="keyword">end</span>
+0020     <span class="keyword">if</span> isempty(data), <span class="keyword">return</span>; <span class="keyword">end</span>
+0021     <span class="keyword">while</span>(length(unique(data(1,:,1)))==1), data(1,:,:)=[]; <span class="keyword">end</span>
+0022     <span class="keyword">if</span> isempty(data), <span class="keyword">return</span>; <span class="keyword">end</span>
+0023     <span class="keyword">while</span>(length(unique(data(<span class="keyword">end</span>,:,1)))==1), data(<span class="keyword">end</span>,:,:)=[]; <span class="keyword">end</span>
+0024     <span class="keyword">if</span> isempty(data), <span class="keyword">return</span>; <span class="keyword">end</span>
+0025 <span class="keyword">end</span>
+0026 map=fra.colormap;
+0027 <span class="comment">% set(fig,'Color',col);</span>
+0028 <span class="keyword">if</span> (ndims(data) &gt; 3)
+0029     error(sprintf(<span class="string">'%d-D data not supported for PNG files'</span>, ndims(data)));
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="comment">% Color type values (as in PNG library defs)</span>
+0033 PNG_COLOR_TYPE_GRAY = 0;
+0034 PNG_COLOR_TYPE_RGB = 2;
+0035 PNG_COLOR_TYPE_PALETTE = 3;
+0036 PNG_COLOR_TYPE_GRAY_ALPHA = 4;
+0037 PNG_COLOR_TYPE_RGB_ALPHA = 6;
+0038 
+0039 <span class="comment">% Set default parameters</span>
+0040 bitdepth = [];
+0041 sigbits = [];
+0042 interlace = <span class="string">'none'</span>;
+0043 transparency = [];
+0044 alpha = [];
+0045 background = [];
+0046 gamma = [];
+0047 chromaticities = [];
+0048 xres = [];
+0049 yres = [];
+0050 resunit = [];
+0051 textchunks = cell(0,2);
+0052 
+0053 <span class="comment">% Process param/value pairs</span>
+0054 propStrings = [<span class="string">'interlacetype  '</span>
+0055     <span class="string">'transparency   '</span>
+0056     <span class="string">'bitdepth       '</span>
+0057     <span class="string">'significantbits'</span>
+0058     <span class="string">'alpha          '</span>
+0059     <span class="string">'background     '</span>
+0060     <span class="string">'gamma          '</span>
+0061     <span class="string">'chromaticities '</span>
+0062     <span class="string">'xresolution    '</span>
+0063     <span class="string">'yresolution    '</span>
+0064     <span class="string">'resolutionunit '</span>
+0065     <span class="string">'title          '</span>
+0066     <span class="string">'author         '</span>
+0067     <span class="string">'description    '</span>
+0068     <span class="string">'copyright      '</span>
+0069     <span class="string">'creationtime   '</span>
+0070     <span class="string">'software       '</span>
+0071     <span class="string">'disclaimer     '</span>
+0072     <span class="string">'warning        '</span>
+0073     <span class="string">'source         '</span>
+0074     <span class="string">'comment        '</span>];
+0075 
+0076 <span class="keyword">for</span> k = 1:2:length(varargin)
+0077     prop = lower(varargin{k});
+0078     <span class="keyword">if</span> (~isstr(prop))
+0079         error(<span class="string">'Parameter name must be a string'</span>);
+0080     <span class="keyword">end</span>
+0081     idx = strmatch(prop, propStrings);
+0082     <span class="keyword">if</span> (isempty(idx))
+0083         keyword = varargin{k};
+0084         textItem = varargin{k+1};
+0085         keyword = <a href="#_sub1" class="code" title="subfunction out = CheckKeyword(in)">CheckKeyword</a>(keyword);
+0086         textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(textItem);
+0087         textchunks{end+1,1} = keyword;
+0088         textchunks{<span class="keyword">end</span>,2} = textItem;
+0089     
+0090     <span class="keyword">elseif</span> (length(idx) &gt; 1)
+0091         error(sprintf(<span class="string">'Ambiguous parameter name &quot;%s&quot;'</span>, prop));
+0092         
+0093     <span class="keyword">else</span>
+0094         prop = deblank(propStrings(idx,:));
+0095         <span class="keyword">switch</span> prop
+0096             <span class="keyword">case</span> <span class="string">'bitdepth'</span>
+0097                 bitdepth = varargin{k+1};
+0098                 
+0099             <span class="keyword">case</span> <span class="string">'significantbits'</span>
+0100                 sigbits = varargin{k+1};
+0101             
+0102             <span class="keyword">case</span> <span class="string">'interlacetype'</span>
+0103                 interlace = varargin{k+1};
+0104                 
+0105             <span class="keyword">case</span> <span class="string">'transparency'</span>
+0106                 transparency = varargin{k+1};
+0107                 
+0108             <span class="keyword">case</span> <span class="string">'alpha'</span>
+0109                 alpha = varargin{k+1};
+0110                 
+0111             <span class="keyword">case</span> <span class="string">'background'</span>
+0112                 background = varargin{k+1};
+0113                 
+0114             <span class="keyword">case</span> <span class="string">'gamma'</span>
+0115                 gamma = varargin{k+1};
+0116                 
+0117             <span class="keyword">case</span> <span class="string">'chromaticities'</span>
+0118                 chromaticities = varargin{k+1};
+0119                 
+0120             <span class="keyword">case</span> <span class="string">'xresolution'</span>
+0121                 xres = varargin{k+1};
+0122                 
+0123             <span class="keyword">case</span> <span class="string">'yresolution'</span>
+0124                 yres = varargin{k+1};
+0125                 
+0126             <span class="keyword">case</span> <span class="string">'resolutionunit'</span>
+0127                 resunit = varargin{k+1};
+0128                 
+0129             <span class="keyword">case</span> <span class="string">'title'</span>
+0130                 keyword = <span class="string">'Title'</span>;
+0131                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0132                 textchunks{end+1,1} = keyword;
+0133                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0134                 
+0135             <span class="keyword">case</span> <span class="string">'author'</span>
+0136                 keyword = <span class="string">'Author'</span>;
+0137                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0138                 textchunks{end+1,1} = keyword;
+0139                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0140                 
+0141             <span class="keyword">case</span> <span class="string">'description'</span>
+0142                 keyword = <span class="string">'Description'</span>;
+0143                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0144                 textchunks{end+1,1} = keyword;
+0145                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0146                 
+0147             <span class="keyword">case</span> <span class="string">'copyright'</span>
+0148                 keyword = <span class="string">'Copyright'</span>;
+0149                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0150                 textchunks{end+1,1} = keyword;
+0151                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0152                 
+0153             <span class="keyword">case</span> <span class="string">'creationtime'</span>
+0154                 keyword = <span class="string">'Creation Time'</span>;
+0155                 <span class="keyword">if</span> (ischar(varargin{k+1}))
+0156                     textItem = datestr(datenum(varargin{k+1}), 0);
+0157                 <span class="keyword">else</span>
+0158                     textItem = datestr(varargin{k+1}, 0);
+0159                 <span class="keyword">end</span>
+0160                 textchunks{end+1,1} = keyword;
+0161                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0162                 
+0163             <span class="keyword">case</span> <span class="string">'software'</span>
+0164                 keyword = <span class="string">'Software'</span>;
+0165                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0166                 textchunks{end+1,1} = keyword;
+0167                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0168                 
+0169             <span class="keyword">case</span> <span class="string">'disclaimer'</span>
+0170                 keyword = <span class="string">'Disclaimer'</span>;
+0171                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0172                 textchunks{end+1,1} = keyword;
+0173                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0174                 
+0175             <span class="keyword">case</span> <span class="string">'warning'</span>
+0176                 keyword = <span class="string">'Warning'</span>;
+0177                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0178                 textchunks{end+1,1} = keyword;
+0179                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0180                 
+0181             <span class="keyword">case</span> <span class="string">'source'</span>
+0182                 keyword = <span class="string">'Source'</span>;
+0183                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0184                 textchunks{end+1,1} = keyword;
+0185                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0186                 
+0187             <span class="keyword">case</span> <span class="string">'comment'</span>
+0188                 keyword = <span class="string">'Comment'</span>;
+0189                 textItem = <a href="#_sub2" class="code" title="subfunction out = CheckTextItem(in)">CheckTextItem</a>(varargin{k+1});
+0190                 textchunks{end+1,1} = keyword;
+0191                 textchunks{<span class="keyword">end</span>,2} = textItem;
+0192                 
+0193         <span class="keyword">end</span>
+0194     <span class="keyword">end</span>
+0195     
+0196 <span class="keyword">end</span>
+0197 
+0198 <span class="keyword">if</span> ((ndims(data) &gt; 3) | (~ismember(size(data,3), [1 3])))
+0199     error(<span class="string">'Invalid input image.'</span>);
+0200 <span class="keyword">end</span>
+0201 
+0202 <span class="keyword">if</span> (~ismember({class(data)}, {<span class="string">'double'</span>, <span class="string">'logical'</span>, <span class="string">'uint8'</span>, <span class="string">'uint16'</span>}))
+0203     error(<span class="string">'Unsupported input data class.'</span>);
+0204 <span class="keyword">end</span>
+0205 
+0206 <span class="keyword">if</span> (~isempty(alpha) &amp; ((size(alpha,1) ~= size(data,1)) | <span class="keyword">...</span>
+0207                     (size(alpha,2) ~= size(data,2))))
+0208     error(<span class="string">'ALPHA must have the same number of rows and columns as the image data.'</span>);
+0209 <span class="keyword">end</span>
+0210 
+0211 <span class="comment">%</span>
+0212 <span class="comment">% Identify color type</span>
+0213 <span class="comment">%</span>
+0214 isTruecolor = (size(data,3) == 3);
+0215 paletteUsed = ~isempty(map) &amp; ~isTruecolor;
+0216 colorUsed = paletteUsed | isTruecolor;
+0217 alphaUsed = ~isempty(alpha);
+0218 colortype = paletteUsed + 2*colorUsed + 4*alphaUsed;
+0219 <span class="keyword">if</span> (colortype == 7)
+0220     error(<span class="string">'Cannot specify alpha channel with an indexed image.'</span>);
+0221 <span class="keyword">end</span>
+0222 
+0223 <span class="comment">%</span>
+0224 <span class="comment">% Set default bitdepth if not specified</span>
+0225 <span class="comment">%</span>
+0226 <span class="keyword">if</span> (isempty(bitdepth))
+0227     <span class="keyword">switch</span> class(data)
+0228         <span class="keyword">case</span> <span class="string">'logical'</span>
+0229             bitdepth = 1;
+0230 
+0231         <span class="keyword">case</span> {<span class="string">'uint8'</span>, <span class="string">'double'</span>}
+0232             bitdepth = 8;
+0233 
+0234         <span class="keyword">case</span> <span class="string">'uint16'</span>
+0235             bitdepth = 16;
+0236     <span class="keyword">end</span>
+0237 <span class="keyword">end</span>
+0238 
+0239 <span class="comment">%</span>
+0240 <span class="comment">% Validate bitdepth</span>
+0241 <span class="comment">%</span>
+0242 <span class="keyword">switch</span> colortype
+0243     <span class="keyword">case</span> PNG_COLOR_TYPE_GRAY
+0244         <span class="keyword">if</span> (~ismember(bitdepth, [1 2 4 8 16]))
+0245             error(<span class="string">'Invalid bitdepth for grayscale image; must be 1, 2, 4, 8, or 16.'</span>);
+0246         <span class="keyword">end</span>
+0247         
+0248     <span class="keyword">case</span> PNG_COLOR_TYPE_RGB
+0249         <span class="keyword">if</span> (~ismember(bitdepth, [8 16]))
+0250             error(<span class="string">'Invalid bitdepth for RGB image; must be 8 or 16.'</span>);
+0251         <span class="keyword">end</span>
+0252         
+0253     <span class="keyword">case</span> PNG_COLOR_TYPE_PALETTE
+0254         <span class="keyword">if</span> (~ismember(bitdepth, [1 2 4 8]))
+0255             error(<span class="string">'Invalid bitdepth for indexed image; must be 1, 2, 4, or 8.'</span>);
+0256         <span class="keyword">end</span>
+0257         
+0258     <span class="keyword">case</span> PNG_COLOR_TYPE_GRAY_ALPHA
+0259         <span class="keyword">if</span> (~ismember(bitdepth, [8 16]))
+0260             error(<span class="string">'Invalid bitdepth for grayscale image with alpha; must be 8 or 16.'</span>);
+0261         <span class="keyword">end</span>
+0262         
+0263     <span class="keyword">case</span> PNG_COLOR_TYPE_RGB_ALPHA
+0264         <span class="keyword">if</span> (~ismember(bitdepth, [8 16]))
+0265             error(<span class="string">'Invalid bitdepth for RGB image with alpha; must be 8 or 16.'</span>);
+0266         <span class="keyword">end</span>
+0267 <span class="keyword">end</span>
+0268 
+0269 <span class="comment">%</span>
+0270 <span class="comment">% Scale image if necessary to match requested bitdepth</span>
+0271 <span class="comment">%</span>
+0272 <span class="keyword">switch</span> class(data)
+0273     <span class="keyword">case</span> <span class="string">'double'</span>
+0274         <span class="keyword">if</span> (colortype == PNG_COLOR_TYPE_PALETTE)
+0275             data = data - 1;
+0276             data = uint8(data);
+0277         
+0278         <span class="keyword">else</span>
+0279             <span class="comment">% Grayscale or RGB; clamp data to [0,1] dynamic range before</span>
+0280             <span class="comment">% scaling, rounding, and casting.</span>
+0281             data = max(min(data,1),0);
+0282             <span class="keyword">switch</span> bitdepth
+0283                 <span class="keyword">case</span> 8
+0284                     data = uint8(255*data + 0.5);
+0285                     
+0286                 <span class="keyword">case</span> 16
+0287                     data = uint16(65535*data + 0.5);
+0288                     
+0289                 <span class="keyword">case</span> 4
+0290                     data = uint8(15*data + 0.5);
+0291                     
+0292                 <span class="keyword">case</span> 2
+0293                     data = uint8(3*data + 0.5);
+0294                     
+0295                 <span class="keyword">case</span> 1
+0296                     data = uint8(data ~= 0);
+0297             <span class="keyword">end</span>
+0298         <span class="keyword">end</span>
+0299         
+0300     <span class="keyword">case</span> <span class="string">'uint8'</span>
+0301         <span class="keyword">if</span> (colortype == PNG_COLOR_TYPE_PALETTE)
+0302             <span class="comment">% Nothing to do</span>
+0303             
+0304         <span class="keyword">else</span>
+0305             <span class="keyword">switch</span> bitdepth
+0306                 <span class="keyword">case</span> 16
+0307                     data = uint16(data);
+0308                     data = bitor(bitshift(data,8),data);
+0309                     
+0310                 <span class="keyword">case</span> 8
+0311                     <span class="comment">% Nothing to do</span>
+0312                     
+0313                 <span class="keyword">case</span> 4
+0314                     data = bitshift(data,-4);
+0315                     
+0316                 <span class="keyword">case</span> 2
+0317                     data = bitshift(data,-6);
+0318                     
+0319                 <span class="keyword">case</span> 1
+0320                     <span class="comment">% Nothing to do</span>
+0321             <span class="keyword">end</span>
+0322         <span class="keyword">end</span>
+0323         
+0324     <span class="keyword">case</span> <span class="string">'uint16'</span>
+0325         <span class="keyword">if</span> (colortype == PNG_COLOR_TYPE_PALETTE)
+0326             error(<span class="string">'PNG does not allow 16-bit indexed images.'</span>);
+0327 
+0328         <span class="keyword">else</span>
+0329             <span class="keyword">switch</span> bitdepth
+0330                 <span class="keyword">case</span> 16
+0331                     <span class="comment">% Nothing to do</span>
+0332                     
+0333                 <span class="keyword">case</span> 8
+0334                     data = uint8(bitshift(data,-8));
+0335                     
+0336                 <span class="keyword">case</span> 4
+0337                     data = uint8(bitshift(data,-12));
+0338                     
+0339                 <span class="keyword">case</span> 2
+0340                     data = uint8(bitshift(data,-14));
+0341                     
+0342                 <span class="keyword">case</span> 1
+0343                     data = uint8(data ~= 0);
+0344             <span class="keyword">end</span>
+0345         <span class="keyword">end</span>
+0346 <span class="keyword">end</span>
+0347 
+0348 <span class="keyword">if</span> (ismember(colortype, [PNG_COLOR_TYPE_GRAY_ALPHA, <span class="keyword">...</span>
+0349                         PNG_COLOR_TYPE_RGB_ALPHA]))
+0350     <span class="comment">%</span>
+0351     <span class="comment">% Scale alpha data if necessary to match data class</span>
+0352     <span class="comment">%</span>
+0353     <span class="keyword">switch</span> bitdepth
+0354         <span class="keyword">case</span> 8
+0355             <span class="keyword">switch</span> class(alpha)
+0356                 <span class="keyword">case</span> <span class="string">'double'</span>
+0357                     alpha = max(min(alpha,1),0);
+0358                     alpha = uint8(255 * alpha + 0.5);
+0359                     
+0360                 <span class="keyword">case</span> <span class="string">'uint16'</span>
+0361                     alpha = uint8(bitshift(alpha, -8));
+0362                     
+0363                 <span class="keyword">case</span> <span class="string">'uint8'</span>
+0364                     <span class="comment">% nothing to do</span>
+0365                     
+0366                 <span class="keyword">otherwise</span>
+0367                     error(<span class="string">'Invalid class for alpha'</span>);
+0368             <span class="keyword">end</span>
+0369             
+0370         <span class="keyword">case</span> 16
+0371             <span class="keyword">switch</span> class(alpha)
+0372                 <span class="keyword">case</span> <span class="string">'double'</span>
+0373                     alpha = max(min(alpha,1),0);
+0374                     alpha = uint16(65535 * alpha + 0.5);
+0375                     
+0376                 <span class="keyword">case</span> <span class="string">'uint16'</span>
+0377                     <span class="comment">% nothing to do</span>
+0378                     
+0379                 <span class="keyword">case</span> <span class="string">'uint8'</span>
+0380                     alpha = uint16(alpha);
+0381                     alpha = bitor(bitshift(alpha, 8), alpha);
+0382                     
+0383                 <span class="keyword">otherwise</span>
+0384                     error(<span class="string">'Invalid class for alpha'</span>);
+0385             <span class="keyword">end</span>
+0386     <span class="keyword">end</span>
+0387 <span class="keyword">end</span>
+0388 
+0389 <span class="comment">% Be friendly about specifying resolutions</span>
+0390 <span class="keyword">if</span> (~isempty(xres) &amp; isempty(yres))
+0391     yres = xres;
+0392 
+0393 <span class="keyword">elseif</span> (~isempty(yres) &amp; isempty(xres))
+0394     xres = yres;
+0395 <span class="keyword">end</span>
+0396 
+0397 <span class="keyword">if</span> (~isempty(xres) &amp; isempty(resunit))
+0398     resunit = <span class="string">'unknown'</span>;
+0399 <span class="keyword">end</span>
+0400 
+0401 <span class="keyword">if</span> (isempty(xres) &amp; isempty(yres) &amp; ~isempty(resunit))
+0402     error(<span class="string">'X and Y resolutions required when specifying resolution unit.'</span>);
+0403 <span class="keyword">end</span>
+0404         
+0405 png(<span class="string">'write'</span>, data, map, filename, colortype, bitdepth, <span class="keyword">...</span>
+0406                 sigbits, alpha, interlace, <span class="keyword">...</span>
+0407                 transparency, background, gamma, <span class="keyword">...</span>
+0408                 chromaticities, xres, yres, <span class="keyword">...</span><span class="comment"> </span>
+0409                 resunit, textchunks);
+0410 
+0411 
+0412 <a name="_sub1" href="#_subfunctions" class="code">function out = CheckKeyword(in)</a>
+0413 <span class="comment">%CheckKeyword</span>
+0414 <span class="comment">%   out = CheckKeyWord(in) checks the validity of the input text chunk keyword.</span>
+0415 
+0416 <span class="keyword">if</span> (isempty(in))
+0417     error(<span class="string">'Text chunk keywords must not be empty'</span>)
+0418 <span class="keyword">end</span>
+0419 <span class="keyword">if</span> ((in(1) == 32) | (in(end) == 32))
+0420     error(<span class="string">'PNG does not allow leading or trailing spaces in text chunk keywords.'</span>);
+0421 <span class="keyword">end</span>
+0422 <span class="keyword">if</span> (prod(size(in)) &gt; 80)
+0423     error(<span class="string">'Keyword too long; PNG spec limits keyword size to 80 characters.'</span>);
+0424 <span class="keyword">end</span>
+0425 <span class="keyword">if</span> (any(~ismember(in,[32:126 161:255])))
+0426     error(<span class="string">'Nonprintable characters found in text chunk keyword.'</span>);
+0427 <span class="keyword">end</span>
+0428 
+0429 out = in;
+0430 
+0431 
+0432 <a name="_sub2" href="#_subfunctions" class="code">function out = CheckTextItem(in)</a>
+0433 <span class="comment">%CheckTextItem</span>
+0434 <span class="comment">%   out = CheckTextItem(in) strips out control characters from text; PNG spec</span>
+0435 <span class="comment">%   discourages them.  It also replaces [13 10] by 10; then it replaces 13</span>
+0436 <span class="comment">%   by 10.  The PNG spec says newlines must be represented by a single 10.</span>
+0437 
+0438 <span class="keyword">if</span> (~ischar(in))
+0439     error(<span class="string">'Text chunk must be a string.'</span>);
+0440 <span class="keyword">end</span>
+0441 
+0442 out = in;
+0443 out = strrep(out, char([13 10]), char(10));
+0444 out = strrep(out, char(13), char(10));
+0445 badChars = find((out &lt; 32) &amp; (out ~= 10));
+0446 <span class="keyword">if</span> (~isempty(badChars))
+0447     warning(<span class="string">'Stripping control characters from text chunk.'</span>);
+0448     out(badChars) = [];
+0449 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

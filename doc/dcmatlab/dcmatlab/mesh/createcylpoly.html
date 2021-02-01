@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of createcylpoly</title>
+  <meta name="keywords" content="createcylpoly">
+  <meta name="description" content="CREATECYLPOLY - Create Cylinder domain poly file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../../index.html">Home</a> &gt;  <a href="#">dcmatlab</a> &gt; <a href="index.html">mesh</a> &gt; createcylpoly.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../../index.html"><img alt="<" border="0" src="../../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for dcmatlab\mesh&nbsp;<img alt=">" border="0" src="../../right.png"></a></td></tr></table>-->
+
+<h1>createcylpoly
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>CREATECYLPOLY - Create Cylinder domain poly file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function Poly=createcylpoly(rad,xli,nseg) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> CREATECYLPOLY - Create Cylinder domain poly file
+ Poly = createcylpoly(rad,xlimits,nsegments)
+        both arguments can be neglected
+        rad..radius of cylinder
+        xlim..z-coordinates of top/bottom
+        nsegments..number of circle segments</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function Poly=createcylpoly(rad,xli,nseg)</a>
+0002 
+0003 <span class="comment">% CREATECYLPOLY - Create Cylinder domain poly file</span>
+0004 <span class="comment">% Poly = createcylpoly(rad,xlimits,nsegments)</span>
+0005 <span class="comment">%        both arguments can be neglected</span>
+0006 <span class="comment">%        rad..radius of cylinder</span>
+0007 <span class="comment">%        xlim..z-coordinates of top/bottom</span>
+0008 <span class="comment">%        nsegments..number of circle segments</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;1, rad=1; <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;2, xli=[0 1]; <span class="keyword">end</span>
+0012 <span class="keyword">if</span> nargin&lt;3, nseg=48; <span class="keyword">end</span>
+0013 
+0014 <span class="comment">% rad=nseg=24;xli=[-0.8 0];</span>
+0015 
+0016 phi=(0:nseg-1)'/nseg*2*pi;
+0017 xy=[cos(phi) sin(phi)]*rad;
+0018 xy(:,3)=xli(1);
+0019 Poly.node=xy;
+0020 xy(:,3)=xli(2);
+0021 Poly.node=[Poly.node;xy];
+0022 <span class="keyword">for</span> i=1:nseg,
+0023     j=i+1;<span class="keyword">if</span> j&gt;nseg, j=1; <span class="keyword">end</span>
+0024     Poly.face{i}=[i j j+nseg i+nseg];
+0025 <span class="keyword">end</span>
+0026 Poly.node(:,4)=0;
+0027 Poly.face{end+1}=1:nseg;
+0028 Poly.face{end+1}=(1:nseg)+nseg;
+0029 dz=abs(diff(xli))/4;
+0030 Poly.node(end+1,:)=[0 0 mean(xli)-dz/2 -999]; <span class="comment">% reference electrode (arbitrary)</span>
+0031 Poly.node(end+1,:)=[0 0 mean(xli)+dz/2 -1000]; <span class="comment">% reference point for Neumann problem</span>
+0032 <span class="keyword">if</span> nargout&lt;1, showpoly3d(Poly); <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 21-Apr-2011 11:32:28 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
