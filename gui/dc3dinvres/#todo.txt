@@ -1,0 +1,55 @@
+* blockify model in Model Menu
+= R als Member von Model -> Überprüfung ob R aktuell ist (nach Einlesen, freemodeledit)
+= FIX,compound & decouple in free model edit
+= pdf als export format
+= export ohm-File ermöglicht bearbeitung und 3d-speicherung
+* mittelfristig Edit Data und Visit Data zusammenführen
+  klicken usw. lokal (Profil), darunter edit global
+* Statuszeile in Model Parameter (%dx%dx%d=%d elements)
+* Fehler bei (png-)Export der Farbskala (-cbar): immer 1-10
+= Erstellung eines vtk-Files der Elektroden
+* k-Faktor als Auswahlkriterium bei data edit
+* darstellen der Elektroden(3d) vorm exportieren
+= if topo, questdgl('Topo neglected! Export as ohm File for webinv?'); end
+= topo in data structure
+= reading of 2d ohm files --> N.elec(:,3)=0; N.topo=
+= export ohm file (interpolate topo)
+= altes File merken
+= model parameter für y wird dy genommen!
+= pro-File mit bei Open Data
+= treat constant electrode as infinity nicht bei constant Null
+* layered model, damit zusammenhängend chi^2/rms
+= file format mit standardisierter doku-Leiste auch beim lesen
+* Show k-Factor ins Menu
+* lambda im Haupt-GUI (slider):
+  smooth solution - structured solution
+  preview-checkbox (rechnet neues Modell aus ohne vorwärtsrechnung)
+* Möglichkeit Menge vorhandenen Speicher abzufragen (direct, Sens)
+= visit data mit fixed als Standard
+= IP-Inversion mit log und nur von neg. Phasen
+* richtiger Versionsstring im Titel und message-window
+* linesearch failed führt zu Hangup keine Anzeige -> bei 1.00
+* warning off mxSetLogical?
+* Broyden update dauert manchmal lange
+* save workspace nicht im Hauptmenue
+= vtk-Export ins Menü und
+* vtk export für Para-Modell
+* überall (write+exportlb) Stellenanzahl optimieren (%g)
+=?sehr langsames Laden von Textdateien
+* vergessener Fehler bei speichern/lesen von Profildaten
+* az-Faktor und normalize ins GUI und minvers.m
+* Data Edit muss mit Streichung ganzer Profile klarkommen
+* manchmal bug im ersten subplot bei nu/nv~=0
+* Pmatrix mit extra Dialog (delete, combine, fix regions) und
+  unabhängig vom Iterationsschritt
+* Einlese-Message bei pro-file
+= forward options-> fillup, discretization, background=source/layer
+* Help-Buttons in allen Dialogen
+* Combine+Delete Cells
+* Überall Fehlerabfange (dau-sicher)
+= Redordering -> ismember(...,'rows')
+* ASENS für grid UND para model + tests if better
+* Option Sensitivity Update (no update, broyden, asens)
+
+* electrodeerr und electrodeerr auflösen!
+* kruemm/curvature und lkurv/tomkurv auflösen!

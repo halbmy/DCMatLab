@@ -1,0 +1,44 @@
+Ra2dTomo - Two-dimensional refraction tomography on unstructured meshes
+--- release notes ---
+
+version 0.9 (??)
+* replaced zpower by zweight according to GIMLi API change
+version 0.8.3 (06.05.09)
+* improved ttinv executable
+* excluded outside points again
+version 0.8.2 (28.04.08)
+* improved ttinv executable
+* minor changes
+version 0.8.1 (27.02.2008)
+* introduced export model as ascii file for external visualization
+* improved ttinv 
+* included data or model export in Export menu
+
+version 0.8 (29.11.2007)
+* included Run menue for calling step or full inversion
+* included facility for calling dcfemlib::ttinv (much faster)
+  (up to now experimental, but recommended for large files)
+* included offset (static shift) inversion
+
+version 0.7.1 (26.11.2007)
+* enabled upper velocity bound
+* included all libraries into the installer
+
+version 0.7 (05/2007)
+* fixed a lot of bugs
+* added (resistivity.net) unified data format data
+  (shot/gephone positions, columns for s(shot),g(geophone),t(traveltime)
+* added max type (*.dat) data
+* included menu
+* added little documentation on resistivity.net
+
+version 0.6 (03/2006)
+* changed name to Ra2dTomo
+* included topography
+* windows installer
+
+version 0.5 (12/2005)
+* first real, but still intern, version
+* based on dcfemlib 0.5
+* intuitive button control from left (File) to right (Export)
+* can read gremix (*.grm), Tomo (*.tom) and GLI (*.gli) files

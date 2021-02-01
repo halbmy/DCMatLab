@@ -1,0 +1,15 @@
+DC2DInvRes - 2D DC Inversion and Resolution
+version 2.12
+Thomas Günther, RESISTIVITY.NET productins 
+thomas@resistivity.net
+
+Full Inversion Facilities
+Use of different Inversion & Regularization Methods
+Grid-independent Electrode Positioning
+Data Pre-processing and Editing
+Interactive Forward Modeling
+Fast Forward Calculation
+Sensitivity and Resolution Analysis
+Sophisticated Constraints
+Time Lapse Inversion
+Underwater surveys

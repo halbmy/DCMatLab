@@ -1,0 +1,24 @@
+CylBERT - Boundless Electrical Resistivity Tomography on Cylinders
+Authors: Thomas Günther & Carsten Rücker
+         resistivity.net productions
+release notes / version history:
+
+version 0.6 (02.07.09)
+* fixed bug with wrong geometric factor in 0.5
+version 0.5 (19.06.09)
+* fixed bug with more cycles in first file
+version 0.4 (27.01.09)
+* added column types BS335 and BS35
+version 0.3 (18.02.08)
+* renamed from DC3dCyl to CylBERT to make BERT interior clear
+* can now handle different data ordering properly
+* inserted optimum regularisation parameter choice
+* fixed bug with wrong error estimation for some files
+* fixed segfault for one-cycle data
+* minor bug fixing and beautifying
+
+version 0.2 (09.08.07)
+* minor bug fixes
+
+version 0.1 (01.08.07)
+* very first version 

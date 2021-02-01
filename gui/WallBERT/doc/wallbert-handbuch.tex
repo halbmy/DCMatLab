@@ -1,0 +1,355 @@
+\documentclass[a4paper,DIV14,12pt]{scrartcl}
+\usepackage{graphicx}
+\usepackage[latin1]{inputenc}
+\usepackage{hyperref}
+\usepackage{ngerman}
+\usepackage{german}
+\author{Benutzerhandbuch\\[2ex]Autoren: Thomas Günther \& Carsten Rücker}
+\title{WallBERT - Eine graphische Benutzeroberfläche zur Mauer\-werks\-diagnose mit Elektrischer Widerstandstomographie}
+\date{Version 0.9\\13.03.2008}
+\parindent 0pt
+\bibliographystyle{apalike}
+\newcommand{\button}[1]{\protect{[{\em #1}]}}
+\newcommand{\menu}[2]{$|${\em #1$\rightarrow$\protect{#2}}$|$}
+\newcommand{\option}[1]{$\langle$#1$\rangle$}
+\newcommand{\BERT}{{\em\bf BERT} }
+\newcommand{\WallBERT}{{\em\bf WallBERT} }
+\newcommand{\wallbert}{\WallBERT}
+\newcommand{\TreeBERT}{{\em\bf TreeBERT} }
+\begin{document}
+\maketitle
+\tableofcontents
+\section{Einführung}
+\subsection{Nomen est Omen}
+Die Software \WallBERT ermöglicht die Rekonstruktion möglicher Verteilungen des komplexen elektrischen Widerstandes aufgrund von elektrischen 4-Punkt-Impedanzmessungen. Sie stellt eine graphische Schnittstelle zu \BERT dar. \BERT steht dabei für {\it Boundless Electrical Resistivity Tomography} und bezeichnet die grundlegende Methode, wie sie (für Oberflächenmessungen) in \cite{guentherruecker06} beschrieben wird. Diese beruht auf der freien C++-Bibliothek DCFEMLib \cite{rueckerguenther06} bzw. ihrer Weiterentwicklung DCFEMLib2, die Methoden zur Simulation mit Finiten Elementen sowie der Inversion auf beliebigen Gittern bereitstellt. Die Logik der Oberfläche selbst hingegen beruht auf der freien MatLab-Toolbox DCMatLab \cite{guentherdiss}, die Funktionen zum Export/Import von Daten und Netzen sowie der Darstellung von Daten und Modellen bietet.
+
+\WallBERT ist also als ein graphisches Tool zu verstehen, welches die Benutzung der angegeben Bibliotheken auf intuitive, auf die speziellen Bedürfnisse der Tomographie von Mauern (Walls) zugeschnittene Weise anspricht. Diese sind im Besonderen:
+\begin{itemize}
+	\item Eingabe der verwendeten Geometrie (Größe des Objekts, verwendete Seiten, Elektrodenzahlen, Abstände etc.)
+	\item Einlesen der spezifischen Ausgabefiles der verwendeten Messgeräte
+	\item auf die Rechteck-Geometrie angepasste Inversionsgitter
+	\item Spektrale Induzierte Polarisation (Ergebnisse für mehrere Frequenzen)
+	\item Anpassung an die verschlechterte Qualität aufgrund des hochohmigen Materials
+\end{itemize}
+
+Für eine verbesserte Internationalisierung basiert die Oberfläche auf der englischen Sprache, möglicherweise wird auch dieses Handbuch zusätzlich in Englisch verfügbar sein.
+
+\subsection{Grundsätzliche Bedienung}
+\WallBERT besteht aus einem Hauptfenster mit Anzeige- und Bedienelementen, einem Menü und weiteren Dialogfenstern.
+Das Hauptfenster (s. Abb.~\ref{fig:gui}) ist so konzipiert, dass die wichtigsten Handlungen ausschließlich hier durchgeführt werden können.
+Dabei entspricht die Anordnung der Elemente der logischen Reihenfolge der Bedienung:
+\begin{enumerate}
+	\item Eingabe der Geometrie
+	\item Einlesen und Prozessieren der Daten
+	\item Gittergenerierung und Inversion
+	\item Darstellung und Export der Ergebnisse
+\end{enumerate}
+Diese dient auch als Gliederung der nachfolgenden detaillierteren Beschreibung.
+Dabei wird mit \button{Button} ein Button oder ein Eingabefenster markiert, während \menu{Hauptmenü}{Menüpunkt} einen Eintrag ins Menü bezeichnet.
+
+\begin{figure}[hbt]
+\centering\includegraphics[width=0.6\textwidth]{pics/mainwindow1}
+\caption{Hauptfenster und Anordnung der Bedienelemente}\label{fig:gui}
+\end{figure}
+
+\section{Eingabe der Mess-Geometrie}
+Die Geometrie ist festgelegt auf eine rechtwinklige Mauer beliebiger Länge und Breite.
+Dabei können an allen vier Seiten Elektroden befestigt sein.
+Daraus ergeben sich die folgenden grundlegenden Typen, die als erstes durch das Popup-Menü \menu{Geometry} eingestellt werden.
+\begin{enumerate}
+  \item Messung an zwei gegenüberliegenden Seiten
+	\item Messung an nur einer Seite
+	\item Messung an zwei benachbarten Seiten
+	\item Messung an drei Seiten
+	\item Messung an allen vier Seiten
+\end{enumerate}
+Die erste Mess-Seite befindet sich immer vorn, d.h. unten auf dem Bildschirm.
+Die weiteren Seiten werden entgegen des Uhrzeigersinnes gezählt. Damit liegt die zweite Seite bei Typ 3 rechter Hand, die Seiten 2 und 3 bei Typ 4 befinden sich rechts bzw. oben.
+
+Weiterhin werden Länge $l$ (von Seite 1) sowie Tiefe $t$ (senkrecht dazu) sowie der verwendete Elektrodenabstand $a$ eingestellt\footnote{Im Moment wird von einem konstanten Elektrodenabstand für alle Seiten ausgegangen, nach Bedarf können hier mehrere Werte eingegeben werden}. 
+Auf jeder Seite wird eine beliebige Anzahl von Elektroden $n_i$ befestigt, die jeweils von links nach rechts (wenn man vor der entsprechenden Wand steht) durchnummeriert werden.
+Weiterhin wird für jede Seite der Abstand $d_i$ der äußersten Elektrode von der Ecke eingegeben, dieser ist jeweils von links außer auf der ersten Seite, wo sie von rechts angegeben wird, um Teilmessungen von langen Mauern zu ermöglichen\footnote{Dies betrifft das (rechte) Ende einer langen Mauer, im Falle einer Mauerwerkstomographie in der Mitte einer langen Mauer muss ein großes $d_1$ (und evtl. großes $d_2$) eingegeben werden.}.
+
+Die Geometrie wird bei jeder Änderung sowie nach Betätigung von \button{Draw} dargestellt, dabei werden die Grundmaße ($l$, $t$ und $a$) grün, die Elektrodenpositionen und -nummern blau sowie die Abstände rot dargestellt, wodurch man die Richtigkeit optisch überprüfen kann. Die eingegebene Geometrie bleibt aktiv, solange sie nicht verändert wird, d.h. für verschiedene Datenfiles auf der gleichen Geometrie entfällt die erneute Eingabe.
+
+Da viele Anordnungen fest installiert sind, kann über die Buttons \button{Save} und \button{Load} eine eingegebene Geometrie gespeichert und zu einem späteren Zeitpunkt wieder eingeladen werden.
+Die Files haben die Endung *.wbg (WallBERT Geometry) und sind einfache ASCII-Files, die auch per Hand editiert werden können. Nach dem \#-Zeichen können Kommentare folgen.
+Diese Funktionen sind auch durch \menu{File}{Load/Save Geometry} erreichbar. Mittels \menu{File}{Set as default} wird die aktuelle Geometrie in die Datei {\em wallbert.wbg} geschrieben und beim nächsten Programmstart automatisch geladen.
+
+\section{Einlesen und Prozessieren der Daten}
+Mit Hilfe von \button{Load Data} bzw. \menu{File}{Load Data} kann ein Datenfile eingelesen werden.
+Verschiedene Dateiformate werden dabei unterstützt:
+\begin{enumerate}
+	\item das Geräte-Format der Apparatur 4point-light von Messgeräte Lippmann (\url{http://www.l-gm.de}) mit der Dateiendung *.tx0
+	\item das von den Autoren eingeführte "`unified data format"' (s. \url{http://www.resistivity.net?unidata}), beliebige Dateiendung
+	\item das Format des für Oberflächenmessungen weit verbreiteten Programms res2dinv (\url{http://www.geoelectrical.com}), Dateiendung *.dat
+\end{enumerate}
+
+Während die ersten beiden Typen Daten für verschiedene Messfrequenzen enthalten können, sind im letzteren Format nur unifrequente Messdaten speicherbar.
+Die Anzahl der verwendeten Elektroden muss in allen Fällen mit der Elektrodenzahl in der Geometrie (Summe der $n_i$) übereinstimmen.
+Prinzipiell sind alle möglichen 4-Punkt-Messungen (Einspeisung des Stroms über 2 Elektroden und Spannungsmessung über 2 weitere) denkbar.
+Da die Messgeräte in der Regel für Oberflächenmessungen konzipiert sind, werden die Positionen der verwendeten Elektroden ignoriert (s. Anmerkung am Ende des Dokuments). 
+
+\begin{figure}[hbt]
+\centering\includegraphics[width=0.6\textwidth]{pics/primmesh}
+\caption{Lokal verfeinertes Netz zur Berechnung der k-Faktoren}\label{fig:primmesh}
+\end{figure}
+
+Zusätzlich sind die scheinbaren spezifischen Widerstände aufgrund falscher k-Faktoren inkorrekt.
+Diese werden nach Betätigung von \button{Calc Geo} numerisch durch eine Finite-Elemente-Simulation mit einer Leitfähigkeit von $1$\,S berechnet. Dazu taucht kurz ein unstrukturiertes Dreiecksnetz auf, (Beispiel in Abb.~\ref{fig:primmesh}), Optionen dazu können \menu{Options}{Mesh} eingestellt werden.
+Danach können alle scheinbaren spezifischen Widerstände, aber auch Phasen, Ströme und Spannungen als Pseudosektion oder als Histogramm (bei aktivierter Checkbox \button{x~stat}) betrachtet werden.
+Im Falle multifrequenter Messungen kann die verwendete Frequenz durch ein Popup-Menü ausgewählt werden.
+
+Die Darstellung der Pseudosektion wird realisiert, als ob alle Elektroden entlang eines Profils aufgereiht wären. Dabei gibt die x-Achse den Mittelpunkt als mittlere Elektrodennummer (nicht Abstand!) an, verschiedene Anordnungen werden vertikal aufgereiht und bezeichnet. "`dd2-4"' bezeichnet z.B eine Dipol-Dipol-Konfiguration mit Dipol-Länge 2 und Dipol-Separation 4.
+Bitte beachten Sie, dass eine Pseudosektion lediglich eine graphische Darstellung der Messwerte darstellt und nur mit viel Erfahrung Rückschlüsse auf die Verteilung der echten Widerstände bzw. Phasen zulässt.
+
+\begin{figure}[hbt]
+\centering\includegraphics[width=355px,height=246px]{pics/datadelete}
+\caption{Anzeige und Löschen einzelner Daten}\label{fig:datadelete}
+\end{figure}
+
+Durch klicken auf ein Kästchen können die Informationen zu der jeweiligen Messung angezeigt werden.
+Dies kann genutzt werden, um einzelne Messungen zu löschen (klicken auf Yes), wie in Abb.~\ref{fig:datadelete} gezeigt.
+Weiterhin kann eine systematische Datenbereinigung erfolgen, indem man den gültigen Wertebereich in den Feldern \button{min} und \button{max} eingibt und den \button{Trim}-Button betätigt.
+
+So bereinigte Daten kann man über Ansteuerung von \menu{File}{Save Data} abspeichern, dann aber nur im "`unified data format"'.
+Als Dateiname wird der Basisname (ohne Endung) plus die Endung .dat eingestellt, kann aber frei gewählt werden.
+Grundsätzlich werden im oberen Teil (nach der Anzahl Elektroden) die Positionen der Elektroden beschrieben. Danach folgen (nach der Anzahl der Daten) die einzelnen Daten zeilenweise. Der vorstehende Header gibt dabei an, wie die einzelnen Spalten zu interpretieren sind, nach den Nummern der verwendeten Elektroden folgen in der Regel die gemessenen Spannungen, Ströme, Phasen oder Fehler, aber auch z.B. Frequenzen.
+
+Das ausgewählte File kann später wieder eingeladen werden. Wenn vor dem Abspeichern bereits k-Faktoren berechnet wurden, so sind diese, wie auch die scheinbaren spezifischen Widerstände, nach dem Laden bereits vorhanden und \button{Calc Geo} kann entfallen. Insgesamt empfiehlt sich folgendes Vorgehen:
+\begin{itemize}
+\item Einlesen eines Datenfiles über \button{Load Data} oder \menu{File}{Load Data}
+\item Berechnung der k-Faktoren und $\rho_a$-Werte über \button{CalcGeo}
+\item Blick auf die Statistik der $\rho_a$ und $k$ und Trimmen von Ausreißern
+\item Entfernung einzelner Ausreißer per Hand für jede Frequenz
+\item Speichern des Datenfiles mit \menu{File}{Save Data}
+\end{itemize}
+
+\section{Gittergenerierung und Inversion}
+\subsection{Gittergenerierung}
+Bevor mit der eigentlichen Inversion begonnen wird, muss ein Gitter/Netz definiert werden, welches die Geometrie der zu invertierenden Parameter definiert. Anders als beim Programm \TreeBERT\footnote{Elektrische Widerstands-Tomographie an Bäumen, bisher als DC2dTree bekannt.}, wo einfach die konvexe Hülle der Messpunkte für die automatische Generierung eines Netzes fungiert, müssen hier die Maße des Mauerwerks berücksichtigt werden.
+
+Prinzipiell kann ein Netz aus Dreiecken oder Vierecken bestehen, erstere können irregulär/un\-struk\-tu\-riert oder regulär/strukturiert angeordnet werden. Strukturierte Netze können Vorteile bieten, da Mauerwerk oft aus rechteckigen Ziegeln besteht. Anderseits kann dadurch eine Vorzugsrichtung von Anomalien erzwungen werden, die nicht erwünscht ist.
+
+Daher kann eine Auswahl aus verschiedenen Netzen getroffen werden\footnote{Es ist nicht klar, ob in der Zukunft alle Netztypen nötig sind, das muss die Praxis zeigen.}:
+\begin{enumerate}
+	\item Regular Triangles: Dies ist ein Dreiecksnetz, das aus einem unregelmäßigen Rechtecknetz (Typ 2) hervor geht, indem jedes Rechteck in 4 Dreiecke zerlegt wird (Standardeinstellung).
+	\item Irregular Rectangles: Die Rechtecke werden so geformt, dass sich die Elektroden auf den Gitterlinien befinden. Je nach Anordnung der Elektroden können diese regelmäßig oder lokal verfeinert sein.
+	\item Regular Rectangles: Die Rechtecke beruhen auf einem annähernd quadratischen Gitter, das von den Elektrodenpositionen unabhängig ist. Dieser Netz-Typ besitzt die größte Freiheit, ist aber noch in der Test-Phase.
+	\item Irregular Triangles: Die Dreiecke sind irregulär angeordnet. Diese bereits aus \TreeBERT bekannte Parametrisierung kann auch für nicht rechteckige Geometrien verwendet werden und ist am besten in der Lage, lokale Verfeinerung zu verwirklichen.
+\end{enumerate}
+
+Zusätzlich kann durch die Checkbox \button{x refine} die Wahl zwischen einer gröberen und einer feineren Variante getroffen werden. Die optimale Wahl hängt von den Elektrodenpositionen ab. Netztyp 1 ist bereits verfeinert, \button{x refine} ist daher hier nicht zu empfehlen. Im Gegensatz dazu macht bei regelmäßigen Elektrodenpositionen eine Verfeinerung für die anderen Netztypen durchaus Sinn. Siehe auch \menu{Options}{Mesh Options} unter Optionen. 
+
+Durch Betätigung von \button{Make mesh} wird ein Poly-File (tomo.poly) generiert und dann DCFEMLib::dctriangle aufgerufen, der daraus ein Netz tomo.bms (bms - binary mesh format) generiert.
+In Abb.~\ref{fig:meshtypes} werden verschiedene Netztypen exemplarisch dargestellt.
+
+\begin{figure}[hbt]
+\includegraphics[width=0.5\textwidth]{pics/mesh-regtri}\hfill
+\includegraphics[width=0.5\textwidth]{pics/mesh-regrec}\\
+\includegraphics[width=0.5\textwidth]{pics/mesh-irrtri}\hfill
+\includegraphics[width=0.5\textwidth]{pics/mesh-irrrec}
+\caption{Die verschiedenen Netztypen: Reguläre (oben) und irreguläre (unten) Anordnung von Dreiecken (links) und Rechtecken (rechts). Die roten Kreise bezeichnen die Elektroden, nur bei regulären Rechtecken erfolgt die Diskretisierung unabhängig von den Elektroden. Alle Typen außer die regelmäßige Dreiecke sind bereits verfeinert.}\label{fig:meshtypes}
+\end{figure}
+
+\subsection{Inversion}
+Dann wird über Betätigung von \button{Inversion} die eigentliche Inversion gestartet. Sie rekonstruiert die Widerstandsverteilung auf Basis der aktuellen (im Datenbereich eingestellten) Frequenz durch den Aufruf von DCFEMLib2::dcinv. Dieses zeigt den Fortschritt im dahinter liegenden DOS-Fenster an. Schließlich wird das errechnete Widerstandsmodell dargestellt. Wenn mehrere Frequenzen vorliegen, erfolgt jetzt die SIP-Inversion:
+
+Für jede Frequenz wird ein Widerstandsmodell mit einer 1-Schritt-Referenztechnik berechnet. Das bedeutet, dass das vollständig invertierte Widerstandsmodell als Referenz dient und die Differenz der gemeinsamen Datenbasis in eine Modelldifferenz übertragen wird, die das Modell für die jeweilige Frequenz bestimmt. Diese Technik hat den Vorteil, dass auch bei schlechten Daten verhältnismäßig zuverlässige Verteilungen errechnet werden. Daher ist zu empfehlen, die "`volle"' Inversion mit der niedrigsten Frequenz durchzuführen.
+Analog werden - wenn vorhanden - die Phasen für die einzelnen Frequenzen berechnet.
+
+\section{Darstellung und Export der Ergebnisse}
+
+\begin{figure}[hbt]
+\centering\includegraphics[width=355px,height=246px]{pics/obelix-model}
+\caption{Ergebnis der Widerstandsinversion am Probekörper Obelix}\label{fig:model}
+\end{figure}
+
+Schließlich können die einzelnen Ergebnisse betrachtet werden, dabei werden die Drei- bzw. Vierecke farbig gefüllt.
+Abbildung~\ref{fig:model} zeigt das Ergebnis der Widerstandsinversion bei $f=1.25$\,Hz für den Probekörper (Obelix) der BAM.
+Durch Auswahl von \button{Modell} und \button{Phase} kann zwischen Widerstand und Phase umgeschalten werden. Zusätzlich gibt es ein Popup-Menü, wo die jeweilige Frequenz ausgewählt werden kann.
+
+Danach kann durch Klicken in das Modell die Information für die jeweilige Modellzelle angezeigt werden. Im Falle einer unifrequenten Messung werden Position und Widerstand der Zelle sowie die Phase - wenn vorhanden - angezeigt.
+Wenn mehrere Frequenzen vorliegen, werden Widerstand (und Phase, wenn vorhanden) als Spektrum dargestellt, wie in Abb.~\ref{fig:spectrum} gezeigt.
+
+\begin{figure}[hbt]
+\centering\includegraphics[width=284px,height=277px]{pics/spectralview}
+\caption{Spektrale Ausgabe von Amplitude und Phase für alle Frequenzen}\label{fig:spectrum}
+\end{figure}
+
+Im Export-Menü gibt es verschiedene Möglichkeiten, die Ergebnis nach außen zu tragen.
+Mit \menu{Export}{Model} wird eine Textdatei mit den Ergebnissen generiert. In ihr stehen - nach einer Headerzeile, welche die Spalten bezeichnet - x und z für den Mittelpunkt jeder Zelle sowie sämtliche vorhandenen Widerstände und Phasen. Damit kann eine Visualisierung, z.B. mit Surfer oder MatLab, die Speicherung in einer Datenbank oder sonstige Weiterverarbeitung erfolgen.
+\menu{Export}{Graphics} erzeugt eine eps-Datei mit dem aktuellen Inversionsergebnis, welche zusätzlich in eine pdf-Datei umgewandelt wird. Mit \menu{Export}{Spectrum} kann das Spektrum abgespeichert werden.
+
+Der Menüpunkt \menu{Export}{Figure} hingegen speichert den Inhalt des gesamten Fensters in einer eps/pdf-Datei. Dies ist vor allem günstig, um Fehler oder Unregelmäßigkeiten zu dokumentieren, da auch die eingestellten Optionen erkennbar sind. Wahlweise kann man statt einer eps-Datei auch eine Bitmapdatei (png-Format) exportiert werden.
+
+\section{Optionen}
+Für alle Schritte der Gittergenerierung, Inversion aber auch der graphischen Darstellung, können eine Reihe von Optionen eingestellt werden, welche für die einzelnen Datenfiles deutliche Verbesserungen bewirken können. Um das Handling dennoch einfach zu halten, wurden sie in externe Dialoge ausgelagert. Über \menu{Options}{Save Options} können die aktuellen Einstellungen gespeichert werden, so dass sie beim nächsten Programmaufruf wieder verfügbar sind.
+\subsection{Mesh Options}
+Die Netzoptionen (mesh options) steuern das Aussehen der zur Berechnung erforderlichen Netze. Dabei wird zwischen dem Parameternetz (dessen Zellen die zu invertierenden Amplituden/Phasen enthalten) und dem Primärnetz (Netz zur Erzeugung des Referenzpotentials) unterschieden. An letzterem wird zunächst nichts geändert. Abbildung~\ref{fig:meshopts} zeigt den Dialog mit den Standardeinstellungen.
+
+\begin{figure}[hbt]
+\centering\includegraphics[width=179px,height=116px]{pics/meshoptions}
+\caption{Der Dialog Mesh Options - Netzoptionen}\label{fig:meshopts}
+\end{figure}
+
+Für das Parameternetz gelten folgene Einstellmöglichkeiten:
+\begin{description}
+\item[mesh type] - Der Netztyp (wie im Hauptfenster, von wo er verschwinden wird)
+\item[refinement] - Verfeinerung (Einstellung im Hauptfenster)
+\item[quality] - (nur bei Zelltyp 4) Netz-Qualität, Werte zw. 30 (grob) und 34.5 (sehr fein) sind sinnvoll
+\item[maxcellsize] - (nur bei Zelltyp 4) die maximale Zellgröße (in m$^2$) verhindert große Zellen im inneren)
+\item[electrode refinement] - (nur bei Zelltyp 4) eine lokale Verfeinerung erzwingt feines (Wert*$a$) Netz an den Elektroden
+\end{description}
+Die Auswirkungen dieser Optionen sind nach Betätigung von \button{Make mesh} ersichtlich.
+
+Für das Primärnetz können folgende Einstellungen getroffen werden (s.a. Parameternetz):
+\begin{description}
+\item[quality] - die Qualität des Netzes (s. triangle)
+\item[maxcellsize] - die maximale Zellgröße
+\item[local refinement] - eine lokale Verfeinerung
+\end{description}
+Allerdings sieht man die Auswirkungen nur kurz in der Netzdarstellung nach \button{Calc Geo}, von einer Änderung ohne konkrete Probleme wird abgeraten.
+
+\subsection{Inversion Options}
+Verschiedene Einstellungen betreffen die Inversion selbst. Damit kann das Ergebnis der Rechnungen entscheidend beeinflusst werden. Es ist somit eine gewisse Erfahrung - mit dem Programm, aber auch mit der Messapparatur und dem Messobjekt selbst - nötig, um optimale und plausible Resultate zu erhalten. Die einzelnen Einstellungen (s. Abbildung~\ref{fig:invopts}) sind im Einzelnen:
+\begin{figure}[hbt]
+\centering\includegraphics[width=253px,height=102px]{pics/invoptions}
+\caption{Der Dialog Inversion Options - Einstellungen für die Inversion}\label{fig:invopts}
+\end{figure}
+
+\begin{description}
+\item[regularization strength] - die Regularisierungsstärke ist der wichtigste Parameter, der beschreibt, wie stark die (Glattheits-) Nebenbedingungen (smoothness constraints) in die Minimierung der Datenanpassung eingehen. Große Werte (100-1000) resultieren in glatten Modellen, während kleine Werte (1-10) stark strukturierte Modelle verursachen.
+\item[optimize regularization] - kann benutzt werden, um die Regularisierungsstärke auf der Basis der so genannten L-Kurve zu optimieren, d.h. einen guten Kompromiss zwischen Datenanpassung und Modellschönheit zu finden. Diese Option funktioniert oft gut, manchmal aber auch weniger.
+\item[iterations] - maximale Iterationszahl, nach der das Programm abbricht.
+\item[lower bound] - untere Widerstandsgrenze
+\item[upper bound] - obere Widerstandsgrenze
+\item[blocky model] - bevorzuge blockiges Modell (schärfere Kanten)
+\item[robust data] - robuster Datenfitting (Ausreißer gehen weniger stark ein)
+\item[error level] - prozentuales Fehlerlevel der Messwerte, sollte bei wenigen \% liegen, wenn Spannungen vorhanden sind, wird 1\%, ansonsten 3\% empfohlen
+\item[error voltage] - Spannungsfehler der Apparatur, üblicherweise um 20-100$\mu$V, nur wirksam, wenn Spannungen im Datenfile vorliegen (tx0-File oder unified data format)
+\end{description}
+Fehlerschätzung ist ein wichtiger Einflussfaktor in der Inversion.
+Kleinere Fehler korrespondieren mit hoher Regularisierung und umgekehrt.
+
+%\subsection{Graphics Options}
+
+\section{Automatisierung}
+Für bestimmte Aufgabenstellungen mag es sinnvoll sein, die Inversion als zentrales Element zu automatisieren, z.B. für Wiederholungsmessungen oder Messungen in verschiedenen Schichten.
+Dazu kann das Programm dcinv direkt angesteuert werden, z.B. aus der Eingabeaufforderung oder aus einer Shell (cygwin, minsys) heraus.
+Obligatorisches Argument ist das Datenfile am Ende des Aufrufs sowie das Netz (*.bms) nach dem Kommandozeilenparameter -p.
+Weitere Argumente sind:
+\begin{description}
+	\item[-v] Verbose Ausgabe (mehr Ausgabe), -vv erzeugt Dateien zur Fehlersuche
+	\item[-R] Robustes Datenprozessing
+	\item[-B] Blocky Model Constraints
+	\item[-O] Optimierung des Regularisierungsparameters
+	\item[-l \option{lambda}] Regularisierungsparameter
+	\item[-i \option{iter}] Anzahl Iterationen
+	\item[-b \option{lowerbound}] untere Widerstandsgrenze
+	\item[-u \option{upperbound}] obere Widerstandsgrenze (0-deaktiviert)
+	\item[-E] erzwinge Fehlerschätzung (ignoriere Messfehler)
+	\item[-e \option{errlevel}] Fehlerniveau (2\%)
+	\item[-y \option{errvoltage}] Spannungsfehler (100$\mu$V)
+\end{description}
+
+Alternativ zum von \WallBERT erzeugten Netz ({\em tomo.bms}) kann ein eigenes kreiert werden, indem (wie beim Netztyp 4) das File {\em tomo.poly} editiert wird und {\em dctriangle} aufgerufen wird.
+Für das Format von .poly-Files siehe Triangle-Website \url{http://www.cs.cmu.edu/~quake/triangle.html}.
+
+Zur Darstellung der Ergebnisse mit MatLab können Funktionen aus der DCMatLab-Toolbox bereitgestellt werden.
+
+\section{Mögliche Erweiterungen o. Änderungen}
+\begin{itemize}
+  \item Bisher wird eine lange Mauer (egal ob nur in 1 Richtung oder in 2) komplett invertiert. Es macht sicher Sinn, den zu invertierenden Teil zu begrenzen. Dies ist vorgesehen und kann relativ schnell umgesetzt werden.
+	\item Mit dem Unified Data Format (oder auch durch Editieren des Lippmann-Formats) können prinzipiell auch die Elektrodenpositionen frei eingegeben werden, wodurch z.B. unregelmäßige oder zwischen den Seiten differierende Elektrodenabstände verwirklicht werden können. Im Moment werden die Positionen durch die Angabe der $n_i$/$a_i$ überschrieben. Es müsste also ein entsprechender Schalter oder eine Abfrage eingeführt werden.
+  \item Unter Umständen könnte es im Routineeinsatz sinnvoller sein, die Abstände bezüglich anderer Nullpunkte anzugeben oder die Zählweise der Seiten oder Elektroden zu verändern. In Absprache und unter Versionskontrolle machbar.
+  \item Modellimport ist im Moment nicht geplant, könnte aber implementiert werden.
+  \item Für Timelapse-Messungen, d.h. Untersuchung von (in der Regel sehr kleinen) zeitlichen Änderungen bietet DCFEMLib bzw. dcinv spezielle Funktionen, die man unter Umständen mit integrieren kann.
+  \item Für Modellstudien kann auf die Routinen zur Netzerstellung (DCFEMLib::PolyTools bzw. DCFEMLib::dctriangle) und das Modellierungstool DCFEMLib2::dcmod zurückgegriffen werden. Wir empfehlen stets eine 3D-Modellierung. Informationen dazu über \url{http://www.resistivity.net}.
+  \item Ob der am Modelltrog beobachtete 3D-Effekt mit ins Programm integriert werden kann, ist noch unklar. Möglicherweise ist es eine gute Lösung, durch eine Modellierung (3D) k-Faktoren zu berechnen und ins File zu integrieren oder die Daten mit dem Verhältnis der k-Faktoren für 2D und 3D zu korrigieren.
+  \item Schließlich stellt sich die Frage, ob eine 3D-Inversion durch Messung in verschiedenen Schichten oder mittels vertikaler Profile erfolgen kann. DCFEMLib2::dcinv kann dies per se, allerdings müsste dazu eine andere Oberfläche generiert werden.
+\end{itemize}
+
+\bibliography{wallbert}
+
+\section*{Versionshistorie}
+Im folgenden werden die bisherigen Entwicklungsschritte, d.h. neu eingeführte Features, gelöste Fehler für die einzelnen Releases dargestellt. Diese sogenannten release notes befinden sich im File \#release.txt und sind über \menu{Help}{Release notes} abrufbar. Sie sind, wie auch die Bedienung des Programms, in englischer Sprache formuliert.
+
+Die Installationsprogramme der einzelnen Versionen befinden sich auf der Installations-CD, womit auch ältere Versionen wieder abrufbar sind. 
+\menu{Help}{About} gibt die aktuelle Version aus. Die Nummerierung beginnt bewusst mit der Null, die Version 1.0 bezeichnet somit die vollständige Erfüllung der Anforderungen. Hauptversionen (0.x) kennzeichnen meist neue Fähigkeiten, während Nebenversionen (0.x.y) im wesentlichen Fehler beheben.
+
+\begin{verbatim}
+version 0.9 (13.03.08)
+* save options menu item, will be read at program start
+* inversion options (regularization strength, lower/upper bound, error weighting, robust/blocky)
+* mesh options (mesh type, quality, maxparameter, refinement for para and prim mesh)
+* updated handbook with many figures and release notes
+version 0.8.3 (04.02.08)
+* loads new file from same directory of old file
+* bugfix: only impedance data present (modelling)
+* bugfix: no ip data present in remove data
+version 0.8.2 (16.01.08)
+* speeded up spectral inversion
+* catched negative apparent resistivities causing hang-up
+version 0.8.1 (11.01.08)
+* introduced checks for valid geometry and electrode numbers
+* minor beautifying (colored status bar) and bug fixing
+* fixed bug displaying wrong array types for 3+4 side files
+* fixed bug that did not save n3/n4/d3/d4 to geometry file
+version 0.8 (21.12.07) "Santa Claus"
+* updated handboook
+* enabled inversion for all frequencies at one time
+* introduced Pick Cell: shows amplitude (and phase) spectrum
+* extended model output to all available phases
+version 0.7.5 (12.12.07)
+* enabled export model via Export->Export Model
+* added synthetic 3d example showing 3d effects
+* trim now works for all frequencies 
+  (but deletions are still lost when changing frequency)
+* completely cleaned up code a lot (still things are not working)
+version 0.7 (07.12.07)
+* first version of a german handbook
+* removed meshing problem with electrodes near the boundary
+* solved problem with zero (or invalid) voltages in data file
+* solved problem with CalcGeo producing completely wrong apparent resistivities
+  (however inversion was still done correctly)
+version 0.6 (22.11.07)
+* cannot remember what the changes have been
+version 0.5 (02.11.07)
+* Save Data (File Menu) saves processed file
+* set as default geometry (File Menu) will be loaded at start)
+* introduced min/max trimming of data
+* added statistics/histogram checkbox for data plotting
+* more status messages, watch-pointer shows computation
+* added Icon to installer
+version 0.4 (28.10.07)
+* changed order of buttons 
+* used unstructured mesh for Calc Geo (much faster)
+* introduced popupmenu for data viewing rhoa/IP/k/U/I
+* introduced save/load geometry to *.wbg (WallBert Geometry) file
+* marked geometry with colors
+version 0.3.2 (26.10.07)
+* introduced different mesh types and optional refinement
+  (not all are guaranteed to work well)
+* some more status messages, minor beautifying  
+version 0.3.1 (23.10.07)
+* included meshconvert into install file (was missing before)
+* fixed bug in Make Mesh making 4 sides running
+version 0.3 (22.10.07)
+* made all input measures (l,t,a,ni,di) working
+  (so far just tested for geometry case 1 - Obelix & Idefix )
+* enabled 5 different geometries (opp.sides, 1/2/3/4 sides)
+  sides are numbered counterclockwise, electrodes from left
+* minor beautifying/bug fixing, more status messages
+version 0.2 (11.10.07)
+* enabled button CalcGeo (calculates primary potential/geometry factor)
+  needs dcfemlib::meshconvert
+* manual data edit by clicking on data blocks possible
+* phase inversion (single phase, single step)
+version 0.1 (05.10.07)
+* first rudimentary version with main control elements
+(restricted to two opposite sides, Load and invert data)
+* pure resistivity inversion (based on dcfemlib2::dcinv)
+\end{verbatim}
+
+\end{document}

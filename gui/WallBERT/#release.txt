@@ -1,0 +1,78 @@
+WallBERT - Boundless Electrical Resistivity Tomography on Walls
+resistivity/phase inversion of DC data on closed, rectangular geometries
+Authors: Thomas Günther & Carsten Rücker, resistivity.net production
+------------------------------------------------------------------------
+
+version 0.9 (13.03.08)
+* save options menu item, will be read at program start
+* inversion options (regularization strength, lower/upper bound, error weighting, robust/blocky)
+* mesh options (mesh type, quality, maxparameter, refinement for para and prim mesh)
+* updated handbook with many figures and release notes
+version 0.8.3 (04.02.08)
+* loads new file from same directory of old file
+* bugfix: only impedance data present (modelling)
+* bugfix: no ip data present in remove data
+version 0.8.2 (16.01.08)
+* speeded up spectral inversion
+* catched negative apparent resistivities causing hang-up
+version 0.8.1 (11.01.08)
+* introduced checks for valid geometry and electrode numbers
+* minor beautifying (colored status bar) and bug fixing
+* fixed bug displaying wrong array types for 3+4 side files
+* fixed bug that did not save n3/n4/d3/d4 to geometry file
+version 0.8 (21.12.07) "Santa Claus"
+* updated handboook
+* enabled inversion for all frequencies at one time
+* introduced Pick Cell: shows amplitude (and phase) spectrum
+* extended model output to all available phases
+version 0.7.5 (12.12.07)
+* enabled export model via Export->Export Model
+* added synthetic 3d example showing 3d effects
+* trim now works for all frequencies 
+  (but deletions are still lost when changing frequency)
+* completely cleaned up code a lot (still things are not working)
+version 0.7 (07.12.07)
+* first version of a german handbook
+* removed meshing problem with electrodes near the boundary
+* solved problem with zero (or invalid) voltages in data file
+* solved problem with CalcGeo producing completely wrong apparent resistivities
+  (however inversion was still done correctly)
+version 0.6 (22.11.07)
+* cannot remember what the changes have been
+version 0.5 (02.11.07)
+* Save Data (File Menu) saves processed file
+* set as default geometry (File Menu) will be loaded at start)
+* introduced min/max trimming of data
+* added statistics/histogram checkbox for data plotting
+* more status messages, watch-pointer shows computation
+* added Icon to installer
+version 0.4 (28.10.07)
+* changed order of buttons 
+* used unstructured mesh for Calc Geo (much faster)
+* introduced popupmenu for data viewing rhoa/IP/k/U/I
+* introduced save/load geometry to *.wbg (WallBert Geometry) file
+* marked geometry with colors
+version 0.3.2 (26.10.07)
+* introduced different mesh types and optional refinement
+  (not all are guaranteed to work well)
+* some more status messages, minor beautifying  
+version 0.3.1 (23.10.07)
+* included meshconvert into install file (was missing before)
+* fixed bug in Make Mesh making 4 sides running
+version 0.3 (22.10.07)
+* made all input measures (l,t,a,ni,di) working
+  (so far just tested for geometry case 1 - Obelix & Idefix )
+* enabled 5 different geometries (opp.sides, 1/2/3/4 sides)
+  sides are numbered counterclockwise, electrodes from left
+* minor beautifying/bug fixing, more status messages
+
+version 0.2 (11.10.07)
+* enabled button CalcGeo (calculates primary potential/geometry factor)
+  needs dcfemlib::meshconvert
+* manual data edit by clicking on data blocks possible
+* phase inversion (single phase, single step)
+
+version 0.1 (05.10.07)
+* first rudimentary version with main control elements
+(restricted to two opposite sides, Load and invert data)
+* pure resistivity inversion (based on dcfemlib2::dcinv)

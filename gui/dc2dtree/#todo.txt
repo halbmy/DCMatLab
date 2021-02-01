@@ -1,0 +1,52 @@
+= include tx0 files
+= fix vtk export (file name und falsches Format)
+* Auswahl des Export-Formats (pdf,png,eps)
+* epstopdf-Problem (testen auf jungfräulichem Rechner)
+* Problem mit tabs statt Space
+= notdefined Files
+* Phasenskala einstellen
+* compare data sollte exportiert werden können (questdlg)
+* Funktion zum Durchsuchen+Aufräumen alter tmp-Verzeichnisse
+? Export Wid, Export Phase -> falsche Skala
+
+Für Tina zum testen: arguseit/dcfemlib2 (Geheimtaste)
+
+später: Umstellung auf DCFEMLib2 (Easymesh, ...)
+
+Inversion Options:
++ errorlevel, errorvoltage
++ maxiter, rhostart
++ lower/upperbound
++ updateS
+Graphics Options
+
+Altes Verzeichnis merken
+Überdeckungsdichte
+Farbskala für alle Plots, v.a. IP
+Sensitivitäten-Video oder -Slider
+Start bei altem Filenamen
+? Farbskala-Beschriftung abh. vom Bereich
+? Sens-Matrix x % fehlt manchmal
+= Ersetzung von konf1.mat durch Weideltsches 12/48.pot
+  (Interpolation über die Winkel (exakt für Teiler von 96 El.)
+= Einführung von malstat für alle plots
+= einmalige Erzeugung von Sens. und Potential f. one.ohm
+  Sens. ja, Potential nein
+= writesensmatrix.m,savepotmat.m (aus anal. Lsg.)
+
+= Mesh options: 
+	q/Q , a/A, s/S, r/R f(sekrefine), 
+
+Im Menu alles noch checken auf gangbarkeit-->Enable
+clear Project -> löscht tmp-Verzeichnis
+= Misfit 3 Kreise nebeneinander
+  --> muss wieder ausgehen (bei new/load project)
+= Sekmeshrefine 0-3(1)
+= Textfeld mit Scrollbar
+= About --> ohne Bild
+= Topoeffekt (dazu kfaktoren...)
+= Modelexport muss Farbskala berücksichtigen
+= nach prepare (und bei Load) kann rhoa aus *data geladen werden
+= Compare Data
+= About gibt Meldung über Version
+= Farbbalken

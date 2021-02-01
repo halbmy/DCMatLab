@@ -1,0 +1,253 @@
+DC3DInvRes - Direct Current 3D Inversion and Resolution
+------- Release Notes --------
+
+version 2.11.5 (11,05.09)
+* several small bug fixed
+version 2.11.4 (18,08.08)
+* minor bug fix
+version 2.11.3 (10.07.08)
+* solved a totally unpredictable error producing matrix size mismatch
+version 2.11.2 (24.10.07)
+* really enabled Add Data (which was never running before)
+* minor bug fixes
+version 2.11.1 (12.09.07)
+* bug fix for additional tabs in input format
+* bug fix for completely irregular data
+version 2.11.0 (01.08.07)
+* solved some other bugs
+* solved bugs concerning profile extracting and exporting
+version 2.10.4 (16.07.07)
+* catched zero voltages
+* solved problems in Edit Data
+* added geometric factor to Edit Data menu
+* fixed an error reading files
+version 2.10.3 (08.07.07)
+* fixed big error determining vertical parameterization
+* fixed minor bugs
+version 2.10.2 (07.02.07)
+* various minor bugs fixed
+version 2.10.1 (08.01.07)
+* fixed current/voltage bug in Edit data
+* equatorial dipole profiles are now recognised (and displayed as pole-pole)
+* error estimation: set and add button, keeps settings
+version 2.10.0 (24.11.06)
+* reading of pro-file with 2d-topo-files will show data properly
+* enabled fixing, compounding and decoupling of cells via Model->Free model edit
+* now blocky option is really working
+* heavily speeded up inverse subproblem
+* fixed wrong interpretation of graphics options in 3d view
+* enabled pdf export
+version 2.9.3 (05.11.06)
+* compare model in Model menu compares current model to saved mod file
+* pro-file can now contain more points to form non-straight profiles
+* slight improvement for reading res2dinv files
+* code optimization
+version 2.9.2 (14.08.06)
+* fixed bug for deleting data within Visit Data
+* multiple-gradient data are displayed much better
+* option for saving electrode positions to vtk file
+* (re-)enabled robust data and blocky model option
+version 2.9.1 (01.08.06)
+* better read-in of ves soundings using s3d file
+* better data display
+* fixed error using truncated LS
+* fixed error in 1d forward calculation
+version 2.9.0 (08.06.06)
+* added time lapse inversion (identical electrodes, but diff. data possible)
+* added upper resistivity bound explicitly
+* removed data display bug for ex-topography data sets
+* removed recently appeared bug for pole-dipole and pole-pole data
+* fixed loosing voltage/current when deleting data
+* fixed wrong rms calculation (changes nothing since chi^2 is used)
+* took out choice of Grid/Para model (Para will be revised)
+* minor bug fixing (exported colorbar, 
+version 2.8.0 (28.11.05)
+* recognition of reciprocals and treatment in Edit Data
+* enabled linear spaced layering
+* slightly improved pseudosections
+version 2.7.5 (02.11.05)
+* introduced k-factor into Edit Data again
+* weight for derivatives with respect to z
+* changed number of digits in displaying/exporting models
+* removed bug importing/exporting res3dinv files (general array)
+version 2.7.4 (20.10.05)
+* improved layered model inversion
+* allows exporting an ohm-File before negelecting topography
+* minor bug fixes (2.7.3a+b)
+version 2.7.3 (03.09.05)
+* add error dialog when too small values
+* fixed "save pro file" bug
+* improved accuracy of forward operator and fixed +1 problem
+* fixed possible pro-File read errors
+* fixed data combination (esp. in use of s3d-Files)
+* plotting soundings (from s3d file) as curves
+* fixed empty error bug
+version 2.7.2 (04.08.05)
+* saving the old filename path
+* fixed dx/dy bug in Model->Model Parameter
+* minor bug fixing and beautifying
+* enabled reading of 3d soundings file *.s3d, rows containg
+    ves_file x y angle flag # ves file contains ab/2 mn/2 and rho_a
+* changed IP inversion slightly
+version 2.7.1 (22.06.05)
+* changed release system
+* minor bug fixing and beautifying
+* new constraint type (against diagonal stripes)
+* introduced again "set as reference model" menu item
+* rearranged internal structure (hopefully invisible)
+version 2.6b4 (18.05.05)
+* rearranged examples directory (rename existing one)
+* fixed bug with sparse sensitivity matrix (memory hangup after iteration)
+* enabled 2d raw data files in pro-File
+* enabled ip values and 2- or 3-point data in raw file format
+* enabled comments (#...) in 3d data file
+* minor bug fixes and behavioral things
+version 2.6b3 (29.04.05)
+* minor bug fixes
+* enabled data edit for ip data
+* fixed BIG BUG which prevented convergence after 1st iteration
+  (coinciding line-search and broyden update)
+version 2.6b2 (07.03.05)
+* enabled/disabled menu entries in dependence on status
+* speeded up sparse sensitivity matrix creation
+* small bug fixes
+* added a commandline version dc3drun.exe without graphics (experimental)
+* renewed documentation
+* restructured inversion menu
+version 2.6b1 (13.01.05)
+* fixed bug in line search routine
+* fast LDL-based direct solution of forward equation
+* auto option for direct solution of forward equation
+* enabled sparse Jacobian approximation (saves memory)
+* restructured inversion option menu
+version 2.5b2 (09.12.04)
+* speeded up 1D forward calculation
+* fixed(hacked) the old bug with the model forgetting again
+* fixed bug in reading res3dinv file (Index exceeds matrix dimensions)
+* fixed bug with alpha mapping
+* changed model representation (patches as in res2dinv)
+version 2.5b1 (07.11.04)
+* introduced license file check
+* enabled reading of "general array" data from res3dinv file
+* new tool "visit profiles" for processing profiles
+version 2.4b2 (31.10.04)
+* enabled ip data through PRO-file
+* data reweighting for robust processing)
+* added VTK output (for visualizing with ParaView)
+* fixed forward error for Para models
+version 2.4 (31.08.04)
+* changed data representation of 2D profile data
+* optional fast direct equation solver for forward calculation
+  (cholesky with approximate minimum degree reordering)
+* beautifying and minor changes
+* fixed bug after "Model parameter" (and forward calculation)
+version 2.3b2 (18.05.04)
+* created Test version (restricted plot and export functions)
+* removed Menu Bar from figures
+version 2.3b1 (13.05.04)
+* added Help Menu
+* fixed wrong misfit visualization
+* renewed documentation
+* fixed bug with error in profile data
+* fixed "matrix dimension error" for model export
+version 2.3 (04.05.04)
+* changed program name to DC3DInvRes
+version 2.2b3 (29.04.04)
+* fixed (compiler) bug in linesearch
+* enabled model cell resolution (as slices and 3d volume)
+* enabled TLS inversion again
+* minor visibility and bug fixes
+version 2.2 (23.04.04)
+* improved convergence and waitbar of CGLSPAR solver
+* enabled lower resistivity bound
+* enabled line search
+* enabled global regularization
+* fixed memory problem in forward calculation
+version 2.1b2 (15.04.04)
+* changed a lot of default options (fixed lambda, 1st order smoothness, forward opts)
+* enabled exporting 3d image with "Export Figure"
+* fixed colorbar bug in 3d visualization
+* improved figures
+* improved paper positioning for eps-files
+* fixed colorbar bug
+version 2.1 (30.03.04)
+* enabled export of the main GUI's (vertical) colobar
+* Export Figure exports also (horizontal) colorbar
+* export to encapsulated post-script (eps) possible
+* deleted white space around figure
+* fixed problems with Deleting and Saving PRO-File Data
+* added Aspect Ratio and Colorbar to 3d-visualization
+* fixed export problems with png.dll
+version 2.0b6 (18.03.04)
+* fixed bug in profile plotting
+* introduced Misfit in Edit Data (for robust processing)
+version 2.0b5 (16.03.04)
+* introduced Edit Data GUI
+* enabled saving of PRO-files and its 2d-files
+* fixed bug for reading in profile data
+* delete dead electrodes button
+* enabled fillup boundaries by model (Background=0)
+version 2.0b4 (23.02.04)
+* fixed some serious bugs for untested v2.0b3
+version 2.0b3 (19.02.04)
+* fixed bug with Graphics Options-->Apply
+* fixed problems in connection with para models
+* introduced coverage in model ascii export/import
+* enabled alpha blending with coverage
+version 2.0b2 (12.02.04)
+* fixed (wrong) error message for first file in pro-file
+* fixed X/Y-Tick-Label problem
+* fixed contour lines problem
+* slight changes in model view
+version 2.0b1 (05.01.04)
+* IP inversion
+version 1.4b4 (22.12.03)
+* fixed permanent error in 3D visualization
+* fixed bug in 2d profile data visualization
+version 1.4b3 (09.12.03)
+* fixed error for present errors in reading 2d files in pro files
+version 1.4b2
+* beautifying (icons, window names, ...)
+* minor bug fixes
+Version 1.4b (15.08.03)
+* changed display of 2d-profile data
+* inversion controlled by CHI^2 (rms only displayed)
+* loading model from sensitivity if present
+* changed inversion options menu
+* fixed 3d visualization error (ignored graphics options)
+* PRO-file can include inv2d-data
+* changed model parameter menu
+
+Version 1.3b3 (13.08.03)
+* fixed forgetting of forward response by load workspace
+* changed some behaviour options
+* fixed TSVD inversion and model choosing
+* resolution analysis included
+* reordered menu and added menu
+* inserted slider for watching sensitivities
+Version 1.3b2 (07.08.03)
+* ASCII Export/Import of Model possible
+* Free Model Edit converted
+* fixed forgetting of model in forward modelling
+* fixed display error (e.g. sensitivity)
+Version 1.3b1 (02.08.03)
+* Fixed several compiler bugs
+* Improved forward calculation, fixed bug in it
+* Changed behaviour of Options->Forward Calculation, fixed bugs
+* Export of model slices as .png file
+* Export button in 3D Visualization tool
+Version 1.3 (10.07.03)
+* Only 1 Programm remains(elinv3d.exe)
+* Choice of grid oder para model
+
+Version 1.2 (12.05.03)
+* Parallel Parameter version of inversion (elinv3d.exe)
+
+Version 1.1 (20.01.03)
+* Grid model inversion inv3d.exe
+
+TODO for the future
+* reinstalling anomalous sensitivity calculation
+* IP inversion
+* FEM forward calculation
+* resolution like in inv2d

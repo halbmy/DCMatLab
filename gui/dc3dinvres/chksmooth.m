@@ -1,0 +1,9 @@
+x=0:10;
+y=0:6;
+z=0:5;
+L=smooth3d1st(x,y,z);
+M=zeros(length(x)-1,length(y)-1,length(z)-1);
+M(4,4,4)=1;
+S=M;
+S(:)=L*M(:)+2;
+draw3dgridmodel(S,x,y,z);

@@ -1,0 +1,9 @@
+#WallBERT Config File 
+geo=5
+l=0.73
+t=0.73
+a=0.04
+n1=12
+d1=0.165
+n2=12
+d2=0.125

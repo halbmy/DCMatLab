@@ -1,0 +1,16 @@
+DC2Tree - 2d inversion of dc data on circle geometry
+Thomas Günther & Carsten Rücker 
+----------- RESISTIVITY.NET productions -----------
+
+Note:
+The software is free only for non-commercial purposes
+A license file is needed to use full facilities 
+(export functions). Please write an email to the
+authors with the code provided by executing 
+Start->Programs->DC2dTree->Generate License Code
+
+Disclaimer:
+There is no warranty for the program, to the extent
+permitted by applicable law.
+The author is not liable for any damages or costs
+resulting from its use.

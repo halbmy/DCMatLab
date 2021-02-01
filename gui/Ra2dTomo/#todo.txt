@@ -1,0 +1,16 @@
+* problem reading sgt files without x/z tokens
+* inversion options: log/vel/slo, upper/lower bound, withoffset
+* preview button (without forward calculation)
+* graphics options: log/vel/slo
+* create n-layer model (specify v - d - h - ...)
+* watch when running
+* export figure in menu not working
+* export model, export data
+* ray coverage not working
+* cluster model into menu
+* full inversion in menu
+= Inversion menu (Single step, Full Inversion)
+= call ttinv from menu
+= include offset in inversion
+* test again with all data sets
+= publish first downloadable version on resistivity.net

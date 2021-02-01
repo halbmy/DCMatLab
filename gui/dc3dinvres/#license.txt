@@ -1,0 +1,16 @@
+DC3DInvRes - 3d inversion of dc resistivity data
+v. 2.11 Thomas Günther (thomas@resistivity.net)
+--------- RESISTIVITY.NET productions ----------
+
+Note:
+The software is free for non-commercial purposes.
+A license file is needed to use full facilities
+(export functions). Please write an email to the
+author with the code provided by calling
+DC2dInvRes->Generate License Code from start menu
+
+Disclaimer:
+There is no warranty for the program, to the extent
+permitted by applicable law.
+The author is not liable for any damages or costs
+resulting from its use.

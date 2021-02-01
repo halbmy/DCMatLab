@@ -1,0 +1,11 @@
+figure(3);
+Data0=N;
+Data0.elec=N.elec*[0 1;1 0];
+mal=struct('clog',1,'cmin',30,'cmax',10000);
+subplot(311);
+showdata2d(Data0,N.r,mal);
+subplot(312);
+showdata2d(Data0,Mod.R,mal);
+misfit=Mod.R./N.r*100-100;
+subplot(313);
+showdata2d(Data0,misfit);

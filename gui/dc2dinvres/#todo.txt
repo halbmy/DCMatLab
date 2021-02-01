@@ -1,0 +1,97 @@
+Model-File mit Topo drin zurückrollen
+ip aus flw-Dateien?
+ip-Inversion bei roll-along
+Tutorial-Tutorial-Tutorial
+ascii-options über read/writecfgfile oder xml-Ex-/Import
+weitere Auslagerung von Funktionen in dcmatlab
+Vereinfachung des Codes (mehr Funktionen, weniger Redundanz)
+  a) konsequente Nutzung von logtrans/ilogtrans
+  b) kleine Sachen wie cind
+was ist mit choose2dmodel
+Problem roll-along mit unterer+oberer Grenze
+Read Seismic line darf doppelte x und größere z als Tiefe haben
+coverage fuer ip-Modell
+merke x/y und nutze fürs Exportieren
+Merken ob Vorwärtsantwort aktuell ist. Nicht beim einlad rechnen.
+kein plot im forwarding, bei jedem Aufruf checken
+Edit Data: nicht automatisch show nur bei checkbox immediate, Show->Pseudo
+Roll-along inversion: evtl. Abfrage der Segmentlänge
+save timelapse result in mod/vtk File
+memory allocation request in invauto:786
+* put feldungel file in examples and use for tutorial
+* M(end,end) ist manchmal mist
+* Starting model soll bei FIX nachschauen und (wenn 1 Wid.) übernehmen
+* Filename speichern klappt nicht wirklich
+* setup.mat aus dem updater nehmen
+* stop-button für intensive Rechnungen (Full Inversion, Roll-along, SensCalc)
+* zweight (Opt-Inv) disabled for min. length
+* schalte "error opening configuration" ab
+* autocompound (unique(M(:)), autodecouple
+= checke: ob topo bei modelexport berücksicht wird
+* Create New Data: Crosshole/hole2surface: dipole length, Tx/Rx->pole/dipole/reference electrode
+= create new data wenner-beta und gamma ändern
+* stop-flag zum beenden von fullinv und rollalonginv (evtl. auch sensberechnung->löschen von S nicht vergessen)
+= fullinv über stepinv
+* k-Faktor-Berechnung über kellipse
+* Menueintrag remove topography
+= Model-Struktur mit x z M und R und entsprechender Logik
+* graphics options -> log/rho/sigma choosebox
+* resecs Fehlerhafte Ströme/Spannungen genau rausfiltern
+= Sachen aus Fehlerdialog in Datenstruktur speichern und wenn da, nehmen
+= export ohne endung macht png statt eps
+* Verzeichnis merken geht nicht richtig nach Neustart
+* start bei edit data ist falsch
+* save settings local into ASCII file
+= clustering: auf fcmcluster umschalten, msf im 1. Bild, IP einbeziehen, wenn da
+= ip: in export model, 
+* add data soll versuchen, sens zu laden und anzuhängen sowie topo zu kombinieren
+= 1d forward und 1d inversion zu langsam (profiler)
+
+* compare data must show model difference
+* upper bound ins inv-options menu
+* include menu entry export vtk file
+= topography support for vtk files
+* check/update/close compare window loading a new file
+* fixing/compounding with topography
+* submenus Import/Export->(res2dinv,org,ABEM,resecs,geotom)
+* Export 4-channel file (Anz. Channels, Hist der Belegungen, 1-Löschen?)
+* invers button im Create Data Menu
+* showdata2d anders machen
+* bei readdata alles noch mal einzeln auflisten
+* alpha->patch beim plotten von surface2hole-Daten
+* layered model, damit zusammenhängend chi^2/rms
+= Bei zu großen Modellen (Sond.) dx anders wählen (median(diff(...?)
+* reshape bzw. colon Fehler beim Modell malen außerhalb der Grenzen
+= FIX-Compound anzeigen und in invers.m implementieren (pmatrix)
+* Bessere Beispiele (ein Crosshole/Surface2hole, synth. Model, IP)
+* "Save Workspace" nicht im Hauptmenue
+* Kurzfristige cmin/cmax im Haupt-GUI
+= Weiterrücke in ncreate bei large
+= Add noise checken
+* Fehlermeldung beim Vorwärtsoperator
+* add-Button beim Fehlerschätzer
+* beachtung der P-Matrix bei Model Cell Resolution
+* am besten globale P-Matrix, auch C und D
+* P-matrix GUI (combine, delete, fix regions)
+* textdatei als menubutton (oder doch automatisch beim Bild?)
+= Az-Faktor für smoothness ins GUI, auch normalize
+* Im OK von daterr kommt Fehler "identifier" expected, "]" found.
+* irgendwas haut mit Auflösung nicht hin (SMC?)
+* auch graphics options etwas tiefer
+* frage nach save file first bevor sens berechnet wird
+* Distortion flag in der Modellauflösung irgendwie mit darstellen
+* recommend invert layered model
+* Layered Model mit Fehler-D, mehrere Iterationen?
+* Show reciprocity in s_for
+* Nach modpar checken, ob Sens. noch gültig ist
+* Beim Modellladen checken, ob Sens. gültig ist
+* SIRT auch mit P-Matrix
+* Allgemeine Fehlerabfange(fehlerhafte Bedienung, alte mat-files, etc.)
+* ev. Umstrukturierung der Inversion Options?
+* Einlese-Error auf message
+* Eigene Malerei-Struct für Daten? oder extended menü?
+
+WEBINV
+(auch checken ob x verändert wurde oder Schichtmodell eingegeben wurde)
+(linex 12-ende des Logfiles)
+(tutorials mit standard file für beide)

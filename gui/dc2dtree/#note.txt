@@ -1,0 +1,4 @@
+DC2Tree - 2d inversion of dc data from trees
+version 0.9
+Thomas Günther & Carsten Rücker 
+------- RESISTIVITY.NET productions -------

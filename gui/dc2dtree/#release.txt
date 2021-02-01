@@ -1,0 +1,103 @@
+DC2dTree - Direct Current 2d Inversion on Closed (tree) geometry
+--- release notes ---
+
+version 0.9.3 (08.09.07)
+* minor bug fixing
+* different frequencies are read from tx0, processed and displayed
+version 0.9.2 (10.08.07)
+* added tx0 (Lippmann device) file support
+* removed bug responsible for the mass of undefined.xxx files
+* fixed vtk export of the model
+version 0.9.1 (25.05.07)
+* minor bug fixes
+version 0.9.0 (24.04.07)
+* new feature: batch mode inverts all files in a given folder automatically
+* new feature: probe line displays resistivity curve along line
+* new feature: timelapse pick cell displays cell resistivity change
+version 0.8.6 (12.04.07)
+* improvements in time lapse inversion (for bad data with wrong signs)
+* took out automatic neglection of big derivations is time lapse data
+* solved problem with blanks and + signs in directory name
+version 0.8.5 (16.10.06)
+* displays electrode numbers after prepare (validation)
+* now asks for direction of electrodes for ddz files
+* sorting of the timelapse files according file time
+* now uses lambda from GUI for timelapse (no run necessary)
+version 0.8.4 (12.09.06 hotfix)
+* fixed minor bugs in combination with time lapse inversion
+* note: time lapse is still not a full feature and thus experimental
+version 0.8.3 (01.09.06)
+* fixed bug in timelapse times and export of png files
+* fixed bug in sorting electrodes (e.g. by use of dummy electrodes)
+* fixed bug with wrong colorscale for non-auto color and added endpoint
+version 0.8.2 (14.08.06)
+* standard file now with spline boundary (call Options->Prepare default)
+* fixed bug with changing radius of ddz type file
+version 0.8.1 (04.07.06)
+* export function (relative deviations) for timelapse results
+* introduced another time lapse option (slower but handles differing data)
+* standard file prepare now really works
+* fixed colorbar bug (was always 1 to 10)
+version 0.8.0 (13.06.06)
+* reintroduced standard file (to activate, press Options->Prepare standard files once)
+* disordered electrodes allowed in input files
+  this allows for additional geometry points as dead electrodes after active ones
+* introduced time lapse option (load data, show data, inversion)
+version 0.7.0 (10.01.06)
+* now really remembers last directory
+* fixed error in load project
+* solved problem with iteration number > 9
+* introduced picking of resistivity (+phase) value (Export->Pick Cell)
+* introduced export of (midpoint based) ascii file
+* mesh options are now global during the DC2dTree session
+* added no-spline and equal refinement to mesh options
+* introduced inversion options (+constraints, +upper/lower bound, +update)
+version 0.6.1 (01.11.05)
+* changed default mesh options (refine=0.2/0.005, maxarea=5e-3/5e-4)
+* boundary is now described by spline (smoother) -> less artifacts
+* switched to smoothness constraints again (bug since 0.5.9)
+* reintroduced circle prepare (saves time for circle geometry)
+version 0.6.0 (25.10.05)
+* enabled reading of ip data from ddz files
+* changed default values for mesh generation
+* switched to triangle 1.6 (smaller meshes, too large triangles?)
+version 0.5.9 (03.09.05)
+* displaying (random) sensitivity by Shift+S key
+* switched to binary mesh (bms) format
+* switched to unified data format, files without tokens are considered ohm-Files
+version 0.5.8 (13.07.05)
+* enabled changing the colorbar for phase model
+* configuration factor (Weidelt) for arbitrary configurations
+* changed the system internally
+version 0.5.7 (18.04.05)
+* reordered example directory
+* show phase model menu item
+* fixed cglscd bug for large regularization parameters
+* minor bug fixes
+version 0.5.6 (14.04.05)
+* arbitrary electrode configurations
+* robust data inversion option
+* blocky model option
+* preview function to checkout regularization strength
+version 0.5.5 (31.03.2005)
+* arbitrary electrode numbers
+version 0.5.4 (15.02.2005)
+* minor improvements
+version 0.5.3 (12.02.2005)
+* induced polarization (IP) phase inversion
+version 0.5.2 (31.01.2005)
+* loading of dc2dinvres style files
+version 0.5.1 (10.01.2005)
+* first stable release
+version 0.5.0 (22.12.2004)
+* first beta version (with dcfemlib 0.5.0)
+
+to come
+* detailed documentation with examples
+* monitoring of inversion process
+* multiple frequency phases (spectral ip)
+* better representation of mixed configuration files
+* inversion options
+* quadratic shape functions for primary potential
+* error estimation by hand
+* resolution analysis

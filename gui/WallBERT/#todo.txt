@@ -1,0 +1,81 @@
+Bugs & Minors:
+iconify new figures
+= ip not existent (modelling) -> error in data deletion
+= wrong popupmenu after reading in model file
+Load new data file in the folder of the current
+colorbar does not disappear sometimes
+
+Todo's for BAM release:
+1.=Remove many different ohm files, Da and so on
+2.=Save multifrequent files (extra column for f)
+3.=SIP behaviour:
+  =Make single step amplitude (reference) and ip inversion  
+  =Choose frequency for plot
+  =show spectrum for pick cell
+4.=Export
+  =Text file (midpoint, rho, phi for each phase)
+  =Graphics
+5.=Handbook in german
+### milestone 0.8 (21.12.07) ###
+   Some more images in handbook: general view, examples
+6.=Check invalid geometries, datafiles and so on
+7.=Do Enable/Disable again
+### 0.8.3
+8. Mesh Options: 
+     Para: Type, Refine, Quality; 
+     Prim: dx, quality (later   
+9. Inversion options: Lambda, LambdaOpt, Robust, Blocky     
+10. Introduce Hotkeys
+### version 0.9 ####
+11. optimize runtime by mesh options and so on
+12. evaluate software (check default) options, remove mesh options from main window
+### milestone 1.0 (January 2008) ###
+very long walls: distribute marker 1 and 2, show only 2, but compute both
+different a values for different sides (partly accomplished in 0.8.3)
+add data in file menu
+More intelligent  weighting of resistivity/phase values
+
+### check before version 1.0 ###
+reduce mesh types to the essentials (reg. rectangles + irr. triangles?)
+  (maybe move mesh type into mesh options)
+extensive testing with all sent files: testbox with file/geometry
+find dummy user to check useability
+check again all the requirements
+
+Optional: 
+Correct data by 3d potential calculation (automatised)
+Full BERT behaviour:
+  Save single primary potentials -> interpolate -> use in dcinv
+    Create pot/sec and pot/prim in installer
+    delete pot/prim/* and pot/prim/* before dcfem and interpolate
+2d modelling by creating poly file    
+Export results into surfer file (which one? current amplitude)
+
+Done minors:
+= Fix problem of changed electrode order using water measurement
+= read in multiple frequencies from TX0 files
+= introduce popdown menu for choosing frequency
+= icon
+= messages/status line before/after each step
+= use of Watch/Arrow pointer type
+= statistics checkbox next to Show switches to histogram
+= min/Trim/max Edit/Buttons
+= all buttons into Menu (Tag: BlaMenu)
+= fix problem with tomo.bms/tomo2.bms
+= enable unified data format as for res2dinv (what's with SIP then??)
+= more status messages
+  = min/max rhoa after calc rhoa or edit data
+  = min/max rho/phase after inversion
+= make opposite sides fully working
+  = change d1 to be distance from electrode n to corner
+  = d2 is distance from corner to electrode n+1
+  = improve geometry plot (for all types)
+= save data file
+= save/load geometry
+= Edit data (rhoa[,ip,err,u,i] >/</= value)
+=  popdown menu for field
+= enable other geometries
+= one side
+= two neighboring sides (d1,d2)
+= three sides (d1, d2, d3)
+= four sides (d1, d2, d3, d4)

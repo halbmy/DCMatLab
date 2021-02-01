@@ -1,0 +1,20 @@
+CylBERT - Timelapse Boundless Electrical Resistivity Inversion on Cylinders
+
+* read popup box content from file to easily include other geometries
+* display image shot for data
+* create different BS335 types, each twice with numerical/experimental k
+
+* make a much more general inversion on any lysimeter
+
+* generate icon file (some BGR pic)
+= make dcinv showing starting resistivity and verbosing ip inversion
+= display some results (chi^2/rms, min/max model)
+= check for data reordering and throw away non-matching data
+= make (edit and internal) fields empty when choosing the geometry type
+= check error estimation
+= single (null) data set must not apply -t option
+= introduce optimum regularization parameter
+= load new file from old directory
+= correct "invalid file" bug
+= bug for just one additional data set
+= max error 1% active or wrong? (only measuring error=small)

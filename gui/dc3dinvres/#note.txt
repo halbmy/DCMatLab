@@ -1,0 +1,12 @@
+DC3DInvRes Direct Current 3D Inversion and Resolution
+Author: Thomas Günther (thomas@resistivity.net)
+RESISTIVITY.NET productions
+
+Full Inversion Facilities
+Use of different Inversion & Regularization methods
+Grid-independent electrode positioning
+Model and Data Editing
+Fast Forward Calculation
+3D-Visualization of Model
+Sensitivity and Resolution Analysis
+Time lapse investgations
