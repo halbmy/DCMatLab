@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration target="target.mlapps" target-name="Package App" name="DC2dInvRes" location="D:\Guenther.T\src\dcapps\dc2dinvres" file="D:\Guenther.T\src\dcapps\dc2dinvres\DC2dInvRes.prj" build-checksum="2481975599">
+    <param.appname>DC2dInvRes</param.appname>
+    <param.authnamewatermark>Thomas Günther, resistivity.net production</param.authnamewatermark>
+    <param.email />
+    <param.company />
+    <param.icon />
+    <param.summary>DC2dInvRes is a GUI for inverting 2d ERT data</param.summary>
+    <param.description />
+    <param.screenshot />
+    <param.version>2.13</param.version>
+    <param.products.name>
+      <item>MATLAB</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+    </param.products.id>
+    <param.products.version>
+      <item>8.0</item>
+    </param.products.version>
+    <param.platforms>
+      <item>glnxa64</item>
+    </param.platforms>
+    <param.output>${PROJECT_ROOT}\DC2dInvRes.mlappinstall</param.output>
+    <param.guid>413ae3dd-a674-465d-9581-e79bbfc11926</param.guid>
+    <unset>
+      <param.email />
+      <param.company />
+      <param.icon />
+      <param.description />
+      <param.screenshot />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\dc2dinvres.m</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\combdata2d.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\createsxhdata.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\deldeadelecs.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\delmeasurement.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\estimateerror.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\getkonf.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\getkonf2d.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\getkonf3d.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\data\sort2delecs.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\export\modelexport2d.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\export\modelimport2d.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\export\vtkexport2d.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\check2dfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\read2dfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\read2drawfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\readampfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\readflwfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\readres2dinvfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\readresecsfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\readstgfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\readsyscalfile.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\import\readtx0file.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\plot\midkonf2d.m</file>
+      <file>D:\Guenther.T\src\bert\trunk\matlab\plot\showdata2d.m</file>
+      <file>${PROJECT_ROOT}\calcsens2d.m</file>
+      <file>${PROJECT_ROOT}\checklic2.m</file>
+      <file>${PROJECT_ROOT}\choose2dmodel.m</file>
+      <file>${PROJECT_ROOT}\daterr.m</file>
+      <file>${PROJECT_ROOT}\dcfwd2d.m</file>
+      <file>${PROJECT_ROOT}\full1dinv.m</file>
+      <file>${PROJECT_ROOT}\fwd2d1d.m</file>
+      <file>${PROJECT_ROOT}\geo2d.m</file>
+      <file>${PROJECT_ROOT}\getrez.m</file>
+      <file>${PROJECT_ROOT}\iconify.m</file>
+      <file>${PROJECT_ROOT}\invers.m</file>
+      <file>${PROJECT_ROOT}\modelfromdata2d.m</file>
+      <file>${PROJECT_ROOT}\ncreate.m</file>
+      <file>${PROJECT_ROOT}\ndelete.m</file>
+      <file>${PROJECT_ROOT}\pmatrix2d.m</file>
+      <file>${PROJECT_ROOT}\s_for.m</file>
+      <file>${PROJECT_ROOT}\s_inv.m</file>
+      <file>${PROJECT_ROOT}\s_mal.m</file>
+      <file>${PROJECT_ROOT}\s_mod.m</file>
+      <file>${PROJECT_ROOT}\sens1d.m</file>
+      <file>${PROJECT_ROOT}\smooth2d1st.m</file>
+      <file>${PROJECT_ROOT}\smooth2d2nd.m</file>
+      <file>${PROJECT_ROOT}\spcalcsens2dt.m</file>
+      <file>${PROJECT_ROOT}\zparam.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\b2r.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\cbar.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\chi2.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\destrip.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\fcmcluster.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\getcindex.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\int2hum.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\interperc.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\messg.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\minmax.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\mytextscan.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\num2strcell.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\base\rndig.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\eqsolve\cglscdp.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\eqsolve\cglscdpt.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\eqsolve\cglsparcdp.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\eqsolve\regcgls.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\plot\draw2dmodel.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\plot\patch2dmodel.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\plot\plotlongmod.m</file>
+      <file>D:\Guenther.T\src\libgimli\trunk\matlab\trans\logtrans.m</file>
+    </fileset.depfun>
+    <fileset.resources>
+      <file>${PROJECT_ROOT}\#license.txt</file>
+      <file>${PROJECT_ROOT}\#note.txt</file>
+      <file>${PROJECT_ROOT}\#release.txt</file>
+      <file>${PROJECT_ROOT}\#todo.txt</file>
+      <file>${PROJECT_ROOT}\choose2dmodel.fig</file>
+      <file>${PROJECT_ROOT}\daterr.fig</file>
+      <file>${PROJECT_ROOT}\dc2dinvres.fig</file>
+      <file>${PROJECT_ROOT}\geo2dmx.mexa64</file>
+      <file>${PROJECT_ROOT}\i_choose.fig</file>
+      <file>${PROJECT_ROOT}\mod2d.fig</file>
+      <file>${PROJECT_ROOT}\ncreate.fig</file>
+      <file>${PROJECT_ROOT}\ndelete.fig</file>
+      <file>${PROJECT_ROOT}\s_for.fig</file>
+      <file>${PROJECT_ROOT}\s_inv.fig</file>
+      <file>${PROJECT_ROOT}\s_mal.fig</file>
+      <file>${PROJECT_ROOT}\s_mod.fig</file>
+      <file>${PROJECT_ROOT}\s_par.fig</file>
+      <file>${PROJECT_ROOT}\sens2dxz.mexa64</file>
+    </fileset.resources>
+    <fileset.package />
+    <build-deliverables>
+      <file name="DC2dInvRes.mlappinstall" location="D:\Guenther.T\src\dcapps\dc2dinvres" optional="false">D:\Guenther.T\src\dcapps\dc2dinvres\DC2dInvRes.mlappinstall</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2012b</root>
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>6.1</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
+
